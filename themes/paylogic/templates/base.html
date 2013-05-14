@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="{{ DEFAULT_LANG }}">
+<head>
+  {% block head %}
+  <title>{% block title %}{{ SITENAME }}{% endblock title %}</title>
+  <meta charset="utf-8">
+  {% if FEED_ALL_ATOM %}
+  <link href="{{ FEED_DOMAIN }}/{{ FEED_ALL_ATOM }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Full Atom Feed">
+  {% endif %}
+  {% if FEED_ALL_RSS %}
+  <link href="{{ FEED_DOMAIN }}/{{ FEED_ALL_RSS }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Full RSS Feed">
+  {% endif %}
+  {% if FEED_ATOM %}
+  <link href="{{ FEED_DOMAIN }}/{{ FEED_ATOM }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Atom Feed">
+  {% endif %}
+  {% if FEED_RSS %}
+  <link href="{{ FEED_DOMAIN }}/{{ FEED_RSS }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} RSS Feed">
+  {% endif %}
+  {% if CATEGORY_FEED_ATOM and category %}
+  <link href="{{ FEED_DOMAIN }}/{{ CATEGORY_FEED_ATOM|format(category.slug) }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Categories Atom Feed">
+  {% endif %}
+  {% if CATEGORY_FEED_RSS and category %}
+  <link href="{{ FEED_DOMAIN }}/{{ CATEGORY_FEED_RSS|format(category.slug) }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Categories RSS Feed">
+  {% endif %}
+  {% if TAG_FEED_ATOM and tag %}
+  <link href="{{ FEED_DOMAIN }}/{{ TAG_FEED_ATOM|format(tag.slug) }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Tags Atom Feed">
+  {% endif %}
+  {% if TAG_FEED_RSS and tag %}
+  <link href="{{ FEED_DOMAIN }}/{{ TAG_FEED_RSS|format(tag.slug) }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Tags RSS Feed">
+  {% endif %}
+  <!-- The main stylesheet. -->
+  <link rel="stylesheet" type="text/css" href="{{ SITEURL }}/theme/css/style.css">
+  <!-- Bookmark icon -->
+  <link rel="shortcut icon" href="{{ SITEURL }}/static/images/favicon.ico">
+  <!-- Twitter Bootstrap -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
+  {% endblock %}
+</head>
+
+<body id="index" class="home">
+
+  <header id="banner" class="body">
+    <h1><a href="{{ SITEURL }}">
+        <span id="logo">Paylogic</span>
+        <span id="devportal">development portal</span>
+    </a></h1>
+  </header>
+
+  <nav id="menu"><ul>
+  {% for title, link in MENUITEMS %}
+      <li><a href="{{ link }}">{{ title }}</a></li>
+  {% endfor %}
+  {% if DISPLAY_PAGES_ON_MENU %}
+    {% for p in PAGES|sort(attribute='source_path') %}
+      <li{% if p == page %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ p.url }}" class="btn btn-primary">{{ p.title }}</a></li>
+    {% endfor %}
+  {% endif %}
+  {% if DISPLAY_CATEGORIES_ON_MENU %}
+    {% for cat, null in categories %}
+      <li{% if cat == category %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ cat.url }}" class="btn btn-primary">{{ cat }}</a></li>
+    {% endfor %}
+  {% endif %}
+  </ul></nav>
+
+  <div id="content">
+  {% block content %}
+  {% endblock %}
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+@import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,700);
+
+body {
+  font-family: sans-serif;
+  font-size: 100%;
+  background-color: white;
+  color: #111;
+  width: 50%;
+  min-width: 400px;
+  min-height: 200px;
+  padding: 1em;
+  margin: 5% 10%;
+}
+
+h1 a { color: inherit !important }
+h2 a { color: inherit !important }
+h3 a { color: inherit !important }
+h4 a { color: inherit !important }
+h5 a { color: inherit !important }
+h6 a { color: inherit !important }
+
+/* Styling of tables. */
+table { margin: 1em; }
+th, td { padding: 0.2em 0.3em; }
+
+/* Fancy styling of the plain text Paylogic logo. */
+#banner {
+  height: 3em;
+}
+
+#logo {
+  color: transparent; /* hide the text */
+  background: url(/static/images/paylogic-logo.png);
+  background-repeat: no-repeat;
+}
+
+/* Fancy fonts for headings. */
+#content h1, h2, h3, h4, h5, h6 {
+  font-family: 'Yanone Kaffeesatz', sans-serif !important;
+}
+
+#menu ul {
+  margin: 1em 1em 1em 0;
+}
+
+#menu li {
+    display: inline;
+    margin: 0;
+}
+
+#post-list {
+    margin-bottom: 1em;
+    margin-top: 1em;
+}
+
+pre {
+    margin: 2em 1em 2em 4em;
+}
+
+/* Article metadata block. */
+.post-info {
+  margin-right: 1em;
+  float: right;
+}
+
+/* Styling for the "Contents:" text above the TOC. */
+#contents .topic-title {
+  font-weight: bold;
+}
+
+/* Syntax highlighting based on th Earendel color scheme
+ * https://github.com/xolox/lua-lxsh/blob/master/src/colors/earendel.lua
+ */
+.highlight .c { color: #558817; }
+.highlight .s { color: #a8660d; }
+.highlight .nb { color: #2239a8; font-weight: bold; }
