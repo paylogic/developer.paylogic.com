@@ -1,74 +1,109 @@
 <!DOCTYPE html>
 <html lang="{{ DEFAULT_LANG }}">
-<head>
-  {% block head %}
-  <title>{% block title %}{{ SITENAME }}{% endblock title %}</title>
-  <meta charset="utf-8">
-  {% if FEED_ALL_ATOM %}
-  <link href="{{ FEED_DOMAIN }}/{{ FEED_ALL_ATOM }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Full Atom Feed">
-  {% endif %}
-  {% if FEED_ALL_RSS %}
-  <link href="{{ FEED_DOMAIN }}/{{ FEED_ALL_RSS }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Full RSS Feed">
-  {% endif %}
-  {% if FEED_ATOM %}
-  <link href="{{ FEED_DOMAIN }}/{{ FEED_ATOM }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Atom Feed">
-  {% endif %}
-  {% if FEED_RSS %}
-  <link href="{{ FEED_DOMAIN }}/{{ FEED_RSS }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} RSS Feed">
-  {% endif %}
-  {% if CATEGORY_FEED_ATOM and category %}
-  <link href="{{ FEED_DOMAIN }}/{{ CATEGORY_FEED_ATOM|format(category.slug) }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Categories Atom Feed">
-  {% endif %}
-  {% if CATEGORY_FEED_RSS and category %}
-  <link href="{{ FEED_DOMAIN }}/{{ CATEGORY_FEED_RSS|format(category.slug) }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Categories RSS Feed">
-  {% endif %}
-  {% if TAG_FEED_ATOM and tag %}
-  <link href="{{ FEED_DOMAIN }}/{{ TAG_FEED_ATOM|format(tag.slug) }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Tags Atom Feed">
-  {% endif %}
-  {% if TAG_FEED_RSS and tag %}
-  <link href="{{ FEED_DOMAIN }}/{{ TAG_FEED_RSS|format(tag.slug) }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Tags RSS Feed">
-  {% endif %}
-  <!-- The main stylesheet. -->
-  <link rel="stylesheet" type="text/css" href="{{ SITEURL }}/theme/css/style.css">
-  <!-- Bookmark icon -->
-  <link rel="shortcut icon" href="{{ SITEURL }}/static/images/favicon.ico">
-  <!-- Twitter Bootstrap -->
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
-  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
-  <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
-  {% endblock %}
-</head>
+    <head>
+        {% block head %}
+            <title>{% block title %}{{ SITENAME }}{% endblock title %}</title>
+            <meta charset="utf-8">
+            
+            {% if FEED_ALL_ATOM %}
+                <link href="{{ FEED_DOMAIN }}/{{ FEED_ALL_ATOM }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Full Atom Feed">
+            {% endif %}
+            
+            {% if FEED_ALL_RSS %}
+                <link href="{{ FEED_DOMAIN }}/{{ FEED_ALL_RSS }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Full RSS Feed">
+            {% endif %}
+            
+            {% if FEED_ATOM %}
+                <link href="{{ FEED_DOMAIN }}/{{ FEED_ATOM }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Atom Feed">
+            {% endif %}
+            
+            {% if FEED_RSS %}
+                <link href="{{ FEED_DOMAIN }}/{{ FEED_RSS }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} RSS Feed">
+            {% endif %}
+            
+            {% if CATEGORY_FEED_ATOM and category %}
+                <link href="{{ FEED_DOMAIN }}/{{ CATEGORY_FEED_ATOM|format(category.slug) }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Categories Atom Feed">
+            {% endif %}
+            
+            {% if CATEGORY_FEED_RSS and category %}
+                <link href="{{ FEED_DOMAIN }}/{{ CATEGORY_FEED_RSS|format(category.slug) }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Categories RSS Feed">
+            {% endif %}
+            
+            {% if TAG_FEED_ATOM and tag %}
+                <link href="{{ FEED_DOMAIN }}/{{ TAG_FEED_ATOM|format(tag.slug) }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Tags Atom Feed">
+            {% endif %}
+            
+            {% if TAG_FEED_RSS and tag %}
+                <link href="{{ FEED_DOMAIN }}/{{ TAG_FEED_RSS|format(tag.slug) }}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} Tags RSS Feed">
+            {% endif %}
 
-<body id="index" class="home">
+            <!-- Bookmark icon -->
+            <link rel="shortcut icon" href="{{ SITEURL }}/static/images/favicon.ico">
 
-  <header id="banner" class="body">
-    <h1><a href="{{ SITEURL }}">
-        <span id="logo">Paylogic</span>
-        <span id="devportal">development portal</span>
-    </a></h1>
-  </header>
+            <!-- Twitter Bootstrap -->
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+            <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
 
-  <nav id="menu"><ul>
-  {% for title, link in MENUITEMS %}
-      <li><a href="{{ link }}">{{ title }}</a></li>
-  {% endfor %}
-  {% if DISPLAY_PAGES_ON_MENU %}
-    {% for p in PAGES|sort(attribute='source_path') %}
-      <li{% if p == page %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ p.url }}" class="btn btn-primary">{{ p.title }}</a></li>
-    {% endfor %}
-  {% endif %}
-  {% if DISPLAY_CATEGORIES_ON_MENU %}
-    {% for cat, null in categories %}
-      <li{% if cat == category %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ cat.url }}" class="btn btn-primary">{{ cat }}</a></li>
-    {% endfor %}
-  {% endif %}
-  </ul></nav>
+            <!-- Custom Paylogic Bootstrap theme -->
+            <link rel="stylesheet" type="text/css" href="{{ SITEURL }}/theme/css/bootstrap-paylogic.css">
+            <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet">
 
-  <div id="content">
-  {% block content %}
-  {% endblock %}
-  </div>
+            <!-- Devportal specific style tweaks -->
+            <link rel="stylesheet" type="text/css" href="{{ SITEURL }}/theme/css/style.css">
+        {% endblock %}
+    </head>
 
-</body>
+    <body>
+        <div class="navbar navbar-inverse">
+            <div class="navbar-inner">
+                <a class="brand" href="/">Paylogic</a>
+                <div class="devportal-text">
+                    <a href="/">developer portal</a>
+                </div>
+
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+
+                <div class="nav-collapse collapse">
+                    <div class="pull-right">
+                        <ul class="nav">
+                            {% for title, link in MENUITEMS %}
+                                <li><a href="{{ link }}">{{ title }}</a></li>
+                            {% endfor %}
+                            
+                            {% if DISPLAY_PAGES_ON_MENU %}
+                                {% for p in PAGES|sort(attribute='source_path') %}
+                                    <li{% if p == page %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ p.url }}">{{ p.title }}</a></li>
+                                {% endfor %}
+                            {% endif %}
+                            
+                            <li class="dropdown">
+                                <a href="dropdown-toggle" role="button" data-toggle="dropdown"
+                                data-target="#">
+                                    Categories <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    {% if DISPLAY_CATEGORIES_ON_MENU %}
+                                        {% for cat, null in categories %}
+                                            <li{% if cat == category %} class="active"{% endif %}><a href="{{ SITEURL }}/{{ cat.url }}">{{ cat }}</a></li>
+                                        {% endfor %}
+                                    {% endif %}    
+                                </ul>
+                            </li> 
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="wrapper container-fluid">
+            <div class="row-fluid">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+
+    </body>
 </html>
