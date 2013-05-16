@@ -1,11 +1,13 @@
-/* Remove 80px top margin */
-html {
-    margin: 0;
-}
-
 /* Correct brand image */
 .brand {
     background-image: url('/theme/img/paylogic.png') !important;
+}
+
+/* Dont give a margin to brand if this is not a mobile device. */
+@media screen and (min-width: 979px) {
+    .brand {
+        margin-left: -20px !important; 
+    }
 }
 
 /* Nice developer portal text */
@@ -19,6 +21,7 @@ html {
 
 .devportal-text a {
     color: white;
+    font-family: Helvetica;
 }
 
 .devportal-text a:hover {
@@ -28,8 +31,7 @@ html {
 
 /* Different header styles */
 h1, h2, h3, h4, h5, h6 {
-    font-family: helvetica;
-    margin-top:20px;
+    margin-top: 20px;
 }
 
 h1 { font-size: 1.9em }
@@ -38,6 +40,37 @@ h3 { font-size: 1.3em }
 h4 { font-size: 1.0em }
 h5 { font-size: 0.7em }
 h6 { font-size: 0.5em }
+
+/* Elements that get the .with-gutter class, get a gutter based on how big the
+ * screen (or actually the window) is.
+ */
+
+/* "Normal" screens (width > 1366px) */
+.with-gutter {
+    margin: 0 auto;
+    width: 50%;
+}
+
+/* Smaller screens */
+@media screen and (min-width: 980px) and (max-width: 1367px) {
+    .with-gutter {
+        width: 70%;
+    }
+}
+
+/* Tablets */
+@media screen and (min-width: 768px) and (max-width: 979px) {
+    .with-gutter {
+        width: 80%
+    }
+}
+
+/* Smaller tablets and phones */
+@media screen and (max-width: 767px) {
+    .with-gutter {
+        width: 100%
+    }
+}
 
 /* Nicer margin top */
 .wrapper { margin-top: -20px; }

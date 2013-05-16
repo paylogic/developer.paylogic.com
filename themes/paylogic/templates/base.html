@@ -54,22 +54,22 @@
     </head>
 
     <body>
-        <div class="navbar navbar-inverse">
+        <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
-                <a class="brand" href="/">Paylogic</a>
-                <div class="devportal-text">
-                    <a href="/">developer portal</a>
-                </div>
+                <div class="with-gutter">
+                    <a class="brand" href="/">Paylogic</a>
+                    <div class="devportal-text">
+                        <a href="/">development portal</a>
+                    </div>
 
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
 
-                <div class="nav-collapse collapse">
-                    <div class="pull-right">
-                        <ul class="nav">
+                    <div class="nav-collapse collapse">
+                        <ul class="nav pull-right">
                             {% for title, link in MENUITEMS %}
                                 <li><a href="{{ link }}">{{ title }}</a></li>
                             {% endfor %}
@@ -99,7 +99,7 @@
             </div>
         </div>
 
-        <div class="wrapper container-fluid">
+        <div class="wrapper with-gutter container-fluid">
             <div class="row-fluid">
                 {% block content %}{% endblock %}
             </div>
