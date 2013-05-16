@@ -10,25 +10,6 @@
     }
 }
 
-/* Nice developer portal text */
-.devportal-text {
-    float: left;
-    padding: 10px 20px 10px;
-    margin-left: -20px;
-    color: white;
-    font-size: 1.5em;
-}
-
-.devportal-text a {
-    color: white;
-    font-family: Helvetica;
-}
-
-.devportal-text a:hover {
-    color: #eee;
-    text-decoration: none;
-}
-
 /* Different header styles */
 h1, h2, h3, h4, h5, h6 {
     margin-top: 20px;
