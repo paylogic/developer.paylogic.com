@@ -56,6 +56,39 @@ h6 { font-size: 0.5em }
 /* Nicer margin top */
 .wrapper { margin-top: -20px; }
 
+/* Article metadata */
+.post-info {
+    float: right;
+    color: #444;
+    padding-left: 15px;
+    margin-left: 5px;
+    border-left: 1px solid #ddd;
+}
+
+/* Footer stuff */
+.footer {
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    font-size: 0.9em;
+    color: #666;
+    font-family: Helvetica;
+}
+
+/* Remove post-list numbers */
+#post-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+/* Nicer pagination */
+.paginator {
+    margin-top: 20px;
+    color: #444;
+}
+
 /* Syntax highlighting based on th Earendel color scheme
  * https://github.com/xolox/lua-lxsh/blob/master/src/colors/earendel.lua
  */
