@@ -45,8 +45,8 @@ Nowadays tamers understand the lion’s psychology. They condition the
 lion to behave as they want, they tie behaviors to signals and reward
 the right behaviors. They build up trust.
 
-Taming the Lion—recap
----------------------
+Taming the Software Lion—recap
+------------------------------
 
 1800s
 ~~~~~
@@ -178,7 +178,7 @@ As for the build, the deployment script must be automated and used by
 all members of the Team in all environments. Deploying the software
 should be accomplished by a single command:
 
-    *./deploy.sh*\ <environment> <version>
+    *./deploy.sh* <environment> <version>
 
 The only way to deploy is to follow the pipeline: tests, peer-review,
 merge, test, automated build, automated deploy. This includes
