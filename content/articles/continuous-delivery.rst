@@ -1,7 +1,7 @@
 :title: Continuous Delivery
 :date: 2013-05-30 01:08
 :summary: What is Continuous Delivery and how do you get started with it?
-:cathegory: Agile
+:category: Agile
 :author: Òscar Vilaplana
 :slug: articles/continuous-delivery
 :tags: agile, continuous delivery, deployment, release, testing, qa
