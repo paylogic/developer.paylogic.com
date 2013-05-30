@@ -22,4 +22,4 @@ by sending him an `e-mail <peter@peterodding.com>`_.
 
 When he is not coding or designing software or reading books about it he is probably biking around on my recumbent bike, messing around with improv comedy or desecrating old master's works on his piano.
 
-Find him on Twitter as `@grimborg <http://twitter.com/grimborg>`_, check out his `blog <http://oscarvilaplana.cat>`_ or drop him a line on `<dev@oscarvilaplana.cat>`_.
+Find him on Twitter as `@grimborg <http://twitter.com/grimborg>`_, check out his `blog <http://oscarvilaplana.cat>`_ or drop him a line on `dev@oscarvilaplana.cat <dev@oscarvilaplana.cat>`_.

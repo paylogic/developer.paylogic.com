@@ -21,6 +21,7 @@ ticketing API which is currently under development.
 Recent articles
 ===============
 
+- `Continuous Delivery <articles/continuous-delivery.html>`_
 - `pip-accel: Accelerator for pip, the Python package manager <articles/pip-accel.html>`_
 - `Using Debian packages for Python deployments <articles/debian-packages.html>`_
 
