@@ -13,7 +13,7 @@ article explains how we got started.
 
 This is a large article but if you just want to get started building Debian
 packages you can jump straight to the section on `getting started with Debian
-packages`_.
+packaging`_.
 
 Disadvantages of Python packages
 ################################
@@ -37,15 +37,37 @@ like it, but for us it doesn't come close to a full solution:
   details about this subject see `Differences between distribute, distutils,
   setuptools and distutils2? <http://stackoverflow.com/questions/6344076/differences-between-distribute-distutils-setuptools-and-distutils2/14753678#14753678>`_
 
-- Python packages favor virtual environments over system wide installations:
-   - Why do we say this?
-      - ``easy_install`` doesn't support removal of packages
-      - ``pip`` does support removal of packages but does not support anything
-        like ``apt-get autoremove``
-   - Why is it a problem?
-      - We've seen virtual environments break in various ways, for example
-        because of security updates to the system-wide Python installation
-        (Google for `ImportError: cannot import name urandom`_)
+Virtual environments
+====================
+
+There's one more significant thing, which is that Python packages favor virtual
+environments over system wide installations. Why do we say this?
+
+- ``easy_install`` doesn't support removal of packages
+- ``pip`` does support removal of packages but does not support anything like
+  ``apt-get autoremove``
+
+One of our problems with virtual environments is that we've seen them break in
+various ways, for example because of security updates to the system-wide Python
+installation (Google for `ImportError: cannot import name urandom`_). This is
+one of the reasons why we prefer virtual machines over virtual environments to
+isolate our production deployments.
+
+Making sense of the Python packaging ecosystem
+==============================================
+
+As mentioned above the Python packaging ecosystem is a bit of a mess. For an
+overview of the situation and some of the problems, refer to the following
+external resources:
+
+- `The Hitchhiker's Guide to Packaging: Current State of Packaging <http://guide.python-distribute.org/introduction.html#current-state-of-packaging>`_
+- `Python Packaging: Hate, hate, hate everywhere <http://lucumr.pocoo.org/2012/6/22/hate-hate-hate-everywhere/>`_
+- `setuptools versioning - wtf? <http://blog.workaround.org/setuptools-versioning-wtf>`_
+
+I sometimes hear people call Debian package management complex. They certainly
+have a point, but as a DevOps who wants to do their work properly, Debian and
+Python are both complex, the difference is that Debian is (mostly) a pleasure
+to work with :-)
 
 Advantages of Debian packages
 #############################
@@ -69,27 +91,15 @@ Here are a couple of notable advantages of using Debian packages:
 There's also the fact that we get to use ``apt-get`` more and we (generally)
 love ``apt-get`` :-)
 
-Making sense of the Python packaging ecosystem
-==============================================
+.. _getting started with Debian packaging:
 
-For an overview of the Python packaging ecosystem and some of its problems,
-refer to the following external resources:
-
-- `The Hitchhiker's Guide to Packaging: Current State of Packaging <http://guide.python-distribute.org/introduction.html#current-state-of-packaging>`_
-- `Python Packaging: Hate, hate, hate everywhere <http://lucumr.pocoo.org/2012/6/22/hate-hate-hate-everywhere/>`_
-- `setuptools versioning - wtf? <http://blog.workaround.org/setuptools-versioning-wtf>`_
-
-I sometimes hear people call Debian package management complex. Of course they
-have a point, but as a devops Debian and Python are both complex, the
-difference is that Debian is (mostly) a pleasure to work with :-)
-
-.. _getting started with Debian packages:
-
-Getting started with Debian packages
-####################################
+Getting started with Debian packaging
+#####################################
 
 Debian package management is a complex topic, however getting started requires
-little upfront knowledge nor does it require a complex build environment.
+little upfront knowledge nor does it require a complex build environment. In
+fact most of the tools you'll need are probably already installed if you're
+running Debian or a derivative Linux distribution!
 
 Creating your first Debian package
 ==================================
