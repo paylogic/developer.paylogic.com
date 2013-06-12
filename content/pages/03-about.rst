@@ -31,7 +31,7 @@ sales and access management both prior and during the event. Paylogic
 additionally provides dedicated account management services to assist event
 organizers in strengthening the relationship with their visitors.
 
-Call us for more information or visit www.paylogic.com_.
+For more information visit www.paylogic.com_.
 
 .. External references:
 .. _event specific seating solutions: http://www.paylogic.com/en/unique-solutions/seating-solutions/
