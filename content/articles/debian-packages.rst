@@ -67,7 +67,9 @@ external resources:
 I sometimes hear people call Debian package management complex. They certainly
 have a point, but as a DevOps who wants to do their work properly, Debian and
 Python are both complex, the difference is that Debian is (mostly) a pleasure
-to work with :-)
+to work with... The Python packaging ecosystem is very fragmented and
+underdocumented while in Debian there is almost always a canonical, documented
+way to do things properly.
 
 Advantages of Debian packages
 #############################
@@ -116,7 +118,7 @@ command. Here's how you get started:
    mkdir DEBIAN
 
    # Create the main control file with package metadata.
-   cat DEBIAN/control << EOF
+   cat > DEBIAN/control << EOF
    Package: name-of-package
    Version: 1.0
    Section: universe/web
@@ -127,8 +129,11 @@ command. Here's how you get started:
    Description: Explanation of why name-of-package is so cool
    EOF
 
-   # Build the package.
-   dpkg-deb --build .
+   # Build the package using the accepted naming scheme.
+   NAME=$(awk '/^Package:/ {print $2}' DEBIAN/control)
+   VERSION=$(awk '/^Version:/ {print $2}' DEBIAN/control)
+   ARCH=$(awk '/^Architecture:/ {print $2}' DEBIAN/control)
+   dpkg-deb --build . $NAME-${VERSION}_$ARCH.deb
 
 Assuming you're on a Debian/Ubuntu system, the above commands should be enough
 to build a simple package. Any files in the working directory (excluding the
