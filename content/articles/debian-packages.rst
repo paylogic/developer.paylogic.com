@@ -52,7 +52,7 @@ Advantages of Debian packages
 
 Here are a couple of notable advantages of using Debian packages:
 
-- It provides a controlled process for installing, removing, upgrading and
+- They provide a controlled process for installing, removing, upgrading and
   downgrading packages (for example doing new releases, but also rolling back
   existing releases)
 
