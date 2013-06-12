@@ -21,8 +21,8 @@ Disadvantages of Python packages
 Python has its own packaging infrastructure and there are a lot of people who
 like it, but for us it doesn't come close to a full solution:
 
-- PyPi_ and distribution websites go down at least once a week, usually at the
-  exact time you need them to perform a live deployment :-)
+- PyPI_ and/or distribution websites go down regularly, usually at the exact
+  time you need them to perform a live deployment :-)
 
 - Python packages cannot and so don't declare their binary dependencies because
   there is no portable way to do so (the packages names are different in every
