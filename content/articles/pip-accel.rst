@@ -37,7 +37,29 @@ For Python deployments there are two main ways to deploy a project and its depen
 1. System-wide installation
 2. `Virtual environments`_ (or an equivalent construction, isolated from the system)
 
-At Paylogic we use system-wide installations on production (like) hosts and virtual environments everywhere else.
+At Paylogic we use system-wide installations on production (like) hosts and
+virtual environments everywhere else. Why don't we use virtual environments on
+production systems? Virtual environments do have some drawbacks (see below) and
+we have the luxury of being able to isolate applications on the level of
+virtual machines instead of Python virtual environments. This additional layer
+of isolation is worth it for us.
+
+Drawbacks of virtual environments
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Python virtual environments are by their nature a bit fragile. Quoting from
+`the virtualenv website`_:
+
+    **Warning:** *Python bugfix releases 2.6.8, 2.7.3, 3.1.5 and 3.2.3 include
+    a change that will cause import random to fail with “cannot import name
+    urandom” on any virtualenv created on a Unix host with an earlier release
+    of Python 2.6/2.7/3.1/3.2, if the underlying system Python is upgraded.
+    This is due to the fact that a virtualenv uses the system Python’s standard
+    library but contains its own copy of the Python interpreter, so an upgrade
+    to the system Python results in a mismatch between the version of the
+    Python interpreter and the version of the standard library. It can be fixed
+    by removing $ENV/bin/python and re-running virtualenv on the same
+    target directory with the upgraded Python.*
 
 Big projects have a lot of dependencies
 =======================================
@@ -197,5 +219,6 @@ information about the `internal control flow`_. You're also free to browse the
 .. _PyPi: https://pypi.python.org/pypi/pip-accel
 .. _source code: https://github.com/paylogic/pip-accel/blob/master/pip_accel.py
 .. _Terrarium: https://pypi.python.org/pypi/terrarium
+.. _the virtualenv website: http://virtualenv.org/en/latest/news.html
 .. _Virtual environments: http://www.virtualenv.org/en/latest/
 .. _Wheel: http://wheel.readthedocs.org/en/latest/
