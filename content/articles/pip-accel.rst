@@ -73,7 +73,7 @@ large modules the compilation can take a while.
 pip can be slow and unreliable
 ==============================
 
-So we build a lot of virtual environments which can be really slow. The actual
+So we build a lot of virtual environments, which can be really slow. The actual
 creation of the environment only takes a couple of seconds, but installing all
 of the dependencies can take minutes! For example at the time of writing it
 takes about seven minutes to install all dependencies of Paylogic's main code
