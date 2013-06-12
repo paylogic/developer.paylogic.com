@@ -1,17 +1,41 @@
 :title: pip-accel: Accelerator for pip, the Python package manager
-:summary: Recently we published `pip-accel` to GitHub_ and PyPi_ and in this article we'll tell you why and how we created this project.
+:summary: Recently we published `pip-accel` to GitHub_ and PyPI_ and in this article we'll tell you why and how we created this project.
 :category: DevOps
 :author: Peter Odding
 :date: 2013-05-14 00:28
 :slug: articles/pip-accel
 :tags: python, deployment, virtual environments, automation, pip, open source, packaging
 
-Recently we published `pip-accel` to GitHub_ and PyPi_ and in this article
-we'll tell you why and how we created this project.
+Recently we published pip-accel_ to GitHub_ and PyPI_ and in this article we'll
+tell you why and how we created this project.
 
 .. contents::
 
-Let's dive in:
+Introduction
+############
+
+The pip-accel program is a wrapper for pip_, the Python package manager. It
+accelerates the usage of pip to initialize Python `virtual environments`_ given
+one or more requirements_ files. It does so by combining the following two
+approaches:
+
+1. Source distribution downloads are cached and used to generate a local index
+   of source distribution archives. If all your dependencies are pinned to
+   absolute versions whose source distribution downloads were previously
+   cached, pip-accel won't need a network connection at all! This is one of the
+   reasons why pip can be so slow: given absolute pinned dependencies available
+   in the download cache it will still scan PyPI (the online Python package
+   index) and distribution websites.
+
+2. Binary distributions are used to speed up the process of installing
+   dependencies with binary components (like M2Crypto and LXML). Instead of
+   recompiling these dependencies again for every virtual environment we
+   compile them once and cache the result as a binary ``*.tar.gz``
+   distribution.
+
+In the rest of this article we will discuss why pip-accel was created and dive
+into the particulars of how it works. At the end we'll also look at some
+related projects.
 
 At Paylogic we deploy our code bases a lot
 ##########################################
@@ -79,7 +103,7 @@ of the dependencies can take minutes! For example at the time of writing it
 takes about seven minutes to install all dependencies of Paylogic's main code
 base using pip_.
 
-What's worse is that PyPi and distribution websites can be very unreliable.
+What's worse is that PyPI and distribution websites can be very unreliable.
 One day everything works fine, the next day the same packages you downloaded
 previously can no longer be downloaded. Usually these are transient errors, you
 just have to be very patient and/or retry until it works.
@@ -107,7 +131,7 @@ So what about a more granular approach?
 There are two obvious targets:
 
 1. Given absolute version numbers available in the download cache, pip_ still
-   goes out and scans PyPi and distribution websites. This is documented
+   goes out and scans PyPI and distribution websites. This is documented
    behavior:
 
       pip offers a ``--download-cache`` option for installs to prevent redundant
@@ -128,13 +152,13 @@ Keeping pip off the internet
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Our first problem was that pip's index crawling process is very slow so we want
-to avoid it when possible. So how can we keep pip_ from always scanning PyPi
+to avoid it when possible. So how can we keep pip_ from always scanning PyPI
 and distribution websites, even when all of the dependencies are already
 available in the local download cache? Here's how:
 
 1. We generate a local source package index based on the pip_ download cache.
    This local source package index is just a directory with source packages
-   downloaded from PyPi and distribution websites.
+   downloaded from PyPI and distribution websites.
 
 2. We then run pip_ as follows:
 
@@ -172,7 +196,7 @@ course with a bit of work these pathnames can be normalized to the root of the
 Putting it all together: pip-accel
 ##################################
 
-So now you know why and how pip-accel_ was born! It's available on PyPi_ and
+So now you know why and how pip-accel_ was born! It's available on PyPI_ and
 GitHub_ but if you just want to try it out you can use the following:
 
 .. code-block:: sh
@@ -242,3 +266,4 @@ and it is definitely worth looking around to evaluate your options:
 .. _the virtualenv website: http://virtualenv.org/en/latest/news.html
 .. _Virtual environments: http://www.virtualenv.org/en/latest/
 .. _Wheel: http://wheel.readthedocs.org/en/latest/
+.. _requirements: http://www.pip-installer.org/en/latest/cookbook.html#requirements-files
