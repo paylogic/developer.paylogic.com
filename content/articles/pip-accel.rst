@@ -44,8 +44,8 @@ Big projects have a lot of dependencies
 
 At Paylogic we create large virtual environments with pip_: At the time of
 writing our main code base has 84 dependencies if we include testing,
-documentation & transitive dependencies (43 of those dependencies are required
-in production). Some of these dependencies require SWIG & a compiler and for
+documentation and transitive dependencies (43 of those dependencies are required
+in production). Some of these dependencies require SWIG and a compiler and for
 large modules the compilation can take a while.
 
 pip is slow & unreliable
@@ -73,7 +73,7 @@ In this section we'll discuss ways in which we can speed up pip.
 Brute force caching
 ===================
 
-If no requirements changed, we can re-use a previously built & cached virtual
+If no requirements changed, we can re-use a previously built and cached virtual
 environment. Terrarium_ takes this approach. There is a drawback however: If a
 single dependency changes, we can't re-use the cache and have to rebuild
 everything. This is not exactly ideal for continuous integration/deployment
