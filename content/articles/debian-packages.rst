@@ -109,7 +109,10 @@ command. Here's how you get started:
 
 .. code-block:: sh
 
-   # Create directory with control files.
+   # Create a directory to hold the files contained in the package.
+   mkdir my-package && cd my-package
+
+   # Create a directory with the package's control files.
    mkdir DEBIAN
 
    # Create the main control file with package metadata.
@@ -132,11 +135,12 @@ to build a simple package. Any files in the working directory (excluding the
 special ``DEBIAN`` directory) will be included in the package as if the
 directory containing the ``DEBIAN`` package is the root of the file system.
 
-The resulting ``*.deb`` file can be installed using ``dpkg -i $filename``
-however this doesn't automatically install dependencies, instead ``dpkg`` will
-error out when dependencies are missing. When this happens you can run
+The resulting ``*.deb`` file can be installed using ``dpkg -i $filename``,
+however this won't automatically install dependencies, instead ``dpkg`` will
+error out when dependencies are missing... When this happens you can run
 ``apt-get install -f`` to install the dependencies. After that you can rerun
-the ``dpkg`` command; it should now succeed.
+the ``dpkg`` command; it should now succeed. Read on if you're interested in a
+more streamlined experience.
 
 Creating a Debian package repository
 ====================================
