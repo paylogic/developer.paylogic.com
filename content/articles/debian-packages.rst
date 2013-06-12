@@ -15,28 +15,6 @@ This is a large article but if you just want to get started building Debian
 packages you can jump straight to the section on `getting started with Debian
 packages`_.
 
-Advantages of Debian packages
-#############################
-
-Here are a couple of notable advantages of using Debian packages:
-
-- It provides a controlled process for installing, removing, upgrading and
-  downgrading packages (for example doing new releases, but also rolling back
-  existing releases)
-
-- Dependencies on operating system packages are formalized as proper package
-  dependencies instead of being written down in wiki pages, personal notes, or
-  worse, not written down at all...
-
-- The steps that should be executed in every environment where a package is
-  deployed are formalized in pre/post installation/removal scripts
-
-- The packages are built on a dedicated host so production machines don't need
-  a build environment
-
-There's also the fact that we get to use ``apt-get`` more and we (generally)
-love ``apt-get`` :-)
-
 Disadvantages of Python packages
 ################################
 
@@ -68,6 +46,28 @@ like it, but for us it doesn't come close to a full solution:
       - We've seen virtual environments break in various ways, for example
         because of security updates to the system-wide Python installation
         (Google for `ImportError: cannot import name urandom`_)
+
+Advantages of Debian packages
+#############################
+
+Here are a couple of notable advantages of using Debian packages:
+
+- It provides a controlled process for installing, removing, upgrading and
+  downgrading packages (for example doing new releases, but also rolling back
+  existing releases)
+
+- Dependencies on operating system packages are formalized as proper package
+  dependencies instead of being written down in wiki pages, personal notes, or
+  worse, not written down at all...
+
+- The steps that should be executed in every environment where a package is
+  deployed are formalized in pre/post installation/removal scripts
+
+- The packages are built on a dedicated host so production machines don't need
+  a build environment
+
+There's also the fact that we get to use ``apt-get`` more and we (generally)
+love ``apt-get`` :-)
 
 Making sense of the Python packaging ecosystem
 ==============================================
