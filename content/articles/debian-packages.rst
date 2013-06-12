@@ -12,7 +12,8 @@ article explains how we got started.
 .. contents::
 
 This is a large article but if you just want to get started building Debian
-packages you can skip the first half.
+packages you can jump straight to the section on `getting started with Debian
+packages`_.
 
 Advantages of Debian packages
 #############################
@@ -81,6 +82,8 @@ refer to the following external resources:
 I sometimes hear people call Debian package management complex. Of course they
 have a point, but as a devops Debian and Python are both complex, the
 difference is that Debian is (mostly) a pleasure to work with :-)
+
+.. _getting started with Debian packages:
 
 Getting started with Debian packages
 ####################################
