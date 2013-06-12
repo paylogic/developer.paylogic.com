@@ -1,12 +1,12 @@
 :title: pip-accel: Accelerator for pip, the Python package manager
-:summary: Recently we published `pip-accel` to GitHub_ and PyPI_ and in this article we'll tell you why and how we created this project.
+:summary: Recently we published `pip-accel` to GitHub_ and PyPI_, in this article we'll tell you why and how we created this project.
 :category: DevOps
 :author: Peter Odding
 :date: 2013-05-14 00:28
 :slug: articles/pip-accel
 :tags: python, deployment, virtual environments, automation, pip, open source, packaging
 
-Recently we published pip-accel_ to GitHub_ and PyPI_ and in this article we'll
+Recently we published pip-accel_ to GitHub_ and PyPI_, in this article we'll
 tell you why and how we created this project.
 
 .. contents::
@@ -151,9 +151,9 @@ There are two obvious targets:
 Keeping pip off the internet
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Our first problem was that pip's index crawling process is very slow so we want
-to avoid it when possible. So how can we keep pip_ from always scanning PyPI
-and distribution websites, even when all of the dependencies are already
+Our first problem was that pip's index crawling process is very slow, so we
+want to avoid it when possible. So how can we keep pip_ from always scanning
+PyPI and distribution websites when all of the dependencies are already
 available in the local download cache? Here's how:
 
 1. We generate a local source package index based on the pip_ download cache.

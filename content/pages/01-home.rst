@@ -26,7 +26,7 @@ Recent articles
 - `Using Debian packages for Python deployments <articles/debian-packages.html>`_
 
 .. External references:
-.. _GitHub: https://github.com/paylogic/pip-accel
+.. _GitHub: https://github.com/paylogic
 .. _PyGrunn: http://www.pygrunn.org/
 
 

@@ -24,9 +24,9 @@ like it, but for us it doesn't come close to a full solution:
 - PyPI_ and/or distribution websites go down regularly, usually at the exact
   time you need them to perform a live deployment :-)
 
-- Python packages cannot and so don't declare their binary dependencies because
-  there is no portable way to do so (the packages names are different in every
-  Linux distribution, let alone other operating systems)
+- Python packages cannot and therefore do not declare their binary dependencies,
+  because there is no portable way to do so (the packages names are different
+  in every Linux distribution, let alone other operating systems)
 
 - Python packages don't control init.d scripts, cron tabs, configuration files,
   etc. while we really do need to install and manage these files...
@@ -77,8 +77,8 @@ Advantages of Debian packages
 Here are a couple of notable advantages of using Debian packages:
 
 - They provide a controlled process for installing, removing, upgrading and
-  downgrading packages (for example doing new releases, but also rolling back
-  existing releases)
+  downgrading packages (for example for doing new releases, but also rolling
+  back existing releases)
 
 - Dependencies on operating system packages are formalized as proper package
   dependencies instead of being written down in wiki pages, personal notes, or
