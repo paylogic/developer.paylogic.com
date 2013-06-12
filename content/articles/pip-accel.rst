@@ -48,8 +48,8 @@ documentation and transitive dependencies (43 of those dependencies are required
 in production). Some of these dependencies require SWIG and a compiler and for
 large modules the compilation can take a while.
 
-pip is slow & unreliable
-========================
+pip can be slow and unreliable
+==============================
 
 So we build a lot of virtual environments which can be really slow. The actual
 creation of the environment only takes a couple of seconds, but installing all
