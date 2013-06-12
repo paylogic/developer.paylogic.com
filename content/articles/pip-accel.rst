@@ -205,11 +205,31 @@ We have some ideas on how to make this even faster :-)
 More information
 ================
 
-If you're interested in more details, the readme on GitHub contains more
-information about the `internal control flow`_. You're also free to browse the
-`source code`_; it's only a few hundred lines of well documented Python code.
+If you're interested in more details about ``pip-accel``, the readme on GitHub
+contains more information about the `internal control flow`_. You're also free
+to browse the `source code`_; it's only a few hundred lines of well documented
+Python code.
+
+Related projects
+################
+
+There are a lot of projects that try to improve the Python deployment process
+and it is definitely worth looking around to evaluate your options:
+
+- Terrarium_ generates and caches complete virtual environments, accomplishing
+  some of the same goals as ``pip-accel`` but at a different granularity level
+
+- Buildout_ is about reliable and repeatable deployments just like
+  ``pip-accel`` but it tackles non-Python applications as well, in effect
+  reproducing complete deployment environments
+
+- The `devpi project`_ implements the server and client side of a Python
+  cheese shop (package index) with lots of additional features to support
+  Python package release, testing and installation activities
 
 .. External references:
+.. _Buildout: http://www.buildout.org/
+.. _devpi project: http://doc.devpi.net/
 .. _Fast & Local Installs: http://www.pip-installer.org/en/latest/cookbook.html#fast-local-installs
 .. _GitHub: https://github.com/paylogic/pip-accel
 .. _internal control flow: https://github.com/paylogic/pip-accel#control-flow-of-pip-accel
@@ -217,7 +237,7 @@ information about the `internal control flow`_. You're also free to browse the
 .. _pip-accel: https://github.com/paylogic/pip-accel
 .. _pip: http://www.pip-installer.org/
 .. _PyPi: https://pypi.python.org/pypi/pip-accel
-.. _source code: https://github.com/paylogic/pip-accel/blob/master/pip_accel.py
+.. _source code: https://github.com/paylogic/pip-accel/blob/master/pip_accel/__init__.py
 .. _Terrarium: https://pypi.python.org/pypi/terrarium
 .. _the virtualenv website: http://virtualenv.org/en/latest/news.html
 .. _Virtual environments: http://www.virtualenv.org/en/latest/
