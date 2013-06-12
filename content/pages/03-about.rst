@@ -1,42 +1,41 @@
 :title: About
 
-This website is built using Pelican_, a static site generator written in
-Python. The input files are reStructuredText_ files stored in a git repository.
-Right now the generated files are uploaded to an Amazon S3 bucket but we're
-planning to use `GitHub Pages`_ to publish this website. This will make it
-easy for the engineering and operational IT teams of Paylogic to manage the
-content of this website.
+About the development portal
+############################
 
-Getting started
-~~~~~~~~~~~~~~~
+The Paylogic development portal was created as a portal between the technical
+teams working at Paylogic and the rest of the (tech) world. This site is
+published using Pelican_, a static site generator written in Python. Pelican
+allows us to write our articles in reStructuredText_ and given our experience
+with both Python and reStructuredText, what's not to love?
 
-Here's how you get a copy of the git repository, create a virtual environment,
-install the dependencies and generate an up to date copy of the static pages:
+About Paylogic International
+############################
 
-.. code-block:: sh
+Paylogic offers event organizers high end technological solutions for them to
+gain full control over ticket sales (strategies) and access management. Full
+ownership of customer data is provided on a no cure no pay basis, and the
+company is specialized in handling `peak sales`_ and `event specific seating
+solutions`_.
 
-  git clone ssh://code.paylogic.eu//var/git/users/peter/devportal
-  cd devportal
-  mkvirtualenv devportal
-  pip install -r requirements.txt
-  pelican .
+The platform of Paylogic exists out of online ticket shops that can be
+integrated in the event’s website but it also enables ticket sales through
+Apple Passbook and social media channels like Facebook. Other (marketing)
+platforms of premium media channels in countries where Paylogic operates, are
+integrated in the Paylogic system. Through this approach a wide range of
+audiences to target is offered and all statistics are available real time.
 
-After this is done you'll find a static copy of the website in ``output/``.
+Event organizers can make use of Customer Services for their visitors as well
+as professional Event Services with scan and box office solutions enabling
+sales and access management both prior and during the event. Paylogic
+additionally provides dedicated account management services to assist event
+organizers in strengthening the relationship with their visitors.
 
-Why Pelican?
-~~~~~~~~~~~~
-
-Because Pelican_ is nice! We found it through a comment on a Hacker News
-post: https://news.ycombinator.com/item?id=4858738.
-
-Why GitHub Pages?
-~~~~~~~~~~~~~~~~~
-
-Because `GitHub Pages`_ are dead simple to use, everyone who needs write access
-already has it (by joining the Paylogic organization on GitHub) and we can set
-up a custom DNS name instead of sticking to the ugly defaults.
+Call us for more information or visit www.paylogic.com_.
 
 .. External references:
-.. _GitHub Pages: http://pages.github.com/
+.. _event specific seating solutions: http://www.paylogic.com/en/unique-solutions/seating-solutions/
+.. _peak sales: http://www.paylogic.com/en/unique-solutions/peak-sales-solution/
 .. _Pelican: http://docs.getpelican.com/en/3.2/getting_started.html
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
+.. _www.paylogic.com: http://www.paylogic.com/
