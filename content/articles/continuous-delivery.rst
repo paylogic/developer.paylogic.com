@@ -6,9 +6,6 @@
 :slug: articles/continuous-delivery
 :tags: agile, continuous delivery, deployment, release, testing, qa
 
-Continuous Delivery
-===================
-
 *When you do Continuous Delivery you can deploy whenever you want: you
 made it as easy as possible and you have become very good at it.
 Everyone in the Engineering and Operations teams knows how to deploy
