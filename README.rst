@@ -11,7 +11,7 @@ with a custom DNS name for hosting.
 License
 -------
 
-This work is licensed under a `Creative Commons Attribution-ShareAlike 3.0
+This work is licensed under the `Creative Commons Attribution-ShareAlike 3.0
 Unported License`_.
 
 .. External references:
