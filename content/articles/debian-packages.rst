@@ -184,6 +184,10 @@ There are several gotcha's in the above piece of shell script:
 - We cleanup generated files from previous runs because their presence
   corrupts the generated files
 
+- We modify the output of ``dpkg-scanpackages`` to change for example
+  ``./test_1.0_all.deb`` to ``test_1.0_all.deb`` (for some reason ``apt-get``
+  doesn't like ``Packages`` files with leading ``./`` fragments)
+
 - We clear the ``$LANG`` environment variable so that we are sure the
   ``Release`` file is properly formatted regardless of the value of ``$LANG``
 
