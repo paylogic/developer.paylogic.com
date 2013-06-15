@@ -52,10 +52,19 @@ stopserver:
 
 publish:
 	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(PUBLISHCONF) $(PELICANOPTS)
-	echo developer.paylogic.com > $(OUTPUTDIR)/CNAME
 
 github: publish
+	# GitHub pages requires /404.html at the root of the directory structure and
+	# for some reason adding a /404.rst document confuses Pelican. So instead we
+	# put the 404 page in the /pages/ directory as a hidden page, and copy the
+	# generated HTML to /404.html so that the error page actually works :-).
+	cp $(OUTPUTDIR)/pages/page-not-found.html $(OUTPUTDIR)/404.html
+	# To use a custom DNS name with GitHub Pages there needs to be a /CNAME file
+	# in the 'gh-pages' branch containing the DNS name to be used for the site.
+	echo developer.paylogic.com > $(OUTPUTDIR)/CNAME
+	# Import the generated static files to the 'gh-pages' branch.
 	ghp-import $(OUTPUTDIR)
-	git push origin gh-pages
+	# Publish the updated site to GitHub.
+	git push origin master gh-pages
 
 .PHONY: html help clean regenerate serve devserver publish github

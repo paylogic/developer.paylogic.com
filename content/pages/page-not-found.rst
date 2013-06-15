@@ -1,4 +1,3 @@
-:date: 2013-06-15 11:36
 :title: Page not found
 :status: hidden
 
