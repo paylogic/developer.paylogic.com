@@ -248,7 +248,7 @@ Hidden Features
 In some cases it is useful to release features but keep them
 inaccessible or only accessible to a few users. There are several tools
 to make this easy;
-`gargoyle <https://medium.com/r/?url=https%3A%2F%2Fgithub.com%2Fdisqus%2Fgargoyle>`_
+`gargoyle <https://github.com/disqus/gargoyle>`_
 is a popular one for Django.
 
 Tips
@@ -288,7 +288,7 @@ Equal Environments
 ~~~~~~~~~~~~~~~~~~
 
 All environments must be as similar as possible. Use
-`vagrant <https://medium.com/r/?url=http%3A%2F%2Fwww.vagrantup.com%2F>`_
+`vagrant <http://www.vagrantup.com/>`_
 to develop.
 
 Automate Everything
@@ -300,7 +300,7 @@ everything that can be automated.
 --------------
 
 I gave a talk about this at DjangoCon Europe 2013. Here are the
-`slides <https://medium.com/r/?url=https%3A%2F%2Fbitbucket.org%2Fgrimborg%2Fcontinuousdeployment%2Fsrc%2Ftip%2Fcontinuous-deployment.pdf>`_;
+`slides <https://bitbucket.org/grimborg/continuousdeployment/src/tip/continuous-deployment.pdf>`_;
 the video will be available soon.
 
 If this interests you, you may want to check these books:
