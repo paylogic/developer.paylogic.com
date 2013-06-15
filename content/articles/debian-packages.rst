@@ -133,7 +133,7 @@ command. Here's how you get started:
    NAME=$(awk '/^Package:/ {print $2}' DEBIAN/control)
    VERSION=$(awk '/^Version:/ {print $2}' DEBIAN/control)
    ARCH=$(awk '/^Architecture:/ {print $2}' DEBIAN/control)
-   dpkg-deb --build . $NAME-${VERSION}_$ARCH.deb
+   dpkg-deb --build . $NAME_${VERSION}_$ARCH.deb
 
 Assuming you're on a Debian/Ubuntu system, the above commands should be enough
 to build a simple package. Any files in the working directory (excluding the
