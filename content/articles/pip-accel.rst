@@ -185,7 +185,7 @@ Unfortunately these distributions are really dumb:
 
 .. code-block:: sh
 
-   $ tar tf ipython-0.13.2.linux-x86_64.tar.gz | tail -n1 | echo 'foo'
+   $ tar tf ipython-0.13.2.linux-x86_64.tar.gz | tail -n1
    ./home/peter/.virtualenvs/pip-accel/lib/python2.6/site-packages/IPython/lib/security.py
 
 Dumb binary distributions contain hard coded pathnames specific to the virtual
