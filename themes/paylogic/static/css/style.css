@@ -92,6 +92,20 @@ h6 { font-size: 0.5em }
 /* Syntax highlighting based on th Earendel color scheme
  * https://github.com/xolox/lua-lxsh/blob/master/src/colors/earendel.lua
  */
+
+/* Comments */
 .highlight .c { color: #558817; }
-.highlight .s { color: #a8660d; }
+
+/* Keywords & operators */
+.highlight .o,
 .highlight .nb { color: #2239a8; font-weight: bold; }
+
+/* Strings */
+.highlight .s,
+.highlight .s1 { color: #a8660d; }
+
+/* Variable names */
+.highlight .nv { color: #0e7c6b; }
+
+/* ? */
+.highlight .k { color: #844631; }
