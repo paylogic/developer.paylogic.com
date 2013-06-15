@@ -52,6 +52,7 @@ stopserver:
 
 publish:
 	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(PUBLISHCONF) $(PELICANOPTS)
+	echo developer.paylogic.com > $(OUTPUTDIR)/CNAME
 
 github: publish
 	ghp-import $(OUTPUTDIR)
