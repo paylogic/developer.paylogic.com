@@ -24,6 +24,7 @@ Recent articles
 - `Continuous Delivery <articles/continuous-delivery.html>`_
 - `pip-accel: Accelerator for pip, the Python package manager <articles/pip-accel.html>`_
 - `Using Debian packages for Python deployments <articles/debian-packages.html>`_
+- `You are welcome <articles/you-are-welcome.html>`_
 
 .. External references:
 .. _GitHub: https://github.com/paylogic
