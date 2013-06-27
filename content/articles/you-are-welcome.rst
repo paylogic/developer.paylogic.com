@@ -1,6 +1,6 @@
 :title: You are welcome
 :summary: Welcome to the Paylogic developer portal
-:category: general
+:category: General
 :author: Berco Beute
 :date: 2013-06-19 18:00
 :slug: articles/you-are-welcome
