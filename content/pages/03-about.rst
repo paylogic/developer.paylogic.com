@@ -1,9 +1,9 @@
 :title: About
 
-About the development portal
-############################
+About the developer portal
+##########################
 
-The Paylogic development portal was created as a portal between the technical
+The Paylogic developer portal was created as a portal between the technical
 teams working at Paylogic and the rest of the (tech) world. This site is
 published using Pelican_, a static site generator written in Python. Pelican
 allows us to write our articles in reStructuredText_ and given our experience

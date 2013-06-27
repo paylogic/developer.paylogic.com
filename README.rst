@@ -1,7 +1,7 @@
-Paylogic development portal
-===========================
+Paylogic developer portal
+=========================
 
-This repository contains the sources for the Paylogic development portal hosted
+This repository contains the sources for the Paylogic developer portal hosted
 at developer.paylogic.com_. We use the static site generator Pelican_ to
 generate the web pages from content written in the reStructuredText_ format.
 

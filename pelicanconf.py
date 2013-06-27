@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import os
 
 AUTHOR = u'Paylogic Crew'
-SITENAME = u'Paylogic development portal'
+SITENAME = u'Paylogic developer portal'
 SITEURL = 'http://localhost:8000'
 
 TIMEZONE = 'Europe/Amsterdam'

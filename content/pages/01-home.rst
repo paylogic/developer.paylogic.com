@@ -2,10 +2,10 @@
 :URL:
 :save_as: index.html
 
-Introducing the Paylogic development portal
-###########################################
+Introducing the Paylogic developer portal
+#########################################
 
-Welcome to the Paylogic development portal! This website is a platform for
+Welcome to the Paylogic developer portal! This website is a platform for
 communication between the engineers & devops at Paylogic and the world (you!).
 We use this website to share:
 
