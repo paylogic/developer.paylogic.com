@@ -1,0 +1,370 @@
+:title: Test parallelization
+:date: 2013-08-27 10:37
+:summary: The article tells how we distributed our tests to run them faster.
+:category: Testing
+:author: Dmitrijs Milajevs
+:slug: articles/test-p14n
+:tags: testing
+
+Automated tests are awesome. A good test suite makes refactoring easier, allows
+developers to catch bugs before the code was deployed on live, or being spotted
+by a tester.
+
+Once the advantages of automated testing are discovered, the number of tests in
+rockets. At Paylogic, there were 240 unit tests in the early testing stage.
+Tests took about 5 minutes to run and were most of the time green. After a year,
+we ended up with 1323 unit tests and 306 functional tests. We spent 37 minutes
+on running unit tests and 55 minutes on running functional tests.
+
+Due to the fact that tests took forever to run, nobody bothered to run them all,
+believing that the relevant tests were executed and nothing was broken. As a
+result, every sprint we had a couple of failing tests that required an extra,
+usually unplanned time to be fixed.
+
+It became clear that something had to be changed. We could abandon automated
+tests to get rid of the problem as an ultimate solution, but we wanted to keep
+advantages of automated testing. We could completely rewrite the tests, make
+them very focused, mock most of the things (such as the database). However,
+this would mean that the team dedicated few months exclusively to tests and
+stopped developing new features.
+
+Another solution would involved test distribution over several executors that
+might be run on one or several machine. The same tests are run in parallel on
+many nodes reducing wall time. Everybody is happy: developers do not need to
+wait hours to get their test results and get an excuse to go for a coffee.
+Product managers do not need to change long term planning. Customers are happy.
+Profit.
+
+A closer look to the test suite
+===============================
+
+`py.test <http://pytest.org/>`_ is the testing tool we use. We keep our tests in
+a separate folder called tests, which is organized like this::
+
+    tests
+    ├── conftest.py
+    ├── deployment
+    ├── fixtures
+    ├── functional
+    ├── __init__.py
+    └── unit
+
+In `conftest.py` we store `py.test` configuration and import fixtures which are
+defined in the `fixtures` folder, `functional` contains functional tests, `unit`
+contains unit tests.
+
+The tests require a MySQL database available via
+`'mysql://pltest@127.0.0.1/pltest'` and Memcache. Functional tests
+expect that Django applications listen on specific ports. For example,
+"backoffice" is listening on the port 8000, "frontoffice" on 8001 and so on. All
+the applications are located in the `paylogic` package. Tests switch Django
+settings as they go to access needed templates, template tags and other
+settings.
+
+We have a script that creates the database schema, and a fabric command that
+generates the project development settings. We store settings in python modules
+in `paylogic.privates`, but `.py` files are generated from templates.
+
+A typical development session looks like this:
+
+.. code-block:: bash
+
+    virtualenv -p python2.6 env  # Create a virtualenv.
+    source env/bin/activate  # Activate it.
+    pip install -r requirements-testing.txt  # Install all the needed packages.
+    fab local  # Generate settings (set up the database connection string to mysql://pltest@127.0.0.1/pltest).
+    pltest mkdb  # Generate the database schema and insert initial data into it.
+
+    # Implement a case.
+
+    paylogic/backoffice/manage.py runserver 8000  &  # Start backoffice.
+    paylogic/frontoffice/manage.py runserver 8001  &  # Start frontoffice.
+
+    py.test tests  # Run the tests.
+
+Dependency satisfaction, configuration, database instantiation and population
+together with needed Django application startup is done outside of the test run.
+This makes sense, because none of them have to be done before every test run.
+Clearly, a developer has to install a package when a new dependency is
+introduced, regenerate setting if a new configuration parameter is added.
+
+Test parallelization in theory and practice
+===========================================
+
+If we run tests in parallel in two sessions, each session will share the same
+settings (most importantly the database connection string), and the Django
+applications. This has several limitations. If we have two tests that access
+backoffice at the same time, their requests will be processed by only one
+backoffice worker consequently.
+
+Another more serious limitation comes from the way our tests are written. There
+are ticket generation tests that check pdf generation. On a high level the tests
+look like this:
+
+    1. Create an order.
+
+    2. Execute the ticket generation function.
+
+    3. Check that 1 ticket was generated.
+
+The trick is in the second step. The ticket generation function is triggered by
+a cron job. It selects from the database all the orders for which tickets have
+to be generated and generates them. In a sequential test run it is not a big
+deal because there will never be a situation that one call of the ticket
+generation function generates more than one ticket. The performed actions are:
+
+==== =========================================
+Time Action
+==== =========================================
+Test 1
+----------------------------------------------
+1    Create an order.
+2    Execute the ticket generation function.
+3    Check that 1 ticket was generated.
+Test 2
+----------------------------------------------
+4    Create another order.
+5    Execute the ticket generation function.
+6    Check that 1 ticket was generated.
+==== =========================================
+
+In a parallel run, two order may be generated simultaneously. Then, the
+generation function will get both orders. Imagine a situation like this:
+
++----+---------------------------------------------------------------------+---------------------------------------------------------------------+
+|Time|Action                                                               |Action                                                               |
++====+=====================================================================+=====================================================================+
+|Test 1                                                                    |Test 2                                                               |
++----+---------------------------------------------------------------------+---------------------------------------------------------------------+
+|1   |Create an order.                                                     |Create another order.                                                |
++----+---------------------------------------------------------------------+                                                                     |
+|2   |Execute the ticket generation function. (Generates 2 tickets.)       |                                                                     |
++----+---------------------------------------------------------------------+---------------------------------------------------------------------+
+|3   |Check that 1 ticket was generated. (Fails! 2 tickets were generated.)|Execute the ticket generation. (Does nothing!)                       |
++----+---------------------------------------------------------------------+---------------------------------------------------------------------+
+|4   |                                                                     |Check that 1 ticket was generated. (Fails! 0 tickets were generated.)|
++----+---------------------------------------------------------------------+---------------------------------------------------------------------+
+
+Because the tests are not meant to be run in parallel when they were written,
+situation like this happen quite often.
+
+The art of mocking
+==================
+
+The simplest way to avoid situations when tests influence each other is to get
+rid of the shared resources - in our case to provides for each tests session its
+own unique database connection string (which leads to an non-shared database).
+
+The problem is that we store setting in python modules and instantiate them from
+templates before the test run!
+
+We could checkout the sources of Paylogic to two folders and change the settings
+to the ones we want. It would entail some crazy text file editing scripts to
+alter settings. In addition, it is not the way `pytest-xdist
+<https://pypi.python.org/pypi/pytest-xdist>`_ works.
+
+We mock the connection string as a fixture:
+
+.. code-block:: python
+
+    @pytest.fixture(scope='session')
+    def database_settings(database_connection):
+        """Mock the database settings.
+
+        :param str database_connection: the database connection string.
+
+        """
+        # Reset the connection string.
+        from paylogic.privates import database
+        database.database_connection = database_connection
+
+To make the mock successful, our code should behave particularly. Instead of:
+
+.. code-block:: python
+
+        from paylogic.privates. import database_connection
+
+
+        def connect_to_db():
+            """Connect to the database,
+
+            A completely made up function to illustrate *incorrect* settings import.
+
+            """
+            return Connection(database_connection)
+
+we write:
+
+.. code-block:: python
+
+        from paylogic.privates.import database
+
+
+        def connect_to_db():
+            """Connect to the database,
+
+            A completely made up function to illustrate a *better* settings import.
+
+            """
+            return Connection(database.database_connection)
+
+Django applications
+-------------------
+
+For the unit tests, mocking the database connection is sufficient. If we want to
+start two instances of a web application (for instance, backoffice), we need to
+change:
+
+ 1. Database connection string.
+ 2. The port the application is listening on.
+
+Backoffice could be a fixture that starts a subprocess and passes the custom
+port, if we use `Circus <d>`_:
+
+.. code-block:: python
+
+    from circus.watcher import Watcher
+
+
+    @pytest.fixture(scope='session')
+    def backoffice(backoffice_port, backoffice_manage_py):
+        """Start backoffice Django application in a separate process.
+
+        :param backoffice_port: a random port the backoffice application should listen to.
+        :param backoffice_manage_py: the path to backoffice manage.py. E.g, 'paylogic/backoffice/manage.py'.
+
+        """
+
+        watcher = Watcher(
+            name='backoffice',
+            cmd=backoffice_manage_py,
+            args='runserver {0}'.format(backoffice_port),
+        )
+
+        watcher.start()
+        request.addfinalizer(watcher.stop)
+
+        return watcher
+
+This is a rather limited solution, because we did not set up the database
+connection string. We neither could not pass it as an environment variable, nor
+could not pass the path to the custom settings. The only way is to monkeypatch
+the settings before starting the webserver loop:
+
+.. code-block:: python
+
+    from multiprocessing import Process
+    import sys
+
+
+    @pytest.fixture(scope='session')
+    def backoffice(backoffice_port, database_connection):
+        """Start backoffice in a separate process."""
+        process = Process(
+            target=backoffice_worker,
+            args=(database_connection, backoffice_port),
+        )
+
+        process.start()
+        request.addfinalizer(process.terminate)
+
+        return process
+
+
+    def backoffice_worker(database_connection, port):
+        """Start Django runserver for backoffice.
+
+        :param str database_connection: the database connection string.
+        :param port: the port number that will be used by runserver.
+
+        """
+        # Remove modules that happen to be imported by the parent process.
+        import sys
+        for module in set(sys.modules).difference(sys.builtin_module_names):
+            if not module.startswith('multiprocessing') and module != __name__:
+                del sys.modules[module]
+
+        # An evil way to use a fixture as a function.
+        from tests.fixtures.services.mysql import database_settings
+        database_settings(database_connection)
+
+        # Prepare Django to run with the desired settings.
+        from testhelpers.django_settings import setup_django_settings
+        setup_django_settings('paylogic.backoffice.settings')
+
+        from django.core.management import call_command
+        addr = '127.0.0.1:{0}'.format(port)
+        call_command('runserver', addr, use_reloader=False)
+
+In this way we can attach any customizations before starting the application.
+
+Other isolated resources
+------------------------
+
+Apart from the database connection string, there are other shared resources. One
+of them is a folder where venue images are stored. They have to be isolated as
+well, because the file names are simply ID of the venues in the database, which
+are clearly clashes during a parallel test run. However, mocking is done in the
+same way, as the connection string.
+
+It is possible to use one server but isolated databases. We start as many MySQL
+instances as we have concurrent test sessions.
+
+Requirements
+============
+
+Another nontrivial part is to distribute requirements to each node. We do it
+together with the code distribution as a virtualenv and then each node activates
+it before running the tests:
+
+.. code-block:: python
+
+    def pytest_configure_node(node):
+        """Configure node information before it gets instantiated.
+
+        Acivate the virtual env, so the node is able to import Paylogic
+        dependencies.
+
+        """
+
+        here = os.path.basename(os.path.dirname(os.path.dirname(__file__)))
+        node.gateway.remote_exec('\n'.join(
+            [
+                "import os.path",
+                "activate_this = os.path.join('{here}', 'env', 'bin', 'activate_this.py')".format(here=here),
+                "if os.path.exists(activate_this):",
+                "    execfile(activate_this, {'__file__': activate_this})",
+            ]
+        )).waitclose()
+
+
+Results
+=======
+
+Test parallelization dramatically reduced the time needed to run unit and
+functional tests. It takes about 5 minutes to run unit and functional tests on a
+cluster of 6 old dual core machines, which of them is running 2 sessions.
+
+An experiment on early stage gave this results.
+
+.. image:: |filename|/images/p14n.png
+    :width: 75%
+    :align: center
+
+The blue line is the test distribution over cluster machines, one worker on each
+of them. The pink line represents the "ideal situation", when a double increase
+of the number of workers, decreases the tests execution time twice. Finally, the
+yellow line is the run executed on a `developer's machine
+<http://www.asus.com/Notebooks_Ultrabooks/ASUS_ZENBOOK_UX32VD/#specifications>`_.
+
+py.test-xdist is behaves very well when it comes to parallel execution, the
+overhead is relatively small.
+
+Conclusion
+==========
+
+Automated testing helps a lot during development on complex software, however,
+if it takes too much time to get a test result, it will not be used by the
+majority of the team. Test parallelization and execution over several nodes
+solves this problem, but an extra effort has to be put to make the tests ready
+for parallelization.
