@@ -28,9 +28,9 @@ The idea of BDD is to formalize the input of requirements and automate their tes
 Gherkin
 =======
 
-Gherkin serves both purposes of documenting requirements and testing them. Pretty clear
-structure that allows the just-enough specification and prevents overlapping of the
-requirement specifications.
+Gherkin serves both purposes of documenting requirements and testing them.
+Pretty clear structure allows just-enough requirement specification and prevents
+overlapping of requirements.
 
 .. code-block:: gherkin
 
@@ -39,15 +39,15 @@ requirement specifications.
 		In order to realize a named business value
 		As an explicit system actor
 		I want to gain some beneficial outcome which furthers the goal
-	 
+
 		Scenario: Some determinable business situation
 			Given some precondition
 			And some other precondition
-			
+
 			When some action by the actor
 			And some other action
 			And yet another action
-			
+
 			Then some testable outcome is achieved
 			And something else we can check happens too
 
@@ -60,9 +60,9 @@ What BDD is good for?
 	- Testing without misinterpretation of the requirements
 
 Our product management team picked up the Gherkin way of writing requirements relatively easily.
-We also find it useful as ultimately short summary of the documentation.
+We also find it useful as the ultimately short summary of the documentation.
 
-Whats wrong with the BDD?
+Whats wrong with BDD?
 =========================
 
 	- Too explicit/verbose while should be just-enough specification
@@ -70,15 +70,18 @@ Whats wrong with the BDD?
 	- Keywords with flavors are not reusable
 
 Without the recommendations or enforced guidelines it is very hard to follow the
-just-enough specification in requirement declarations.
-It is important to use some kind of framework that would help to follow the BDD ideas.
+just-enough specification in requirement declarations. Therefore, it is
+important to use some kind of framework that would help to follow the BDD ideas.
 
 Existing tools in Python
 ========================
 
-We looked at the solutions around. Some of them are nice, but we always compared
-them to our experience with the unit testing where the problem of the test setup
-was already solved.
+Before adopting BDD we looked at the existing solutions.
+
+Some of them were nice, but the way the test condition are being set up did not
+satisfy us.The reason is that we always compared the setup of a test to our
+experience with the unit testing where the problem of the test setup was already
+solved.
 
 RobotFramework
 --------------
@@ -88,20 +91,23 @@ the functional tests. It has a freedom of scripting, a library with the bindings
 to selenium webdriver and a possibility to write code in Python.
 
 Later the lack of limitations became a reason the BDD was not used as intended.
-Feature descriptions became programmatic with the variables in the text files,
-overlapping the requirements, scripting actions after observing results (
-When-Then-When-Then sections).
+Feature descriptions became programmatic with the variables in the text files.
+The scenarios contained overlapping requirements. A pattern of scripting actions
+appeared for complex scenarios which contained a chain of When-Then-When-Then
+sections to observe the results.
 
-But the biggest problem was the setup of the test. The whole Given section was hard to reuse
-because of the complexity of the system domain.
+Due to the complex system domain the Given sections contained a lot of detailed
+and not reusable keywords. It happened because RobotFramework does not provide
+means to setup a test and pass a shared stated across keywords.
 
-But there was also something what we have learned from it...
+We had to implement state sharing between keywords ourselves and learned from
+it...
 
 Splinter
 --------
 
-Unlike the RobotFramework most of the BDD tools are mapping the python code to Gherkin
-features. That keeps the feature files clean, browsable and readable. Allows having
+Unlike the RobotFramework most of the BDD tools map the python code to Gherkin
+features. That keeps the feature files clean, browsable and readable. In addition it allows having
 a nice overview of the functionality of the system.
 
 Also they use Splinter - a pythonic webdriver that inherits some problems of the selenium, but
@@ -179,9 +185,15 @@ Example:
 Building context imperative style
 =================================
 
-You never know what is in your context and how did it get there
-Side effects are encapsulated inside methods and are not mentioned in the step name
-It is hard to break up the setup logic for the complicated data model hierarchy and reuse it.
+A global context object solves the problem of sharing state, but it does not
+provide any way for keywords to demand a certain situation. As the result, you
+never know what is in your context and how did it get there. Side effects are
+encapsulated inside methods and are not mentioned in the step name. It is hard
+to break up the setup logic for the complicated data model hierarchy and reuse
+it.
+
+The following example illustrates the problem of missing a contract on how
+context artifacts are stored:
 
 
 Given I have 2 books
@@ -213,21 +225,23 @@ PyTest is like no other test toolkit. It gives you true pythonic way of testing.
 No special functions are needed for assertions, less imports needed, no classes are
 necessary for the test cases.
 
-But the main difference is in the dependency injection pattern that it uses for the
-test setup.
+But the main difference is in the dependency injection pattern that is used for
+setting up the tests.
+
 It allows concentrating on only what is necessary to implement the fixture (part of the setup)
 or the test function. Everything that it depends on can be just specified in the
 arguments of the function and PyTest will provide the values of all the dependencies.
+
 This makes it a real declarative style where you don't have to worry about the order
 of following or the side effects that were previously applied.
 
 Fixtures
 ========
 
-Fixtures implement a concept of expecting and returning values. They have a scope
-where they are evaluated only once, the testing session by default. If you want to
-use a fixture simply specify it's name in the arguments of the test function or
-another fixture.
+Fixtures implement a concept of expecting and returning values. They have a
+scope where they are evaluated only once, by default they are created for every
+test. If you want to use a fixture simply specify it's name in the arguments of
+the test function or another fixture.
 
 .. code-block:: python
 
