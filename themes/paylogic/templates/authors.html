@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Authors{% endblock %}
+
+{% block content %}
+    <h1>Authors on {{ SITENAME }}</h1>
+    {%- for author, articles in authors|sort %}
+
+        <a href="{{ SITEURL }}/{{ author.url }}">
+            <h2>{{ author }} ({{ articles|count }} article{% if articles|count > 1 %}s{% endif %})</h2>
+        </a>
+
+        {{ authors_info.get(author) }}
+
+        {% if not loop.last %}<hr />{% endif %}
+    {% endfor %}
+
+{% endblock %}
