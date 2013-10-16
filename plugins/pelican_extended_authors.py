@@ -12,11 +12,13 @@ logger = logging.getLogger(__name__)
 
 
 class AuthorBiography(Content):
+    """Wrapper class for AuthorBiography content to live in."""
     mandatory_properties = ('slug',)
     default_template = 'page'
 
 
 class AuthorBiographyManager(object):
+    """Manager for easy access to biography objects in templates."""
     def __init__(self):
         self.contents = {}
 
@@ -32,6 +34,12 @@ class AuthorBiographyManager(object):
 
 
 class AuthorBiographyGenerator(Generator):
+    """Pelican generator that:
+      - parses author biography files
+      - puts those biographys in a AuthorBiographyManager
+      - puts the AuthorBiographyManager into global template context
+
+    """
     def __init__(self, *args, **kwargs):
         self.authors_info = AuthorBiographyManager()
         super(AuthorBiographyGenerator, self).__init__(*args, **kwargs)
@@ -57,7 +65,9 @@ class AuthorBiographyGenerator(Generator):
 
 
 def get_generators(generators):
+    """Helper function for Pelican to get generator."""
     return AuthorBiographyGenerator
 
 def register():
+    """Starting point for Pelican to instantiate plugin."""
     signals.get_generators.connect(get_generators)
