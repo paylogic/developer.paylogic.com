@@ -121,9 +121,9 @@ compression. Data encoding is performed using base64 as specified in
     <?php
     $json_data_string = '{"first_name": "Test Client First Name", ... }';
 
-    $compressed_data = gzcompress(utf8_encode($json_data), 6);
+    $compressed_data = gzcompress(utf8_encode($json_data_string), 6);
 
-    $encoded_data = base64_encode($compressed);
+    $encoded_data = base64_encode($compressed_data);
 
     $encoded_data = str_replace(array('+','/'), array('-','_'), $encoded_data);
     ?>
