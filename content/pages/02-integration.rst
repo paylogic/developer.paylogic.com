@@ -10,4 +10,4 @@ experience. It is intended for third party developers.
 Articles
 ===============
 
-- `Pre-fill registration data </articles/prefill-registration.html>`_
+- `Prefill registration data </articles/prefill-registration.html>`_

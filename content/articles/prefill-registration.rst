@@ -1,18 +1,18 @@
-:title: Pre-fill Registration Data
+:title: Prefill Registration Data
 :date: 2013-12-02 10:56
-:summary: How to integrate with the pre-fill registration feature.
+:summary: How to integrate with the prefill registration feature.
 :category: Integration
 :author: Spyros Ioakeimidis
 :slug: articles/prefill-registration
 :tags: integration
 
-*Paylogic offers a feature to allow the pre-filling of the personal data of a
+*Paylogic offers a feature to allow the prefilling of the personal data of a
 consumer during the sales process via a personalized URL. This can be used
 whenever a merchant already has the data of the consumers and wants to offer
 these consumers a more personalized and smooth ticketing process, or when a
 pre-registration step is used. The following sections describe the steps that
 third parties have to implement in order to provide the possibility of
-pre-filling the registration form in the front office.*
+prefilling the registration form in the front office.*
 
 JSON data format
 ------------------------
