@@ -65,7 +65,7 @@ The pseudo code below illustrates the process of encoding and compression. It
 also includes the creation of the JSON data. The data should first be compressed
 and then encoded.
 
-.. code:: pseudocode
+.. code::
 
     create the JSON data
 
