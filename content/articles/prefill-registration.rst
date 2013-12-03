@@ -84,8 +84,9 @@ Python
 ~~~~~~~
 
 The compression is done using the `zlib <http://www.zlib.net/>`_
-standard python module. The default level of compression has the value of 6.
-Data encoding is performed using base64 as specified in `RFC 3548 <http://tools.ietf.org/html/rfc3548.html>`_
+standard python module. The data is encoded to utf-8 prior to compression. The
+default level of compression has the value of 6. Data encoding is performed
+using base64 as specified in `RFC 3548 <http://tools.ietf.org/html/rfc3548.html>`_
 
 .. code:: python
 
@@ -101,7 +102,7 @@ Data encoding is performed using base64 as specified in `RFC 3548 <http://tools.
     json_data_string = json.dumps(json_data)
 
     # compress the data
-    compressed_data = zlib.compress(json_data_string)
+    compressed_data = zlib.compress(json_data_string.encode('utf8'))
 
     # encode the data using base64 and urlsafe
     encoded = urlsafe_b64encode(compressed_data)
@@ -110,15 +111,17 @@ PHP
 ~~~~~~~
 
 The compression is done using the `gzcompress <http://php.net/manual/en/function.gzcompress.php>`_
-method. The level of compression that should be used is 6. Data encoding is
-performed using base64 as specified in `RFC 3548 <http://tools.ietf.org/html/rfc3548.html>`_
+method, which uses the `zlib <http://www.zlib.net/>`_ data format. The level of
+compression that should be used is 6. The data is encoded to utf-8 prior to
+compression. Data encoding is performed using base64 as specified in
+`RFC 3548 <http://tools.ietf.org/html/rfc3548.html>`_
 
 .. code:: php
 
     <?php
     $json_data_string = '{"first_name": "Test Client First Name", ... }';
 
-    $compressed_data = gzcompress($json_data, 6);
+    $compressed_data = gzcompress(utf8_encode($json_data), 6);
 
     $encoded_data = base64_encode($compressed);
 
