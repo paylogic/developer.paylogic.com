@@ -6,16 +6,19 @@
 :slug: articles/prefill-registration
 :tags: integration
 
-*In some cases it is required that the registration form in the front office is pre-filled
-with the personal data of a consumer, assuming that a consumer has provided the personal data beforehand on a
-pre-registration step. The following sections describe the steps that third parties have to implement
-in order to provide the possibility of pre-filling the registration form in the front office.*
+*Paylogic offers a feature to allow the pre-filling of the personal data of a
+consumer during the sales process via a personalized URL. This can be used
+whenever a merchant already has the data of the consumers and wants to offer
+these consumers a more personalized and smooth ticketing process, or when a
+pre-registration step is used. The following sections describe the steps that
+third parties have to implement in order to provide the possibility of
+pre-filling the registration form in the front office.*
 
 JSON data format
 ------------------------
 
-The first step is to construct the data. The data should be structured using JSON. The JSON data should adhere to the
-following format:
+The first step is to construct the data. The data should be structured using
+JSON. The JSON data should adhere to the following format:
 
 .. code-block:: javascript
 
@@ -32,35 +35,57 @@ following format:
       "country": "NL"
     }
 
-The :code:`gender` attribute should contain a code according to `ISO 5218 <http://en.wikipedia.org/wiki/ISO/IEC_5218>`_,
-which specifies the following codes:
+The :code:`gender` attribute should contain a code according to `ISO 5218
+<http://en.wikipedia.org/wiki/ISO/IEC_5218>`_, which specifies the following
+codes:
 
 - 0 = not known
 - 1 = male
 - 2 = female
 - 9 = not applicable
 
-The format of the :code:`birth_date` attribute should be :code:`YYYY-MM-DD`. This
-format is according to `ISO 8601 <http://en.wikipedia.org/wiki/ISO_8601>`_.
+The format of the :code:`birth_date` attribute should be :code:`YYYY-MM-DD`.
+This format is according to `ISO 8601 <http://en.wikipedia.org/wiki/ISO_8601>`_.
 Finally, the :code:`country` code attribute should contain a value according to
 `ISO 3166 <http://www.iso.org/iso/country_codes/iso_3166_code_lists/country_names_and_code_elements.htm>`_.
-For example, for The Netherlands the country code :code:`NL` should be used.
+For example, for The Netherlands the country code :code:`NL` should be used. It
+should be mentioned that no certain format is required for :code:`postal_code`,
+as long as its length is less than or equal to 12.
 
 Compression and Encoding
 ------------------------
 
-The second step is to compress and encode the data. Compression helps to reduce the length of the data, as the URL can contain
-up to a maximum number of characters. It is not only that the JSON data itself
-might be long. Encoding also increases the length of the data by approximately
-33%. Encoding is used to protect the privacy of the data.
+The second step is to compress and encode the data. Compression helps to reduce
+the length of the data, as the URL should contain up to a maximum number of
+characters. It is not only that the JSON data itself might be long. Encoding
+also increases the length of the data by approximately 33%. Encoding is used to
+protect the privacy of the data.
 
-The way encoding and
-compression can be implemented depends on which programming language is used. A simple implementation is illustrated both for
-Python and PHP. If a different programming language is used, then please contact
-the support team of Paylogic (URL here). The data should first be compressed and then encoded.
+The pseudo code below illustrates the process of encoding and compression. It
+also includes the creation of the JSON data. The data should first be compressed
+and then encoded.
+
+.. code:: pseudocode
+
+    create the JSON data
+
+    create a string out of the JSON data
+
+    compress the data using gzip compatible compression
+
+    encode the data using base64
+
+The way encoding and compression can be implemented depends on which programming
+language is used. A simple implementation is illustrated both for Python and
+PHP. If there are any questions regarding the implementation, then please contact
+the Paylogic support team.
 
 Python
 ~~~~~~~
+
+The compression is done using the `zlib <http://www.zlib.net/>`_
+standard python module. The default level of compression has the value of 6.
+Data encoding is performed using base64 as specified in `RFC 3548 <http://tools.ietf.org/html/rfc3548.html>`_
 
 .. code:: python
 
@@ -81,11 +106,12 @@ Python
     # encode the data using base64 and urlsafe
     encoded = urlsafe_b64encode(compressed_data)
 
-The compression is performed using the :code:`zlib` standard python module. The
-default level of compression has the value of 6.
-
 PHP
 ~~~~~~~
+
+The compression is done using the `gzcompress <http://php.net/manual/en/function.gzcompress.php>`_
+method. The level of compression that should be used is 6. Data encoding is
+performed using base64 as specified in `RFC 3548 <http://tools.ietf.org/html/rfc3548.html>`_
 
 .. code:: php
 
@@ -102,28 +128,34 @@ PHP
 Transferring the data
 ------------------------
 
-The third step is to append the encoded and compressed data to the landing page URL.
-The landing page URL is the URL that is usually included within the confirmation emails.
-The encoded and compressed data should be appended to the landing page URL **after** the fragment identifier (**#**).
+The third step is to append the encoded and compressed data to the landing page
+URL. The landing page URL is the URL that is usually included within the
+confirmation emails. The encoded and compressed data should be appended to the
+landing page URL **after** the fragment identifier (**#**).
 
-The implementation of this is left to the third parties. The only constraint is that
-the appended data should have a specific form. We assume that the landing page URL contains some query parameters (substituted with '...' in the following example for clarity) and :code:`FGRAhdfhasAHDFA=` is
-the encoded and compressed data. Then, a landing page URL with the appended data would have the following form:
+The implementation of this is left to the third parties. The only constraint is
+that the appended data should have a specific form. We assume that the landing
+page URL contains some query parameters (substituted with '...' in the
+following example for clarity) and :code:`FGRAhdfhasAHDFA` is the encoded and
+compressed data. Then, a landing page URL with the appended data would have the
+following form:
 
 .. code::
 
-    http://tickets.company.com/?...#pld=FGRAhdfhasAHDFA=
+    http://tickets.company.com/?...#pld=FGRAhdfhasAHDFA
 
-It is important to use :code:`pld` as a parameter, as this is also used
-in Paylogic side. The above method will work if Paylogic handles the creation of the landing page.
+It is important to use :code:`pld` as a parameter, as this is also used on the
+side of Paylogic, when retrieving the data from the URL. The above method will
+work if Paylogic handles the creation of the landing page.
 
 Third party handles landing page
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In case third party handles the creation of the landing page, then one more step needs to be performed.
-The code of javascript below should be appended at the end of the landing page HTML document.
-This ensures that the data are read from the landing page URL and that they are appended in the queue URL, which
-resides as an iframe inside the landing page HTML document.
+In case a third party handles the creation of the landing page, then one more
+step needs to be performed. The Javascript code below should be appended at the
+end of the landing page HTML document. This ensures that the data is read from
+the landing page URL and that it is appended in the queue URL, which resides as
+an iframe inside the landing page HTML document.
 
 .. code:: javascript
 
