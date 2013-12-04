@@ -58,8 +58,7 @@ Compression and Encoding
 The second step is to compress and encode the data. Compression helps to reduce
 the length of the data, as the URL should contain up to a maximum number of
 characters. It is not only that the JSON data itself might be long. Encoding
-also increases the length of the data by approximately 33%. Encoding is used to
-protect the privacy of the data.
+also increases the length of the data by approximately 33%.
 
 The pseudo code below illustrates the process of encoding and compression. It
 also includes the creation of the JSON data. The data should first be compressed
@@ -73,7 +72,7 @@ and then encoded.
 
     compress the data using gzip compatible compression
 
-    encode the data using base64
+    encode the data using base64 and make them url safe
 
 The way encoding and compression can be implemented depends on which programming
 language is used. A simple implementation is illustrated both for Python and
@@ -84,9 +83,8 @@ Python
 ~~~~~~~
 
 The compression is done using the `zlib <http://www.zlib.net/>`_
-standard python module. The data is encoded to utf-8 prior to compression. The
-default level of compression has the value of 6. Data encoding is performed
-using base64 as specified in `RFC 3548 <http://tools.ietf.org/html/rfc3548.html>`_
+standard python module. The data is encoded to utf-8 prior to compression. Data
+encoding is performed using base64 as specified in `RFC 3548 <http://tools.ietf.org/html/rfc3548.html>`_
 
 .. code:: python
 
@@ -101,7 +99,7 @@ using base64 as specified in `RFC 3548 <http://tools.ietf.org/html/rfc3548.html>
     # create a string of the json data
     json_data_string = json.dumps(json_data)
 
-    # compress the data
+    # encode the data to utf8 and compress it
     compressed_data = zlib.compress(json_data_string.encode('utf8'))
 
     # encode the data using base64 and urlsafe
@@ -111,20 +109,23 @@ PHP
 ~~~~~~~
 
 The compression is done using the `gzcompress <http://php.net/manual/en/function.gzcompress.php>`_
-method, which uses the `zlib <http://www.zlib.net/>`_ data format. The level of
-compression that should be used is 6. The data is encoded to utf-8 prior to
-compression. Data encoding is performed using base64 as specified in
-`RFC 3548 <http://tools.ietf.org/html/rfc3548.html>`_
+method, which uses the `zlib <http://www.zlib.net/>`_ data format. The data is
+encoded to utf-8 prior to compression. Data encoding is performed using base64
+as specified in `RFC 3548 <http://tools.ietf.org/html/rfc3548.html>`_
 
 .. code:: php
 
     <?php
+    # create a string of the json data
     $json_data_string = '{"first_name": "Test Client First Name", ... }';
 
-    $compressed_data = gzcompress(utf8_encode($json_data_string), 6);
+    # encode data to utf8 and compress it
+    $compressed_data = gzcompress(utf8_encode($json_data_string));
 
+    # encode the data using base64
     $encoded_data = base64_encode($compressed_data);
 
+    # make data urlsafe
     $encoded_data = str_replace(array('+','/'), array('-','_'), $encoded_data);
     ?>
 
@@ -133,8 +134,10 @@ Transferring the data
 
 The third step is to append the encoded and compressed data to the landing page
 URL. The landing page URL is the URL that is usually included within the
-confirmation emails. The encoded and compressed data should be appended to the
-landing page URL **after** the fragment identifier (**#**).
+invitation emails. The encoded and compressed data should be appended to the
+landing page URL **after** the fragment identifier (**#**). The advantage of
+this approach is that data after the fragment identifier is not sent over the
+network and is only used client-side.
 
 The implementation of this is left to the third parties. The only constraint is
 that the appended data should have a specific form. We assume that the landing
@@ -173,7 +176,7 @@ an iframe inside the landing page HTML document.
         var param = match.split(/=(.+)?/);
         if (param[0] === "pld") {
             queue = document.getElementById('paylogic-frontoffice');
-            queue.src = queue.src + '#pld=' + param[1];
+            queue.src = queue.src + '#' + param[0] + '=' + param[1];
         }
       });
     };
