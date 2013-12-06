@@ -11,6 +11,7 @@ SITEURL = 'http://localhost:8000'
 
 TIMEZONE = 'Europe/Amsterdam'
 
+DEFAULT_DATE = 'fs'
 DEFAULT_LANG = u'en'
 
 # Feed generation is usually not desired when developing
@@ -34,5 +35,18 @@ THEME = os.path.join(os.path.dirname(__file__), 'themes', 'paylogic')
 
 DISQUS_SITENAME = 'paylogicdevportal'
 
+PLUGINS = ('plugins.pelican_extended_authors',)
+
+# Exclude author pages from other content.
+ARTICLE_EXCLUDES = ('pages', 'authors')
+PAGE_EXCLUDES = ('authors',)
+
 # Uncomment following line if you want document-relative URLs when developing
-#RELATIVE_URLS = True
+RELATIVE_URLS = True
+
+DISPLAY_PAGES_ON_MENU = False
+MENUITEMS = (
+    ("Welcome", "/"),
+    ("Authors", "/authors.html"),
+    ("About", "/pages/about.html"),
+)
