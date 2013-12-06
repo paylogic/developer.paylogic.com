@@ -15,18 +15,19 @@ CONFFILE=$(BASEDIR)/pelicanconf.py
 PUBLISHCONF=$(BASEDIR)/publishconf.py
 
 help:
-	@echo 'Makefile for the Paylogic developer portal                             '
-	@echo '                                                                       '
-	@echo 'Usage:                                                                 '
-	@echo '   make html                        (re)generate the web site          '
-	@echo '   make clean                       remove the generated files         '
-	@echo '   make regenerate                  regenerate files upon modification '
-	@echo '   make publish                     generate using production settings '
-	@echo '   make serve                       serve site at http://localhost:8000'
-	@echo '   make devserver                   start/restart develop_server.sh    '
-	@echo '   make stopserver                  stop local server                  '
-	@echo '   github                           upload the web site via gh-pages   '
-	@echo '                                                                       '
+	@echo 'Makefile for the Paylogic developer portal'
+	@echo ''
+	@echo '  Usage:'
+	@echo ''
+	@echo '    make html          (re)generate the web site'
+	@echo '    make clean         remove the generated files'
+	@echo '    make regenerate    regenerate files upon modification'
+	@echo '    make publish       generate using production settings'
+	@echo '    make serve         serve site at http://localhost:8000'
+	@echo '    make devserver     start/restart develop_server.sh'
+	@echo '    make stopserver    stop local server'
+	@echo '    make github        upload the web site via gh-pages'
+	@echo ''
 
 html: clean $(OUTPUTDIR)/index.html
 
