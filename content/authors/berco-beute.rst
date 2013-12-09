@@ -8,4 +8,5 @@ distributed systems he has a particular interest in big, distributed,
 fault-tolerant systems. After spending too much time with Prolog and Java
 Berco is happy to say most of his current coding is in Python.
 
-You can contact Berco by sending an email to: `e-mail berco.beute@paylogic.com>`_.
+You can contact Berco by sending an email to: `berco.beute@paylogic.com
+<berco.beute@paylogic.com>`_.
