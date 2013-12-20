@@ -6,7 +6,7 @@
 /* Dont give a margin to brand if this is not a mobile device. */
 @media screen and (min-width: 979px) {
     .brand {
-        margin-left: -20px !important; 
+        margin-left: -20px !important;
     }
 }
 
@@ -29,7 +29,7 @@ h6 { font-size: 0.5em }
 /* "Normal" screens (width > 1366px) */
 .with-gutter {
     margin: 0 auto;
-    width: 50%;
+    width: 55%;
 }
 
 /* Smaller screens */
