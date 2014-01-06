@@ -51,3 +51,7 @@ MENUITEMS = (
     ("Authors", "/authors.html"),
     ("About", "/pages/about.html"),
 )
+
+JINJA_EXTENSIONS = [
+    'jinja2.ext.with_',
+]
