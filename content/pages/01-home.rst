@@ -15,6 +15,8 @@ We use this website to share:
 
 - Open source projects we've published (see also our GitHub_ account)
 
+- How to integrate with Paylogic system.
+
 In the future this website will also host the documentation of the Paylogic
 ticketing API which is currently under development.
 
