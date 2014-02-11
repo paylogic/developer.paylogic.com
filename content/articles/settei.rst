@@ -14,13 +14,13 @@ entry points as a registry, inspired by `setuptools <http://pythonhosted.org/set
 Introduction
 ############
 
-:code:`settei` package is a generic purpose python settings library which uses
-entry points as a registry. It is a library which provides the possibility to
-define and use config settings from entry points for specific application and
+:code:`settei` is a generic purpose python settings library which uses entry
+points as a registry. It is a library which provides the possibility to define
+and use configuration settings from entry points for specific application and
 environment. :code:`settei` introduces two terms, **environment** and **application**.
 
 * **environment** is the name of an entry point
-* **application** is part of group's name in which environments are defined
+* **application** is part of a group's name in which environments are defined
 
 Motivation
 ##########
@@ -43,7 +43,31 @@ Entry points
 
 Entry points provide an intuitive way for distributions to expose Python objects,
 such as functions or classes, to be used by other distributions. Applications
-can then search for specific entry points.
+can then search for specific entry points. :code:`settei` uses the concept of
+entry points to define groups of environments.
+
+It means that we will have the possibility to store settings in distribution.
+Then if we want to get access to settings of live or staging, we will need to
+have access install to this distribution and include this distribution in sys.path
+of the script or application.
+
+Groups and environments
+-----------------------
+
+A group is a container of environments. A group name comprises of two parts.
+The first of them is a standard prefix part :code:`settings_`, and the second
+one is the name of an application. For example, :code:`settings_application1` or
+:code:`settings_application2`, where :code:`application1` and :code:`application2`
+are the name of the applications. The prefix part in the group name is important
+as it helps to identify only entry points useful for :code:`settei` and iterate
+through them.
+
+Each environment name inside a group must be unique. For example, if we have a
+group :code:`settings_application1` there should only be one environment named
+:code:`default` and only one named :code:`local`. If we specify environments
+with the same name inside a group, then a :code:`DuplicateEntryPoint` exception
+will be raised. However, we can specify same environment names that belong to
+different groups.
 
 Example Usage
 #############
@@ -56,13 +80,7 @@ environment and use them accordingly in the rest of the application.
 Define groups and environments
 ==============================
 
-As a first step, we need to define environments and put them into groups. A
-group name comprises of two parts. The first of them is a standard prefix part
-:code:`settings_`, and the second one is the name of an application. For
-example, :code:`settings_backoffice` or :code:`settings_frontoffice`, where
-:code:`backoffice` or :code:`frontoffice` is the name of the application.
-The prefix part in the group name is important as it helps to identify only
-entry points useful for :code:`settei` and iterate through them.
+As a first step, we need to define environments and put them into groups.
 
 .. code-block:: python
 
@@ -70,38 +88,31 @@ entry points useful for :code:`settei` and iterate through them.
     setup (
         # ...
         entry_points = {
-            'settings_frontoffice': [
-                'default = path.to.package.of.frontoffice.default_settings:generate_config',
-                'local = path.to.package.of.frontoffice.local_settings:generate_config',
+            'settings_application1': [
+                'default = path.to.package.of.application1.default_settings:generate_config',
+                'local = path.to.package.of.application1.local_settings:generate_config',
             ],
-            'settings_backoffice': [
-                'default = path.to.package.of.backoffice.default_settings:generate_config',
-                'local = path.to.package.of.backoffice.local_settings:generate_config',
+            'settings_application2': [
+                'default = path.to.package.of.application2.default_settings:generate_config',
+                'local = path.to.package.of.application2.local_settings:generate_config',
             ]
         }
         # ...
     )
-
-Each environment name inside a group must be unique. For example, in the group
-:code:`settings_frontoffice` there should only be one environment named :code:`default`
-and only one named :code:`local`. If we specify environments with the same name
-inside a group, then a :code:`DuplicateEntryPoint` exception will be raised.
-However, we can specify same environment names that belong to different groups.
 
 Create settings
 ===============
 
 Settings should be created in the :code:`generate_config` function. The :code:`generate_config`
 function should return an instance of :code:`settei.config.Config` class.
-Settings can be created either directly, or read them from a python file, or
-from an object. If there is any error during configuration or a :code:`settei.config.Config`
-is not returned, then a :code:`WrongConfigTypeError` exception is raised.
+Settings can be created either directly, read them from a python file, or from
+an object. If there is any error during configuration or a :code:`settei.config.Config`
+instance is not returned, then a :code:`WrongConfigTypeError` exception is raised.
 
 .. code-block:: python
 
     # application/default_settings.py
     from settei.config import Config
-
 
     def generate_config():
         config = Config()
@@ -122,22 +133,22 @@ Read settings
 =============
 
 After :code:`settei` package is installed, we can use it to get config settings
-for the applications that we have already defined. Note that in :code:`get_config`
+for the groups that we have already defined. Note that in :code:`get_config`
 function we specify the application name and not the group name. For example,
-if we want to load settings for the application :code:`frontoffice` and we have
-defined a group of environments with the name :code:`settings_frontoffice`,
+if we want to load settings for the application :code:`application1` and we have
+defined a group of environments with the name :code:`settings_application1`,
 then in the :code:`get_config` function we just use the name of the application,
-which in this case is :code:`frontoffice`.
+which in this case is :code:`application1`.
 
 .. code-block:: python
 
     from settei import get_config
 
-    # get config settings for 'frontoffice' application and 'local' environment
-    config = get_config('frontoffice', 'local')
+    # get config settings for 'applicaion1' application and 'local' environment
+    config = get_config('application1', 'local')
 
-    # get config settings for 'backoffice' application and 'local' environment
-    config = get_config('backoffice', 'local')
+    # get config settings for 'application2' application and 'local' environment
+    config = get_config('application2', 'local')
 
     # now you can use it as you want
     DEBUG = config['DEBUG']
@@ -153,16 +164,16 @@ desired environment is using the :code:`CONFIG_ENVIRONMENT` variable.
 
 Then, in ``my_incredible_script.py`` when the :code:`get_config` function is
 used, we do not need to specify an environment as it will use the :code:`dev`
-environment that we have set.
+environment that is defined by :code:`CONFIG_ENVIRONMENT`.
 
 .. code-block:: python
 
     # and in my_incredible_script.py we can use get_config
     from settei import get_config
 
-    # get config settings for 'frontoffice' application and 'dev' environment,
+    # get config settings for 'application1' application and 'dev' environment,
     # which has been specified when running my_incredible_script.py
-    config = get_config('frontoffice')
+    config = get_config('application1')
 
 Settings inheritance
 ====================
@@ -191,7 +202,7 @@ If we read the :code:`local` settings, then we will see that
 .. code-block:: python
 
     >> from settei import get_config
-    >> config = get_config('frontoffice', 'local')
+    >> config = get_config('application1', 'local')
     >> print config['QUESTION']
     The Ultimate Question of Life, the Universe, and Everything
     >> print config['ANSWER']
