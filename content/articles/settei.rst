@@ -6,7 +6,7 @@
 :slug: articles/settei
 :tags: open source, python, settings, entry points, setuptools
 
-Settei is a generic purpose python settings library based on the concept of
+:code:`settei` is a generic purpose python settings library based on the concept of
 entry points as a registry, inspired by `setuptools <http://pythonhosted.org/setuptools/pkg_resources.html#entry-points>`_.
 
 .. contents::
@@ -21,87 +21,66 @@ environments. :code:`settei` introduces the following terms:
 
 * **environment** is the name of an entry point
 * **group** is a group of defined environments
-* **application** is part of a group's name
+* **application** is part of a group's name and refers to the application to which
+  settings apply
 
 Motivation
 ##########
 
 In Paylogic, we are extensively using `Django <https://www.djangoproject.com/>`_
-for most parts of our application stack. Django uses the concept of
+web framework for most parts of our system. Django uses the concept of
 `setting files <https://docs.djangoproject.com/en/1.6/topics/settings/>`_, in
-which we can define application-wide settings, such as ``DEBUG``, and ``MIDDLEWAE_CLASSES``.
-In the rest of the application we can access these settings using for example
-:code:`settings.DEBUG`. Although this implementation is sufficient in many cases,
-we were confronted with a few limitations as our system was scaling.
+which we can define application-specific settings, such as ``DEBUG``. In the
+rest of the application we can access these settings using for example
+:code:`django.conf.settings.DEBUG`. However, for other parts of our system we
+are using `Flask <http://flask.pocoo.org/>`_, which follows a similar, but not exactly
+the same way to define `configuration settings <http://flask.pocoo.org/docs/config/>`_.
+In a Flask application a setting could be accessed like :code:`app.config['DEBUG']`.
 
-Why not Django settings
-=======================
+Soon we were confronted with the limitation to share configuration settings
+between Flask and Django applications. Additionally, we wanted to keep these
+configurations consistent. However, we found out that there was no framework-agnostic
+python library for specifying configuration settings.
 
-some scripts use Django, some not (cronjobs)
+Moreover, as we have a clear separation between environments (e.g. dev, staging,
+live etc.), some configuration settings are either set in one environment and not
+in the others, or the same configuration settings have different values depending
+on the environment. The code however, should not know anything about the environment
+in which it is executed. In this way the code does not need to be modified, even
+when multiple environments are used.
 
-not from the django conf settings, now we get from privates
-
-We end up using a lot of private files, which contain settings from different
-parts of Django applications. For example, we need to use some settings in a
-cronjob script. First thing is to use django.conf.settings. However, not all
-private settings can be read from django.conf.settings. And because when the
-application is running they are not imported, Django does not know anything about
-these settings.
-
-.. a lot of privates files, which contain settigs from different parts of paylogic applications
-.. for example, we need some settigns in some script, firs thing in ind is to use
-.. django. conf.settings, btu not all privates come from there, because they were
-.. not imported, and when yo uare running the applcation, django does not know
-.. about these settings
-
-Moreover, other developers start importing settings from private files and other
-using the standard way of Django. This can easily result in conflicts, as the same
-setting can be imported from different places.
-
-.. develoeprs start to import settings from privates files, that why we ned up with
-.. chaos, someone get settings from django, the same settings other developers from privates
-.. and others from django and privates at the same time, strange behavior, conflicts
-
-you need settings for something, you cannot import them from privates, then you need
-to know for which appication ti initialize django settings (reload), why cronjob script
-should know from whihc django application to load settings (frontoffice.settings)
-and you do not know that anyway, then people started loading settings from privates
-
-you lost track and this leads to bugs and noit maintainable code
-
-tests use settings from privates and django also, we speify application to get settings
-from
-
-we are using it for various kind of settings,
-
-however there are some limitations
-
-Avoid direct imports from private setting files
-
-we have several environments with different configurationas and we were using templates
-difficult to maintain, not alternatives
+For this reason, we initially decided to create separate files to store configuration
+settings, which could also change depending on the environment. However, we end
+up with many of these files, which at some point became unmaintainable. Furthermore,
+other developers started importing settings from these files and others used the
+standard way of Django. This can easily result inconsistencies and conflicts, as
+the same setting can be imported from different places.
 
 Requirements
 ============
 
-Based on this motivation, we came up with a few requirements that we would like
-a settings configuration system like :code:`settei` to fulfil.
+Based on our motivation, we came up with a few requirements that we would like
+a settings configuration system to fulfil.
 
 * Introducing a new environment should be easy and without too much hassle.
-* We should have the possibility to inherit/extend settings from other settings.
-  This would allow to build a modular and extensible structure of settings.
+* We should have the possibility to inherit/extend settings from other environments.
+  This would allow to build a modular and extensible structure of configuration
+  settings.
 * There should be no involvement of specific template structure for generating
   settings, because it is getting really hard and cumbersome to read templates
   with tons of expressions.
 * It should be possible to store settings separately from applications and
   scripts. The advantage of this is that we can create secret settings in a way
   that makes them also safe and that do not depend on a specific application.
+* A configuration settings system should be framework-agnostic so it can be used
+  when multiple frameworks are involved.
 
 Design
 ######
 
 The most important design decision of :code:`settei` is to base its implementation
-in the concept of entry points.
+in the concept of entry points, in order to create a framework-agnostic library
+for configuration settings.
 
 Entry points
 ============
@@ -318,8 +297,7 @@ Conclusion
 
 :code:`settei` is a package, which bases its implementation on the concept of
 entry points from setuptools, to provide a maintainable way of creating configuration
-settings. :code:`settei` makes it very easy and intuitive to introduce a new environment
-configuration, e.g. for a live environment, where settings usually differ a lot
-from those used during development. Setting inheritance, which is accomplished
-using by dependency injection, provides this modularity and extensibility we
-were in need of.
+settings. :code:`settei` makes it very easy and intuitive to introduce a new environment,
+e.g. a live environment, where settings usually differ a lot from those used
+during development. Finally, settings inheritance, which is accomplished by using
+dependency injection, provides this modularity and extensibility we were in need of.
