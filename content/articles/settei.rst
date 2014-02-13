@@ -41,11 +41,45 @@ some scripts use Django, some not (cronjobs)
 
 not from the django conf settings, now we get from privates
 
+We end up using a lot of private files, which contain settings from different
+parts of Django applications. For example, we need to use some settings in a
+cronjob script. First thing is to use django.conf.settings. However, not all
+private settings can be read from django.conf.settings. And because when the
+application is running they are not imported, Django does not know anything about
+these settings.
+
+.. a lot of privates files, which contain settigs from different parts of paylogic applications
+.. for example, we need some settigns in some script, firs thing in ind is to use
+.. django. conf.settings, btu not all privates come from there, because they were
+.. not imported, and when yo uare running the applcation, django does not know
+.. about these settings
+
+Moreover, other developers start importing settings from private files and other
+using the standard way of Django. This can easily result in conflicts, as the same
+setting can be imported from different places.
+
+.. develoeprs start to import settings from privates files, that why we ned up with
+.. chaos, someone get settings from django, the same settings other developers from privates
+.. and others from django and privates at the same time, strange behavior, conflicts
+
+you need settings for something, you cannot import them from privates, then you need
+to know for which appication ti initialize django settings (reload), why cronjob script
+should know from whihc django application to load settings (frontoffice.settings)
+and you do not know that anyway, then people started loading settings from privates
+
+you lost track and this leads to bugs and noit maintainable code
+
+tests use settings from privates and django also, we speify application to get settings
+from
+
 we are using it for various kind of settings,
 
 however there are some limitations
 
-Avoid direct imports from settings files
+Avoid direct imports from private setting files
+
+we have several environments with different configurationas and we were using templates
+difficult to maintain, not alternatives
 
 Requirements
 ============
@@ -282,8 +316,10 @@ exception will be raised.
 Conclusion
 ##########
 
-:code:`settei` makes it very easy and intuitive to introduce a new environment
+:code:`settei` is a package, which bases its implementation on the concept of
+entry points from setuptools, to provide a maintainable way of creating configuration
+settings. :code:`settei` makes it very easy and intuitive to introduce a new environment
 configuration, e.g. for a live environment, where settings usually differ a lot
-from those used during development. Inheritance between different environments
-provides this modularity and extensibility that we were in need of.
-
+from those used during development. Setting inheritance, which is accomplished
+using by dependency injection, provides this modularity and extensibility we
+were in need of.
