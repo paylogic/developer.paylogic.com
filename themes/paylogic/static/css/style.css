@@ -109,3 +109,12 @@ h6 { font-size: 0.5em }
 
 /* ? */
 .highlight .k { color: #844631; }
+
+.admonition-title {
+    display: none;
+}
+
+.note {
+    border-radius: 6px 6px 6px 6px;
+    width: 60%;
+}

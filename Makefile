@@ -13,6 +13,9 @@ INPUTDIR=$(BASEDIR)/content
 OUTPUTDIR=$(BASEDIR)/output
 CONFFILE=$(BASEDIR)/pelicanconf.py
 PUBLISHCONF=$(BASEDIR)/publishconf.py
+PATH := $(BASEDIR)/.env/bin:$(PATH)
+
+DEVSERVER_PORT=8000
 
 help:
 	@echo 'Makefile for the Paylogic developer portal'
@@ -36,22 +39,24 @@ $(OUTPUTDIR)/%.html:
 
 clean:
 	[ ! -d $(OUTPUTDIR) ] || find $(OUTPUTDIR) -mindepth 1 -delete
+	rm -rf .env
 
-regenerate: clean
+regenerate: clean .env
 	$(PELICAN) -r $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS)
 
-serve:
+serve: .env
 	cd $(OUTPUTDIR) && $(PY) -m pelican.server
 
-devserver:
-	$(BASEDIR)/develop_server.sh restart
+devserver: .env
+	export
+	$(BASEDIR)/develop_server.sh restart $(DEVSERVER_PORT)
 
-stopserver:
-	kill -9 `cat pelican.pid`
-	kill -9 `cat srv.pid`
+stopserver: .env
+	export
+	$(BASEDIR)/develop_server.sh stop $(DEVSERVER_PORT)
 	@echo 'Stopped Pelican and SimpleHTTPServer processes running in background.'
 
-publish:
+publish: .env
 	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(PUBLISHCONF) $(PELICANOPTS)
 
 github: publish
@@ -67,5 +72,9 @@ github: publish
 	ghp-import $(OUTPUTDIR)
 	# Publish the updated site to GitHub.
 	git push origin master gh-pages
+
+.env:
+	virtualenv .env
+	.env/bin/pip install -r requirements.txt
 
 .PHONY: html help clean regenerate serve devserver publish github

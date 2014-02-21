@@ -4,3 +4,9 @@
 output/
 *.pid
 *.pyc
+/bin
+/lib
+/include
+/.env
+/env
+.Python
