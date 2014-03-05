@@ -74,7 +74,7 @@ github: publish
 	git push origin master gh-pages
 
 .env:
-	virtualenv .env
+	virtualenv .env -p python2.7
 	.env/bin/pip install -r requirements.txt
 
 .PHONY: html help clean regenerate serve devserver publish github
