@@ -57,7 +57,7 @@ stopserver: .env
 	@echo 'Stopped Pelican and SimpleHTTPServer processes running in background.'
 
 publish: .env
-	.env/bin/$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(PUBLISHCONF) $(PELICANOPTS)
+	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(PUBLISHCONF) $(PELICANOPTS)
 
 github: publish
 	# GitHub pages requires /404.html at the root of the directory structure and
