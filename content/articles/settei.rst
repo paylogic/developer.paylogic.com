@@ -98,16 +98,25 @@ distribution and include this distribution in ``PYTHONPATH`` of the script or ap
 Groups and environments
 -----------------------
 
-A group is a container of environments. A group name comprises of two parts.
-The first of them is a standard prefix part :code:`settings_`, and the second
-one is the name of an application. For example, :code:`settings_application1` or
-:code:`settings_application2`, where :code:`application1` and :code:`application2`
-are the names of the applications. The prefix part in the group name is compulsory
-as it helps :code:`settei` to identify only entry points useful for it and iterate
-through them.
+A group is a container of environments. An example of a group with two environments
+could be:
 
-Each environment name inside a group must be unique. For example, if we have a
-group :code:`settings_application1` there should only be one environment named
+.. code-block:: python
+
+    'settings_application_name': [
+        'default = path.to.package.of.application_name.default_settings:generate_config',
+        'local = path.to.package.of.application_name.local_settings:generate_config',
+    ]
+
+The name of the group consists of two parts.
+The first of them is a standard prefix part :code:`settings_`, and the second
+one is the name of an application. For example, :code:`settings_application_name`,
+where :code:`application_name` is the name of the application. The prefix part in
+the group name is compulsory as it helps :code:`settei` to identify only entry
+points useful for it and iterate through them.
+
+Each environment name inside a group must be unique. In our example, in the
+group :code:`settings_application_name` there should only be one environment named
 :code:`default` and only one named :code:`local`. If we specify environments
 with the same name inside a group, then a :code:`DuplicateEntryPoint` exception
 will be raised. This exception is used to avoid cases of scripts ``borrowing``
@@ -117,10 +126,19 @@ belong to different groups.
 Example Usage
 #############
 
-:code:`settei` package is easy on its use. The best way to explain how
-:code:`settei` can be used is through examples. At first, we need to define
-groups and environments. Then, we can create settings for each defined
-environment and use them accordingly in the rest of the application.
+:code:`settei` package can be configured and used in a series of simple steps.
+
+1. Define groups and environments in ``setup.py`` of package.
+2. For each environment (e.g. default_settings), define the function to be used
+   as an entry point.
+3. Implement this function in the environment files (e.g. default_settings.py),
+   which should create and return a new instance of :code:`Config`
+   with configuration settings for this environment.
+4. Use the :code:`get_config` function in the rest of the package to read
+   configuration settings for specific applications and environments.
+
+The best way to explain how :code:`settei` can be used is through examples.
+The rest of this section goes into more detail for each of the aforementioned steps.
 
 Define groups and environments
 ==============================
@@ -150,18 +168,18 @@ we chose the name :code:`generate_config`.
 Create settings
 ===============
 
-To create settings, we need an instance of the :code:`settei.config.Config` class.
+To create settings, we need an instance of the :code:`Config` class.
 In the following example, we are using the function named :code:`generate_config`,
 which we specified as an entry point when we defined the groups and environments.
 The :code:`generate_config` function, in our case, returns an instance of the
-:code:`settei.config.Config` class. Settings can be created either directly,
+:code:`Config` class. Settings can be created either directly,
 read them from a python file, or from an object. If there is any error during
-configuration or a :code:`settei.config.Config` instance is not returned, then
+configuration or a :code:`Config` instance is not returned, then
 a :code:`WrongConfigTypeError` exception is raised.
 
 .. code-block:: python
 
-    # application/default_settings.py
+    # application1/default_settings.py
     from settei.config import Config
 
     def generate_config():
@@ -182,8 +200,8 @@ a :code:`WrongConfigTypeError` exception is raised.
 Read settings
 =============
 
-After :code:`settei` package is installed, we can use it to get configuration
-settings for the groups that we have already defined. Note that in :code:`get_config`
+After creating settings, we can read them and use them in the rest of our application
+by using the :code:`get_config` function. Note that in :code:`get_config`
 function we specify the application name and not the group name. For example,
 if we want to load settings for the application :code:`application1` and we have
 defined a group of environments with the name :code:`settings_application1`,
