@@ -7,7 +7,8 @@
 :tags: open source, python, settings, entry points, setuptools
 
 :code:`settei` is a generic purpose python settings library based on the concept of
-entry points as a registry, inspired by `setuptools <http://pythonhosted.org/setuptools/pkg_resources.html#entry-points>`_.
+entry points as a registry, inspired by
+`setuptools <http://pythonhosted.org/setuptools/pkg_resources.html#entry-points>`_.
 
 .. contents::
 
@@ -23,6 +24,9 @@ environments. :code:`settei` introduces the following terms:
 * **group** is a group of defined environments
 * **application** is part of a group's name and refers to the application to which
   settings apply
+
+A minimal app that illustrates the use of `settei` can be found
+`here <https://github.com/paylogic/settei-example>`_.
 
 Motivation
 ##########
@@ -51,16 +55,16 @@ when multiple environments are used.
 
 For this reason, we initially decided to create separate files to store configuration
 settings, which could also change depending on the environment. However, we end
-up with many of these files, which at some point became unmaintainable. Furthermore,
-other developers started importing settings from these files and others used the
-standard way of Django. This can easily result inconsistencies and conflicts, as
-the same setting can be imported from different places.
+up with many of these files, which at some point became cumbersome to maintain.
+Furthermore, other developers started importing settings from these files and
+others used the standard way of Django. The result of this is inconsistencies
+and conflicts, as the same setting can be imported from different places.
 
 Requirements
 ============
 
-Based on our motivation, we came up with a few requirements that we would like
-a settings configuration system to fulfil.
+Based on this motivation, we came up with a number of requirements for a settings
+configuration system.
 
 * Introducing a new environment should be easy and without too much hassle.
 * We should have the possibility to inherit/extend settings from other environments.
@@ -145,21 +149,22 @@ Define groups and environments
 
 As a first step, we need to define environments and put them into groups. We are
 free to choose the name of the function to be used as an entry point. In this case,
-we chose the name :code:`generate_config`.
+we chose the name :code:`generate_config`. Let's assume that our package contains
+two applications.
 
 .. code-block:: python
 
-    # in the setup.py
+    # package/setup.py
     setup (
         # ...
         entry_points = {
             'settings_application1': [
-                'default = path.to.package.of.application1.default_settings:generate_config',
-                'local = path.to.package.of.application1.local_settings:generate_config',
+                'default = path.to.application1.default_settings:generate_config',
+                'local = path.to.application1.local_settings:generate_config',
             ],
             'settings_application2': [
-                'default = path.to.package.of.application2.default_settings:generate_config',
-                'local = path.to.package.of.application2.local_settings:generate_config',
+                'default = path.to.application2.default_settings:generate_config',
+                'local = path.to.application2.local_settings:generate_config',
             ]
         }
         # ...
@@ -179,7 +184,7 @@ a :code:`WrongConfigTypeError` exception is raised.
 
 .. code-block:: python
 
-    # application1/default_settings.py
+    # package/application1/default_settings.py
     from settei.config import Config
 
     def generate_config():
@@ -200,7 +205,9 @@ a :code:`WrongConfigTypeError` exception is raised.
 Read settings
 =============
 
-After creating settings, we can read them and use them in the rest of our application
+In order to use the settings of our package, we need to first install it using
+:code:`python setup.py install` and make sure that it is in out path. We can then
+read and use settings in the rest of our package
 by using the :code:`get_config` function. Note that in :code:`get_config`
 function we specify the application name and not the group name. For example,
 if we want to load settings for the application :code:`application1` and we have
@@ -227,7 +234,7 @@ desired environment is using the :code:`CONFIG_ENVIRONMENT` variable.
 
 .. code-block:: python
 
-    # run script/application in this way
+    # run in this way
     $ ENV CONFIG_ENVIRONMENT='dev' python my_incredible_script.py
 
 Then, in ``my_incredible_script.py`` when the :code:`get_config` function is
@@ -254,7 +261,7 @@ environment from which you want to inherit.
 
 .. code-block:: python
 
-    # in your application/local_settings.py file
+    # in your application1/local_settings.py file
     # 'default' is the environment from which we want to inherit settings
     def generate_config(default):
 
@@ -282,7 +289,7 @@ inherited ones with the same name.
 
 .. code-block:: python
 
-    # in your application/local_settings.py file
+    # in your package/application1/local_settings.py file
     from settei.config import Config
 
     def generate_config(default):
