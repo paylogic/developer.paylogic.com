@@ -248,7 +248,7 @@ Another way to define the desired environment is using the
 .. code-block:: python
 
     # run in this way
-    $ ENV CONFIG_ENVIRONMENT='dev' python my_incredible_script.py
+    $ env CONFIG_ENVIRONMENT='dev' python my_incredible_script.py
 
 Then, in ``my_incredible_script.py`` when the :code:`get_config` function is
 used, we do not need to specify an environment as it will use the :code:`dev`
