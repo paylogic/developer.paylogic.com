@@ -6,17 +6,15 @@
 :slug: articles/settei
 :tags: open source, python, settings, entry points, setuptools
 
-:code:`settei` is a generic purpose python settings library based on the concept of
-entry points as a registry, inspired by
-`setuptools <http://pythonhosted.org/setuptools/pkg_resources.html#entry-points>`_.
-
 .. contents::
 
 Introduction
 ############
 
-:code:`settei` is a generic purpose python settings library which uses entry
-points as a registry. It is a library which provides the possibility to define
+:code:`settei` is a generic purpose python settings library based on the concept of
+`entry points <http://pythonhosted.org/setuptools/pkg_resources.html#entry-points>`_
+as a registry, inspired by `setuptools <http://pythonhosted.org/setuptools/setuptools.html>`_.
+It is a library which provides the possibility to define
 and use configuration settings from entry points for specific applications and
 environments. :code:`settei` introduces the following terms:
 
@@ -83,8 +81,8 @@ Design
 ######
 
 The most important design decision of :code:`settei` is to base its implementation
-in the concept of entry points, in order to create a framework-agnostic library
-for configuration settings.
+in the concept of `entry points <http://pythonhosted.org/setuptools/pkg_resources.html#entry-points>`_
+in order to create a framework-agnostic library for configuration settings.
 
 Entry points
 ============
@@ -107,10 +105,17 @@ could be:
 
 .. code-block:: python
 
-    'settings_application_name': [
-        'default = path.to.package.of.application_name.default_settings:generate_config',
-        'local = path.to.package.of.application_name.local_settings:generate_config',
-    ]
+    setup (
+        # ...
+        entry_points = {
+            'settings_application_name': [
+                'default = path.to.package.of.application_name.default_settings:generate_config',
+                'local = path.to.package.of.application_name.local_settings:generate_config',
+            ],
+            # ...
+        },
+        # ...
+    )
 
 The name of the group consists of two parts.
 The first of them is a standard prefix part :code:`settings_`, and the second
@@ -119,13 +124,15 @@ where :code:`application_name` is the name of the application. The prefix part i
 the group name is compulsory as it helps :code:`settei` to identify only entry
 points useful for it and iterate through them.
 
-Each environment name inside a group must be unique. In our example, in the
+Each environment name inside a group must be ``unique``. In our example, in the
 group :code:`settings_application_name` there should only be one environment named
-:code:`default` and only one named :code:`local`. If we specify environments
-with the same name inside a group, then a :code:`DuplicateEntryPoint` exception
-will be raised. This exception is used to avoid cases of scripts ``borrowing``
-settings from each other. However, we can specify same environment names that
-belong to different groups.
+:code:`default` and only one named :code:`local`. However, we can specify same
+environment names that belong to different groups. If we specify environments
+with the same name inside one group, then a :code:`DuplicateEntryPoint` exception
+will be raised. This exception is used to avoid cases of scripts borrowing
+settings from each other. For example, lets assume that in the previous example
+we specified the ``default`` environemnt twice. It would not be clear from which
+file (default_settings.py or local_settings.py) we would read settings.
 
 Example Usage
 #############
@@ -165,8 +172,8 @@ two applications.
             'settings_application2': [
                 'default = path.to.application2.default_settings:generate_config',
                 'local = path.to.application2.local_settings:generate_config',
-            ]
-        }
+            ],
+        },
         # ...
     )
 
