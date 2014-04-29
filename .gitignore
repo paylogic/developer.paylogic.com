@@ -10,3 +10,4 @@ output/
 /.env
 /env
 .Python
+.ropeproject
