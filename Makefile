@@ -17,6 +17,9 @@ PATH := $(BASEDIR)/.env/bin:$(PATH)
 
 DEVSERVER_PORT=8000
 
+# Don't change this or the date formatting in Pelican will depend on the user's local setup...
+LC_TIME = en_US.UTF-8
+
 help:
 	@echo 'Makefile for the Paylogic developer portal'
 	@echo ''
@@ -48,11 +51,9 @@ serve: .env
 	cd $(OUTPUTDIR) && $(PY) -m pelican.server
 
 devserver: .env
-	export
 	$(BASEDIR)/develop_server.sh restart $(DEVSERVER_PORT)
 
 stopserver: .env
-	export
 	$(BASEDIR)/develop_server.sh stop $(DEVSERVER_PORT)
 	@echo 'Stopped Pelican and SimpleHTTPServer processes running in background.'
 
