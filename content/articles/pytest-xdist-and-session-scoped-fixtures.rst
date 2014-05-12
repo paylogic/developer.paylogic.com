@@ -1,5 +1,5 @@
 :title: pytest-xdist and session-scoped fixtures
-:date: 2014-03-05 9:06
+:date: 2014-05-29 9:06
 :summary: Test distribution related optimizations.
 :category: Testing
 :author: Anatoly Bubenkov
@@ -11,14 +11,15 @@ Introduction
 ============
 
 
-In earlier `article <test-p14n>`_ we have unveiled how we ``parallelize`` our tests.
-There we gave few examples about services we run for the tests. Apparently, due to implementation details of
-`pytest <https://pytest.org>`_ and `pytest-xdist <https://pytest.org/latest/xdist.html>`_ it is not possible
-to implement service starting / stopping effectively out of the box. So we propose our solution.
+In the earlier `article on Test parallelization <test-p14n>`_ we unveiled how we ``parallelize`` our tests.
+There we gave a few examples of services we run for the tests. However, due to implementation details of
+`pytest <https://pytest.org>`_ and `pytest-xdist <https://pytest.org/latest/xdist.html>`_, it is not possible
+to implement service starting and stopping efficiently out of the box. That's why we developed our own solution,
+described in this article.
 
 
-Back to example, where problem starts
-=====================================
+Back to the example, where the problem starts
+=============================================
 
 .. code-block:: python
 
@@ -82,43 +83,42 @@ Back to example, where problem starts
         request.addfinalizer(gw.exit)
         return gw
 
-What is extremely important here is we instantiate such things like application, services,
-etc only once per test run, because it takes a lot of time to start / stop applications and / or services,
-create databases, etc.
+What is extremely important here is that we instantiate things like applications and services
+only once per test run, because it takes a lot of time to start / stop applications and/or services,
+to create databases, etc.
 
 According to `pytest fixtures <https://pytest.org/latest/fixture.html>`_, our application will be instantiated
 on demand and should live during the whole test session time. Which is fine, as long as you do
-not ``parallelize`` tests, and therefore you do not use `pytest-xdist <https://pytest.org/latest/xdist.html>`_.
+not ``parallelize`` tests, and therefore do not use `pytest-xdist <https://pytest.org/latest/xdist.html>`_.
 
-But when you do use it, it's NOT GUARANTEED that test nodes will have only one test session!
-
-
-How pytest-xdist internals work
-===============================
-
-To simplify things, let's concentrate on ``stages`` ``pytest-xdist`` uses to run tests in a distributed way:
-
-    * Collects all nodes checking the connection
-    * Rsyncs files needed
-    * Collects all tests on every node
-    * Starts 'initial distribution' test sessions over nodes using number of tests calculated by formula:
-
-        .. math::
-
-            ntests = Ntests / ( Knodes * 4)
-
-        where:
-            *  ntests - number of tests to run for test node session
-            *  Ntests - total number of tests
-            *  Knodes - number of test nodes
+But when you do use it, it's **not guaranteed** that test nodes will have only one test session!
 
 
-    * Starts more test sessions for nodes which are done with initial test sessions using same formula
+pytest-xdist internals
+======================
+
+To simplify things, let's concentrate on the ``stages`` that ``pytest-xdist`` uses to run tests in a distributed way:
+
+* Collect all nodes checking the connection
+* Rsync files needed
+* Collect all tests on every node
+* Start 'initial distribution' test sessions over nodes using the number of tests calculated by the following formula:
+
+    .. math::
+
+        ntests = Ntests / ( Knodes * 4)
+
+    where:
+        *  ntests - number of tests to run for test node session
+        *  Ntests - total number of tests
+        *  Knodes - number of test nodes
+
+* Start more test sessions for nodes which are done with initial test sessions using the same formula
 
 
-We see here that the more tests you have for same amount of nodes, the more test sessions will be started!
+We see here that the more tests you have for the same amount of nodes, the more test sessions will be started!
 
-On this diagram we can see how it works probably in more clear way:
+In the below diagram we can see how it works in a more visual way:
 
 .. image:: |filename|/images/pytest-xdist-in-action.png
     :width: 75%
@@ -128,16 +128,15 @@ On this diagram we can see how it works probably in more clear way:
 How to avoid multiple sessions on single node
 =============================================
 
-So we know that it's possible to get several, not one session during the test run on single node.
-How can we avoid that? Fortunately, even though we have multiple sessions per node, it's still same python process,
-so we can cache objects on module level. This way we ``invent`` new fixture ``scope`` - ``test run``.
-It means that certain fixture and it's finalizer will be called only once per whole test run on given test node.
-Here is the example of utility decorator that we did:
+So we know that it's possible to get not one but several sessions during the test run on a single node.
+How can we avoid that? Fortunately, even though we have multiple sessions per node, it's still the same python process,
+so we can cache objects on module level. In this way we *invent* a new fixture scope - ``test run``.
+For fixtures within this scope, the fixture and its finalizer will be called only once per whole test run on a given test node.
+Here is the implementation of the utility decorator that we use:
 
 .. code-block:: python
 
     import decorator
-
     import pytest
 
     marker = object()
@@ -157,12 +156,13 @@ Here is the example of utility decorator that we did:
         """Decorator which caches the return value of the function."""
         return decorator.decorator(_memoize, f)
 
-As you can see it's pretty straitforward memoization using function object as a cache storage based on
-`decorator <https://pypi.python.org/pypi/decorator/3.4.0>`_.
+As you can see it's a pretty straightforward application of the `memoization
+technique <http://en.wikipedia.org/wiki/Memoization>`_ using function object as
+a cache storage based on the `decorator <https://pypi.python.org/pypi/decorator/3.4.0>`_ package.
 The ``decorator`` package is needed to preserve the function
-prototype which is important for ``pytest fixture dependency injection mechanism``.
+prototype which is important for the ``pytest fixture dependency injection mechanism``.
 
-So now our application fixture looks like:
+So now our application fixture looks like this:
 
    .. code-block:: python
 
@@ -197,16 +197,17 @@ So now our application fixture looks like:
         request.addfinalizer(gw.exit)
         return gw
 
-Using ``memoize`` decorator we avoid calling of ``application`` function multiple times during the test run even if
-there will be multiple sessions involved on single test node. The result of first call of ``application`` function will
-be cached as an attribute on the application function, subsequent calls will just use the cached value.
+By using the ``memoize`` decorator we avoid calling the ``application`` function multiple times during the test run, even if
+there will be multiple sessions involved on a single test node.
+The result of the first call of the ``application`` function will be cached as an attribute on the application function.
+Subsequent calls will just return the cached value.
 
 
 Conclusion
 ==========
 
-We identified a few profits of using the approach discussed in the previous sections.
-This approach allowed us to considerably reduce the test run time.
+We identified a few advantages of using the approach discussed in the previous sections.
+This approach allowed us to considerably reduce our test execution time.
 It also improved the test stability, because the OS performs better as it doesn't need to spawn and kill lots
-of processes. We hope that you will find our approach useful, if you use ``pytest`` and ``pytest-xdist``
-and probably run into the same issues as we did.
+of processes. We hope that you will find our approach useful, especially if you use ``pytest`` and ``pytest-xdist``,
+as you will probably run into the same issues as we did.
