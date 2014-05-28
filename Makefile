@@ -72,7 +72,7 @@ github: publish
 	# Import the generated static files to the 'gh-pages' branch.
 
 ifeq ($(TRAVIS_PULL_REQUEST), false)
-	ghp-import -n $(OUTPUTDIR)
+	ghp-import $(OUTPUTDIR)
   	@git push -fq https://${GH_TOKEN}@github.com/$(TRAVIS_REPO_SLUG).git gh-pages > /dev/null
 endif
 
