@@ -1,5 +1,5 @@
 :title: pytest-xdist and session-scoped fixtures
-:date: 2014-05-28 9:06
+:date: 2014-05-28 12:36
 :summary: Test distribution related optimizations.
 :category: Testing
 :author: Anatoly Bubenkov
