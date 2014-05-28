@@ -5,7 +5,7 @@ language: python
 python:
 - 2.7
 script:
-- git config remote.origin.url | sed 's/git:\/\//https:\/\//g' 
+- git config remote.origin.url `git config remote.origin.url | sed 's/git:\/\//https:\/\//g'` 
 - make github
 notifications:
   email:
