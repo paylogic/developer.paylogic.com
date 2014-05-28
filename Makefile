@@ -73,7 +73,7 @@ ifeq ($(TRAVIS_PULL_REQUEST), false)
 	# Import the generated static files to the 'gh-pages' branch.
 	ghp-import $(OUTPUTDIR)
 	# Push to github
-  	@git push -fq https://${GH_TOKEN}@github.com/$(TRAVIS_REPO_SLUG).git gh-pages > /dev/null
+  	@git push -fq https://${GH_TOKEN}@github.com/$(TRAVIS_REPO_SLUG).git gh-pages > /dev/null 2>&1
 endif
 
 .env:
