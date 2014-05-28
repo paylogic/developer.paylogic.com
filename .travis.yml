@@ -5,7 +5,7 @@ language: python
 python:
 - 2.7
 script:
-- make github
+- make publish
 notifications:
   email:
     on_success: always
@@ -13,5 +13,3 @@ notifications:
 env:
   global:
   - secure: W7atJSXEk4hQST1gG712K4RhizzK1wjgkkBzCgKV7eYLbspPSnVJIBI3Yjc4CgkcMpzxY3Xm+xW8GBpq66Lu9+3po/jd13SADO/SM0pF82wh5+gl/NpzdrTkaAIs5I+W4/lUGz+/Inc9jWvtQSNy4JlpR0Z/yhjHndgvBczJd/U=
-after_success:
-- make publish
