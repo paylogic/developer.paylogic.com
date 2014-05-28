@@ -72,7 +72,7 @@ github: publish
 	# Import the generated static files to the 'gh-pages' branch.
 	ghp-import $(OUTPUTDIR)
 	# Publish the updated site to GitHub.
-	git push origin master gh-pages
+	git push https://$${GH_TOKEN}@github.com/paylogic/dev-portal.git master gh-pages
 
 .env:
 	virtualenv .env -p python2.7
