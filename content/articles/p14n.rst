@@ -461,6 +461,7 @@ An experiment in the early stages gave these results:
 .. image:: |filename|/images/p14n.png
     :width: 75%
     :align: center
+    :alt: parallelization performance comparison graph
 
 The blue line is the test distribution over cluster machines, one worker on each
 of them. The pink line represents the "ideal situation", where doubling the
