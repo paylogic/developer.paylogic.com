@@ -27,10 +27,9 @@ following steps should help you get started::
 Publishing changes
 ------------------
 
-If you 1) followed the steps above, 2) have push access to ``paylogic/dev-portal``
-and 3) have activated the virtual environment, then all you need to publish the
-latest changes to the live website is to run the command ``make github``. This
-will publish your changes using `GitHub Pages`_.
+This repo is set up the way travis will build the static content automatically on every push
+to ``master`` branch, and then will push the build result to ``gh-pages`` branch, which is then
+served by `GitHub Pages`_.
 
 
 License
