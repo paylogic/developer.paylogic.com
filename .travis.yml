@@ -8,7 +8,7 @@ script:
 - make github
 notifications:
   email:
-    on_success: always
+    on_success: change
     on_failure: always
 env:
   global:
