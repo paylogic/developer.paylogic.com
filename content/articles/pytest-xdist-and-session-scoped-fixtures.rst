@@ -164,7 +164,7 @@ prototype which is important for the ``pytest fixture dependency injection mecha
 
 So now our application fixture looks like this:
 
-   .. code-block:: python
+.. code-block:: python
 
     import execnet
 
