@@ -16,10 +16,10 @@ To run the developer portal locally (e.g. to easily preview changes) the
 following steps should help you get started::
 
   # Clone the git repository.
-  git clone git@github.com:paylogic/dev-portal.git
+  git clone git@github.com:paylogic/developer.paylogic.com.git
 
   # Run Pelican and view the result in a web browser.
-  cd dev-portal
+  cd developer.paylogic.com
   make devserver [DEVSERVER_PORT=<port>]
   gnome-open http://127.0.0.1:8000  # DEVSERVER_PORT is 8000 by default
 
@@ -27,10 +27,9 @@ following steps should help you get started::
 Publishing changes
 ------------------
 
-If you 1) followed the steps above, 2) have push access to ``paylogic/dev-portal``
-and 3) have activated the virtual environment, then all you need to publish the
-latest changes to the live website is to run the command ``make github``. This
-will publish your changes using `GitHub Pages`_.
+This repo is set up the way travis will build the static content automatically on every push
+to ``master`` branch, and then will push the build result to ``gh-pages`` branch, which is then
+served by `GitHub Pages`_.
 
 
 License
