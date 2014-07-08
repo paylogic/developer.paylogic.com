@@ -20,7 +20,7 @@ CATEGORY_FEED_ATOM = None
 TRANSLATION_FEED_ATOM = None
 
 # Blogroll
-LINKS =  ()
+LINKS = ()
 
 # Social widget
 SOCIAL = (('Our GitHub account', 'http://github.com/paylogic'),
@@ -38,8 +38,8 @@ DISQUS_SITENAME = 'paylogicdevportal'
 PLUGINS = ('plugins.pelican_extended_authors',)
 
 # Exclude author pages from other content.
-ARTICLE_EXCLUDES = ('pages', 'authors')
-PAGE_EXCLUDES = ('authors',)
+ARTICLE_EXCLUDES = ['pages', 'authors']
+PAGE_EXCLUDES = ['authors',]
 
 # Uncomment following line if you want document-relative URLs when developing
 RELATIVE_URLS = True
