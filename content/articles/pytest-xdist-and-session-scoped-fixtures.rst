@@ -126,6 +126,7 @@ In the below diagram we can see how it works in a more visual way:
 .. image:: |filename|/images/pytest-xdist-in-action.png
     :width: 75%
     :align: center
+    :alt: pytest-xdist in action
 
 
 How to avoid multiple sessions on single node

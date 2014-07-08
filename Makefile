@@ -51,9 +51,10 @@ serve: .env
 	cd $(OUTPUTDIR) && $(PY) -m pelican.server
 
 devserver: .env
+	-make stopserver
 	$(BASEDIR)/develop_server.sh restart $(DEVSERVER_PORT)
 
-stopserver: .env
+stopserver:
 	$(BASEDIR)/develop_server.sh stop $(DEVSERVER_PORT)
 	@echo 'Stopped Pelican and SimpleHTTPServer processes running in background.'
 
@@ -77,7 +78,9 @@ ifeq ($(TRAVIS_PULL_REQUEST), false)
 endif
 
 .env:
+	git submodule update
+	-rm -f .env/bin/python*
 	virtualenv .env -p python2.7
 	.env/bin/pip install -r requirements.txt
 
-.PHONY: html help clean regenerate serve devserver publish github
+.PHONY: html help clean regenerate serve devserver publish github .env

@@ -2,19 +2,13 @@
 :date: 2014-01-31 10:37
 :summary: How we distribute our tests to run them faster.
 :category: Testing
-:author: Anatoly Bubenkov
+:authors: Anatoly Bubenkov, Dmitrijs Milajevs
 :slug: articles/test-p14n
 :tags: testing, parallelization, pytest, pytest-xdist
 :email: bubenkoff@gmail.com
 
 .. contents:: Table of Contents
    :depth: 2
-
-.. note::
-    :class: uk-panel uk-panel-box
-
-    This article was originally started by `Dmitrijs Milajevs <http://www.linkedin.com/in/dmitrijsmilajevs>`_
-    when he was working for Paylogic. We made some fixes and amendments to actualize it.
 
 
 Introduction

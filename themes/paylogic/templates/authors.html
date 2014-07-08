@@ -10,6 +10,11 @@
             {%- for author, articles in authors|sort %}
                 <h2>
                     <a href="{{ SITEURL }}/{{ author.url }}">
+                        {% if authors_info.get_gravatar(author) %}
+                            <img src="{{ authors_info.get_gravatar(author) }}" alt="{{ author }}" />
+                        {% else %}
+                            <i class="uk-icon-user"></i>
+                        {% endif %}
                         {{ author }}
                         <span class="uk-text-muted pl-text-normal">({{ articles|count }} article{% if articles|count > 1 %}s{% endif %})</span>
                     </a>
