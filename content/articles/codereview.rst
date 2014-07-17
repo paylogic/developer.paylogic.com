@@ -76,14 +76,14 @@ Before we continue, we'll give you a quick glossary for the rest of this article
 
 With the customizations we've made to ``rietveld``, we can now:
 
-Use corporate single sign-on to authorize users in the codereview tool
+Use corporate single sign-on to authorize users in the code review tool
 ----------------------------------------------------------------------
 
 It's important to remove unnecessary additional user management responsibilities from our Operational IT team. And of
 course, from the user's perspective it's much less effort, as they can use a single corporate account to log in
 (we use `Google Apps for Business <http://www.google.com/enterprise/apps/business/>`_)
 
-Create codereview issues (patchsets), taking any required information from the corresponding Fogbugz case
+Create code review issues (patchsets), taking any required information from the corresponding Fogbugz case
 ---------------------------------------------------------------------------------------------------------
 
 This feature is implemented by creating a special endpoint on the code review tool which gets the case number as
