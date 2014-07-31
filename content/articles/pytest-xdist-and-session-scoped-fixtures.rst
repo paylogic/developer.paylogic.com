@@ -166,6 +166,8 @@ So now our application fixture looks like this:
 
 .. code-block:: python
 
+    improt atexit
+    
     import execnet
 
     @pytest.fixture(scope='session')
@@ -194,13 +196,15 @@ So now our application fixture looks like this:
             port=port,
             database_connection=database_connection,
         )
-        request.addfinalizer(gw.exit)
+        atexit.register(gw.exit)
         return gw
 
 By using the ``memoize`` decorator we avoid calling the ``application`` function multiple times during the test run, even if
 there will be multiple sessions involved on a single test node.
 The result of the first call of the ``application`` function will be cached as an attribute on the application function.
 Subsequent calls will just return the cached value.
+Note that instead of ``request.addfinalizer`` we use ``atexit.register``. This is because memoization has it's downside - we cannot use
+pytest's normal fixture finalizers simply because there's no scope higher than ``session`` at the moment.  
 
 
 Conclusion
