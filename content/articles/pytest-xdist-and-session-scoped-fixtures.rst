@@ -166,7 +166,7 @@ So now our application fixture looks like this:
 
 .. code-block:: python
 
-    improt atexit
+    import atexit
     
     import execnet
 
