@@ -1,6 +1,9 @@
+._*
 .*.sw?
 .sw?
 *~
+.nfs.*
+*.DS_Store
 output/
 *.pid
 *.pyc
