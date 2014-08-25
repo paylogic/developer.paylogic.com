@@ -6,10 +6,11 @@
 :slug: articles/pip-accel
 :tags: python, deployment, virtual environments, automation, pip, open source, packaging
 
+.. contents:: Table of Contents
+   :depth: 2
+
 Recently we published pip-accel_ to GitHub_ and PyPI_, in this article we'll
 tell you why and how we created this project.
-
-.. contents::
 
 Introduction
 ############

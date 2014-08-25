@@ -3,72 +3,49 @@
 {% block title %}Welcome{% endblock %}
 
 {% block content %}
-<section id="content">
-
-{% block content_title %}
-<h1>Welcome</h1>
-{% endblock %}
-
-    <div class="section" id="introducing-the-paylogic-developer-portal">
-        <h2>Introducing the Paylogic developer portal</h2>
-        <p>Welcome to the Paylogic developer portal! This website is a platform for
-            communication between the engineers &amp; devops at Paylogic and the world (you!).
-            We use this website to share:</p>
-        <ul class="simple">
-            <li>Articles about technical topics involving programming (testing, design,
-                architecture) and system administration (high availability, automation,
-                performance testing) and community events like <a class="reference external" href="http://www.pygrunn.org/">PyGrunn</a></li>
-            <li>Open source projects we've published (see also our <a class="reference external" href="https://github.com/paylogic">GitHub</a> account)</li>
-            <li>How to integrate with Paylogic system.</li>
-        </ul>
-        <p>In the future this website will also host the documentation of the Paylogic
-            ticketing API which is currently under development.</p>
+<div class="uk-cover-background uk-position-relative" style="height: 500px; background-image: url({{ SITEURL }}/theme/img/office.jpg);">
+    <img class="uk-invisible" src="{{ SITEURL }}/theme/img/office.jpg" width="500" />
+    <div class="uk-position-cover uk-flex uk-flex-center uk-flex-middle">
+        <div class="uk-container uk-container-center">Something here</div>
     </div>
+</div>
 
-    <hr />
-    <div class="section" id="latest-article">
-        <h1>Latest article</h1>
-        {% with article=articles_page.object_list[0] %}
-            <article class="hentry">
-                <header> 
-                    <h2 class="entry-title">
-                        <a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">
-                            {{ article.title }}
-                        </a>
-                    </h2> 
-                </header>
-
-                <footer class="post-info">
-                    <abbr class="published" title="{{ article.date.isoformat() }}"> {{ article.locale_date }} </abbr>
-                    {% if article.author %}
-                    <address class="vcard author">By 
-                        <a class="url fn" href="{{ SITEURL }}/{{ article.author.url }}">{{ article.author }}</a>
-                    </address>
-                    {% endif %}
-                </footer><!-- /.post-info -->
-
-                <div class="entry-content"> {{ article.content }} </div><!-- /.entry-content -->
-            </article>
-        {% endwith %}
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            <p>Welcome to the Paylogic developers portal! This website is a platform for
+                communication between the engineers &amp; devops at Paylogic and the world (you!).
+                We use this website to share:</p>
+            <ul class="uk-list uk-list-space">
+                <li>Articles about technical topics involving programming (testing, design,
+                    architecture) and system administration (high availability, automation,
+                    performance testing) and community events like <a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a>.</li>
+                <li>Open source projects we've published (see also our <a href="https://github.com/paylogic" target="_blank">GitHub</a> account).</li>
+                <li>How to integrate with Paylogic system.</li>
+            </ul>
+            <p>In the future this website will also host the documentation of the Paylogic
+                ticketing API which is currently under development.</p>
+        </div>
     </div>
+</section>
 
-    <hr />
-    <div class="section" id="recent-articles">
-        <h1>More articles</h1>
-        <ul class="simple">
-        {% for article in articles_page.object_list %}
-            {% if loop.index > 1 and loop.index < 10 %}
-            <li>
-                <a class="reference" href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a>
-            </li>
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            <h1>More articles</h1>
+            <ul class="uk-list">
+            {% for article in articles_page.object_list %}
+                {% if loop.index > 1 and loop.index < 10 %}
+                <li>
+                    <a class="reference" href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+            {% if articles_page.object_list|length >= 10 %}
+            <a href="{{ SITEURL }}/archives.html" title="Archives">Complete article listing</a>
             {% endif %}
-        {% endfor %}
-        </ul><!-- /#posts-list -->
-
-        {% if articles_page.object_list|length >= 10 %}
-        <a href="{{ SITEURL }}/archives.html" title="Archives">Complete article listing</a>
-        {% endif %}
+        </div>
     </div>
-</section><!-- /#content -->
-
+</section>
 {% endblock content %}

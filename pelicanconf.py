@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import os
 
 AUTHOR = u'Paylogic Crew'
-SITENAME = u'Paylogic developer portal'
+SITENAME = u'Paylogic Developers'
 SITEURL = 'http://localhost:8000'
 
 TIMEZONE = 'Europe/Amsterdam'
@@ -20,7 +20,7 @@ CATEGORY_FEED_ATOM = None
 TRANSLATION_FEED_ATOM = None
 
 # Blogroll
-LINKS =  ()
+LINKS = ()
 
 # Social widget
 SOCIAL = (('Our GitHub account', 'http://github.com/paylogic'),
@@ -35,21 +35,21 @@ THEME = os.path.join(os.path.dirname(__file__), 'themes', 'paylogic')
 
 DISQUS_SITENAME = 'paylogicdevportal'
 
-PLUGINS = ('plugins.pelican_extended_authors',)
+PLUGINS = ('plugins.pelican_extended_authors', 'plugins.extract_toc')
 
 # Exclude author pages from other content.
-ARTICLE_EXCLUDES = ('pages', 'authors')
-PAGE_EXCLUDES = ('authors',)
+ARTICLE_EXCLUDES = ['pages', 'authors']
+PAGE_EXCLUDES = ['authors']
 
 # Uncomment following line if you want document-relative URLs when developing
 RELATIVE_URLS = True
 
 DISPLAY_PAGES_ON_MENU = False
 MENUITEMS = (
-    ("Welcome", "/"),
+    # ("Welcome", "/"),
     ("Integration", "/pages/integration.html"),
     ("Authors", "/authors.html"),
-    ("About", "/pages/about.html"),
+    # ("About", "/pages/about.html"),
 )
 
 JINJA_EXTENSIONS = [

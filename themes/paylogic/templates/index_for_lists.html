@@ -1,22 +1,31 @@
 {% extends "base.html" %}
-{% block content %}
-<section id="content">
-{% block content_title %}
-<h2>All articles</h2>
-{% endblock %}
 
-<ol id="post-list">
-{%- for article in articles_page.object_list %}
-        <li><article class="hentry">
-                <header> <a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}"><h3 class="entry-title">{{ article.title }}</h3></a> </header>
-                <footer class="post-info">
-                    <abbr class="published" title="{{ article.date.isoformat() }}"> {{ article.locale_date }} </abbr>
-                    {% if article.author %}<address class="vcard author">By <a class="url fn" href="{{ SITEURL }}/{{ article.author.url }}">{{ article.author }}</a></address>{% endif %}
-                </footer><!-- /.post-info -->
-                <div class="entry-content"> {{ article.summary }} </div><!-- /.entry-content -->
-        </article></li>
-{% endfor %}
-</ol><!-- /#posts-list -->
-{% include 'pagination.html' %}
-</section><!-- /#content -->
+{% block content %}
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            {% block content_title %}
+            <h1 class="uk-panel-title">All articles</h1>
+            {% endblock %}
+
+            <ul class="uk-list uk-list-space">
+                {% for article in articles_page.object_list %}
+                <li>
+                    <h3 class="uk-margin-bottom-remove">
+                        <a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a>
+                    </h3>
+                    <div class="uk-text-muted uk-text-small uk-margin-small-bottom">
+                        Published on {{ article.locale_date }}
+                    </div>
+                    <div class="pl-article-intro">{{ article.summary }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="uk-text-center pl-pagination">
+                {% include 'pagination.html' %}
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock content %}

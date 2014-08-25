@@ -6,6 +6,8 @@
 :slug: articles/test-p14n
 :tags: testing, parallelization, pytest, pytest-xdist
 
+.. contents:: Table of Contents
+   :depth: 2
 
 .. note::
     :class: well rounded highlight

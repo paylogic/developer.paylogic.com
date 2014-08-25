@@ -6,7 +6,8 @@
 :slug: articles/settei
 :tags: open source, python, settings, entry points, setuptools
 
-.. contents::
+.. contents:: Table of Contents
+   :depth: 2
 
 Introduction
 ############

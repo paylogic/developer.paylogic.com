@@ -6,6 +6,8 @@
 :slug: articles/pytest-xdist-and-session-scoped-fixtures
 :tags: testing, pytest, pytest-xdist, fixtures, session
 
+.. contents:: Table of Contents
+   :depth: 2
 
 Introduction
 ============

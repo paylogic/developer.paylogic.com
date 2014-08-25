@@ -3,32 +3,35 @@
 {% block title %}Articles by {{ author }}{% endblock %}
 
 {% block content %}
-<section id="content">
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            <h1 class="uk-panel-title">{{ author }}</h1>
 
-    <h1>{{ author }}</h1>
-    {{ authors_info.get(author) }}
-    <hr />
-    <h2>Articles</h2>
+            {{ authors_info.get(author) }}
 
-    <ol id="post-list">
-        {% for article in articles_page.object_list %}
-        <li>
-            <article class="hentry">
-                <header> 
-                    <a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">
-                        <h3 class="entry-title">{{ article.title }}</h3>
-                    </a>
-                </header>
-                <footer class="post-info">
-                    <abbr class="published" title="{{ article.date.isoformat() }}"> {{ article.locale_date }}</abbr>
-                </footer>
-                <div class="entry-content"> {{ article.summary }}</div>
-            </article>
-        </li>
-        {% endfor %}
-    </ol>
+            <hr class="uk-article-divider">
 
-    {% include 'pagination.html' %}
+            <h2><i class="uk-icon-pencil uk-float-left uk-margin-right pl-icon-rounded"></i>Articles</h2>
+
+            <ul class="uk-list uk-list-space">
+                {% for article in articles_page.object_list %}
+                <li>
+                    <h3 class="uk-margin-bottom-remove">
+                        <a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a>
+                    </h3>
+                    <div class="uk-text-muted uk-text-small uk-margin-small-bottom">
+                        Published on {{ article.locale_date }} - Posted in <a href="{{ SITEURL }}/{{ article.category.url }}">{{ article.category }}</a>
+                    </div>
+                    <div class="pl-article-intro">{{ article.summary }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="uk-text-center pl-pagination">
+                {% include 'pagination.html' %}
+            </div>
+        </div>
+    </div>
 </section>
-
 {% endblock %}

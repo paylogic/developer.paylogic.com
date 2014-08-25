@@ -11,3 +11,6 @@ output/
 /env
 .Python
 .ropeproject
+*.sublime-project
+*.sublime-workspace
+cache/
