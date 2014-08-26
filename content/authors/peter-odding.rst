@@ -1,4 +1,5 @@
 :slug: peter-odding
+:avatar: peter_odding.jpg
 
 Peter is the team lead of the operational IT team. His day to day job is a
 combination of devops, team management, contact with other departments in

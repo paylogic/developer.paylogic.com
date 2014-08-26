@@ -2,10 +2,13 @@
 from __future__ import unicode_literals
 
 import logging
+import os
 
 from pelican.contents import Content, is_valid_content
 from pelican.generators import Generator
 from pelican import signals
+
+from pelicanconf import SITEURL
 
 
 logger = logging.getLogger(__name__)
@@ -31,6 +34,19 @@ class AuthorBiographyManager(object):
     def get(self, slug):
         content = self.contents.get(slug, "")
         return getattr(content, "content", "")
+
+    def getAvatar(self, slug, default):
+        content = self.contents.get(slug, "")
+
+        try:
+            avatarExists = os.path.isfile("content/images/avatars/{avatar}".format(
+                avatar=getattr(content, "avatar", "")))
+            avatar = "<img src='{site_url}/images/{avatar}' />".format(
+                site_url=SITEURL, avatar=getattr(content, "avatar", ""))
+        except IOError as e:
+            print "I/O error({0}): {1}".format(e.errno, e.strerror)
+
+        return avatar if avatarExists else default
 
 
 class AuthorBiographyGenerator(Generator):
@@ -67,6 +83,7 @@ class AuthorBiographyGenerator(Generator):
 def get_generators(generators):
     """Helper function for Pelican to get generator."""
     return AuthorBiographyGenerator
+
 
 def register():
     """Starting point for Pelican to instantiate plugin."""

@@ -12,6 +12,11 @@
     font-weight: 300;
 }
 
+.pl-text-normal {
+    font-size: 14px;
+    line-height: 20px;
+}
+
 .pl-footer {
     border-top: 1px solid #eeeeee;
 }
@@ -42,6 +47,18 @@
     margin-bottom: 0;
 }
 
+.pl-article-content div + div {
+    margin-top: 15px;
+}
+
+.pl-table-article-meta {
+    width: auto;
+}
+
+.pl-table-article-meta td {
+    padding: 0;
+}
+
 .pl-icon-rounded {
     background: #eeeeee;
     text-align: center;
@@ -50,6 +67,13 @@
     width: 30px;
     height: 30px;
     line-height: 30px;
+}
+
+.pl-slogan h1 {
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+    font-size: 46px;
+    line-height: 52px;
 }
 
 .align-center {
@@ -65,14 +89,16 @@ ul.simple, ul.simple li ul {
 
 ul.simple > li, ul.simple li ul li {
     padding-left: 15px;
+    position: relative;
 }
 
 ul.simple > li:before, ul.simple li ul li:before {
     content: "\f0da";
     font-family: FontAwesome;
-    margin-left: -10px;
-    margin-right: 6px;
-    color: #e0e0e0;
+    color: #9e9e9e;
+    position: absolute;
+    top: 2px;
+    left: 3px;
 }
 
 .topic-title {
@@ -122,6 +148,10 @@ table.docutils thead th {
     vertical-align: bottom;
 }
 
+tt {
+    font-family: 'Open Sans', sans-serif;
+}
+
 /* ========================================================================
    Component: Article
 ========================================================================== */
@@ -134,6 +164,26 @@ table.docutils thead th {
 
 .uk-article-meta {
     color: #9e9e9e;
+}
+
+/* ========================================================================
+   Component: Avatar
+========================================================================== */
+
+.uk-thumbnail {
+    background: #eeeeee;
+    padding: 2px;
+    border-color: #e0e0e0;
+    text-align: center;
+    color: #e0e0e0;
+}
+
+.uk-thumbnail > img {
+    width: 54px;
+}
+
+.uk-thumbnail > i {
+    margin: 3px 7px;
 }
 
 /* ========================================================================
@@ -151,12 +201,21 @@ body {
 }
 
 a, .uk-link {
-    color: #e65100;
+    color: #ff7f00;
+}
+
+h2 a:hover span.pl-text-normal,
+h2 a.pl-text-normal:hover {
+    color: #212121 !important;
 }
 
 a:hover, .uk-link:hover {
-    color: #ff7f00;
+    color: #e65100;
     text-decoration: none;
+}
+
+a.uk-panel:hover {
+    color: #ff7f00;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -213,6 +272,14 @@ ul li > *:last-child, ol li > *:last-child {
     margin-top: 20px;
 }
 
+.uk-list-line > li:nth-child(n+2) {
+    border-top-color: #e0e0e0;
+}
+
+.uk-list-line.uk-list-space > li:nth-child(n+2) {
+    padding-top: 20px;
+}
+
 /* ========================================================================
    Component: Nav
 ========================================================================== */
@@ -224,12 +291,12 @@ ul li > *:last-child, ol li > *:last-child {
 
 .uk-nav-navbar > li > a:hover,
 .uk-nav-navbar > li > a:focus {
-    background: #e65100;
+    background: #ff7f00;
     color: #FFFFFF;
 }
 
 .uk-nav-navbar > li.uk-active > a {
-    background: #e65100;
+    background: #ff7f00;
     color: #FFFFFF;
 }
 
@@ -244,7 +311,6 @@ ul li > *:last-child, ol li > *:last-child {
 }
 
 .uk-navbar {
-    background: #eeeeee;
     color: #212121;
     border-bottom: 1px solid #e0e0e0;
 }
@@ -267,7 +333,7 @@ ul li > *:last-child, ol li > *:last-child {
 
 .uk-navbar-toggle:hover,
 .uk-navbar-toggle:focus {
-    color: #e65100;
+    color: #ff7f00;
 }
 
 .uk-navbar-content > a,
@@ -340,6 +406,10 @@ html .uk-nav.uk-nav-offcanvas > li.uk-active > a {
     font-weight: 800;
 }
 
+.uk-panel-box {
+    background: #eeeeee;
+}
+
 /* ========================================================================
    Component: Subnav
 ========================================================================== */
@@ -354,11 +424,11 @@ html .uk-nav.uk-nav-offcanvas > li.uk-active > a {
 }
 
 .uk-subnav > li > a {
-    color: #e65100;
+    color: #ff7f00;
 }
 
 .uk-subnav > li > a:hover {
-    color: #ff7f00;
+    color: #e65100;
 }
 
 /* ========================================================================
@@ -394,17 +464,19 @@ html .uk-nav.uk-nav-offcanvas > li.uk-active > a {
     overflow: auto;
 }
 
-#table-of-contents ul {
-    font-size: 12px;
-    line-height: 18px;
+#table-of-contents ul.simple > li:before,
+#table-of-contents ul.simple li ul li:before {
+    top: 0;
+    left: 4px;
 }
 
 #table-of-contents a {
     color: #212121;
+    display: inline-block;
 }
 
 #table-of-contents a:hover {
-    color: #e65100;
+    color: #ff7f00;
 }
 
 #table-of-contents a.uk-active {

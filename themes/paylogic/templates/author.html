@@ -6,14 +6,15 @@
 <section class="pl-section">
     <div class="uk-container uk-container-center">
         <div class="uk-panel">
-            <h1 class="uk-panel-title">{{ author }}</h1>
-
+            <h1 class="uk-panel-title">
+                <div class="uk-thumbnail">
+                    {{ authors_info.getAvatar(author, '<i class="uk-icon-user"></i>') }}
+                </div>
+                {{ author }}
+            </h1>
             {{ authors_info.get(author) }}
-
             <hr class="uk-article-divider">
-
-            <h2><i class="uk-icon-pencil uk-float-left uk-margin-right pl-icon-rounded"></i>Articles</h2>
-
+            <h2><i class="uk-icon-pencil uk-float-left uk-margin-small-right pl-icon-rounded"></i>Articles</h2>
             <ul class="uk-list uk-list-space">
                 {% for article in articles_page.object_list %}
                 <li>
@@ -27,7 +28,6 @@
                 </li>
                 {% endfor %}
             </ul>
-
             <div class="uk-text-center pl-pagination">
                 {% include 'pagination.html' %}
             </div>

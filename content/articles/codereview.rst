@@ -6,13 +6,15 @@
 :slug: articles/codereview
 :tags: code review, gatekeeper, fogbugz, review, rietveld, open source
 
+.. contents:: Table of Contents
+   :depth: 2
 
 Introduction
 ============
 
-As open sourcing software is a strategic decision of Paylogic we decided not to make an exception for our 
-development tools, in the hope that they are of use to the community. The code review tool is probably our most 
-important development tool, so we decided to start with that. The Github repository can be found 
+As open sourcing software is a strategic decision of Paylogic we decided not to make an exception for our
+development tools, in the hope that they are of use to the community. The code review tool is probably our most
+important development tool, so we decided to start with that. The Github repository can be found
 `here <https://github.com/paylogic/codereview>`_.
 
 `Code review <http://en.wikipedia.org/wiki/Code_review>`_ is one of the main pillars of the Paylogic development
@@ -43,7 +45,7 @@ Customizations
 ==============
 
 So we decided to use rietveld. But we had to customize it significantly as our development process uses
-`Fogbugz <https://www.fogcreek.com/fogbugz/>`_ as a case management tool. This means that every change to the 
+`Fogbugz <https://www.fogcreek.com/fogbugz/>`_ as a case management tool. This means that every change to the
 Paylogic codebase has a reference to a Fogbugz case, and the development itself is case-based.
 
 The whole picture of our continuous integration will be described in later article(s), however there was a
@@ -127,7 +129,7 @@ And in Fogbugz:
     :align: center
     :alt: approved revision and ci project fields set in the Fogbugz
 
-Allow ``gatekeepers`` to set (and select from the dropdown) the ``target branch`` for a given ``CI project``
+Allow gatekeepers to set (and select from the dropdown) the target branch for a given CI project
 ------------------------------------------------------------------------------------------------------------
 
 Both ``target branch`` and ``CI project`` are custom fields of a Fogbugz case.
@@ -144,7 +146,7 @@ And in Fogbugz:
     :align: center
     :alt: target branch field in the Fogbugz
 
-Support creation of an issue (patchset), using ``bzr``, ``git`` and ``mercurial`` repositories
+Support creation of an issue (patchset), using bzr, git and mercurial repositories
 ----------------------------------------------------------------------------------------------
 
 All combinations are accepted for ``original`` and ``feature`` branch fields in Fogbugz.

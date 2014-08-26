@@ -8,25 +8,32 @@
         {% if article.toc %}
         <div class="uk-grid" data-uk-grid-margin>
             <div class="uk-width-medium-1-4 uk-hidden-small">
-                <div class="toc" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
+                <div class="toc uk-text-small" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
                 {{ article.toc }}
                 </div>
             </div>
             <div class="uk-width-medium-3-4">
                 <article class="uk-article">
+                    <table class="uk-table uk-table-middle pl-table-article-meta">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="uk-thumbnail uk-margin-right">
+                                        {{ authors_info.getAvatar(article.author, '<i class="uk-icon-user uk-icon-large"></i>') }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="uk-article-meta">
+                                        Written by <a class="url fn" href="{{ SITEURL }}/{{ article.author.url }}">{{ article.author }}</a>
+                                        on {{ article.locale_date }}<br />Posted in <a href="{{ SITEURL }}/{{ article.category.url }}">{{ article.category }}</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <h1 class="uk-article-title">{{ article.title }}</h1>
-
-                    <div class="uk-article-meta">
-                        {% if article.author %}
-                            Written by <a class="url fn" href="{{ SITEURL }}/{{ article.author.url }}">{{ article.author }}</a>
-                        {% endif %}
-                        on {{ article.locale_date }} - Posted in <a href="{{ SITEURL }}/{{ article.category.url }}">{{ article.category }}</a>
-                    </div>
-
                     <hr class="uk-article-divider">
-
                     <div class="pl-article-content">{{ article.content }}</div>
-
                     {% if DISQUS_SITENAME %}
                         <hr class="uk-article-divider">
                         <div class="comments">
@@ -47,19 +54,15 @@
         </div>
         {% else %}
         <article class="uk-article">
-            <h1 class="uk-article-title">{{ article.title }}</h1>
-
             <div class="uk-article-meta">
                 {% if article.author %}
                     Written by <a class="url fn" href="{{ SITEURL }}/{{ article.author.url }}">{{ article.author }}</a>
                 {% endif %}
                 on {{ article.locale_date }} - Posted in <a href="{{ SITEURL }}/{{ article.category.url }}">{{ article.category }}</a>
             </div>
-
+            <h1 class="uk-article-title">{{ article.title }}</h1>
             <hr class="uk-article-divider">
-
             <div class="pl-article-content">{{ article.content }}</div>
-
             {% if DISQUS_SITENAME %}
                 <hr class="uk-article-divider">
                 <div class="comments">

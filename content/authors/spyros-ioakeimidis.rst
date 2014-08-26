@@ -1,4 +1,5 @@
 :slug: spyros-ioakeimidis
+:avatar: spyros_ioakeimidis.png
 
 Spyros is working as a software engineer in Paylogic. He is a firm believer of
 the idea that software engineering is not just a craftsmanship, which has something

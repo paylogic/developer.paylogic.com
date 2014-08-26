@@ -38,18 +38,16 @@ DISQUS_SITENAME = 'paylogicdevportal'
 PLUGINS = ('plugins.pelican_extended_authors', 'plugins.extract_toc')
 
 # Exclude author pages from other content.
-ARTICLE_EXCLUDES = ['pages', 'authors']
-PAGE_EXCLUDES = ['authors',]
+ARTICLE_EXCLUDES = ['pages', 'authors', ]
+PAGE_EXCLUDES = ['authors', ]
 
 # Uncomment following line if you want document-relative URLs when developing
 RELATIVE_URLS = True
 
 DISPLAY_PAGES_ON_MENU = False
 MENUITEMS = (
-    # ("Welcome", "/"),
     ("Integration", "/pages/integration.html"),
     ("Authors", "/authors.html"),
-    # ("About", "/pages/about.html"),
 )
 
 JINJA_EXTENSIONS = [

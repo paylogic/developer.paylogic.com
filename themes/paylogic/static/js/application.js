@@ -8,7 +8,7 @@
         var element = $(this);
         stickyHeight = sticky.outerHeight();
         element.uk('smoothScroll', {
-            'offset': stickyHeight
+            'offset': stickyHeight + 10
         });
     });
 
