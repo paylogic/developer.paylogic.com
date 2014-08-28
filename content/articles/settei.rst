@@ -1,6 +1,6 @@
 :title: Settei
 :date: 2014-04-29 12:03
-:summary: Settings configuration system based on entry points of setuptools
+:summary: Settings configuration system based on entry points of setuptools.
 :category: Open source
 :author: Spyros Ioakeimidis
 :slug: articles/settei

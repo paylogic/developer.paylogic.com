@@ -1,34 +1,38 @@
 :title: Traduki
-:date: 2014-06-17 10:00
-:summary: Internationalisation helper classes for SQLAlchemy-based projects
+:date: 2014-08-27 10:00
+:summary: Internationalisation made easier with the help of SQLAlchemy.
 :category: Open Source
 :author: Spyros Ioakeimidis
 :slug: articles/traduki
-:tags: internationalisation, sqlalchemy, python
+:tags: internationalisation, sqlalchemy, python, database
 
 .. contents::
 
 Introduction
 ============
 
-:code:`traduki` is an `open source <https://github.com/paylogic/traduki>`_
+``traduki`` is an `open source <https://github.com/paylogic/traduki>`_
 package, which consists of internationalisation helper classes targeted for
-SQLAlchemy-based python projects. The advantage using :code:`traduki` is that
-it removes the burden of defining translation tables, and it provides
-a consistent, intuitive, and easy way to introduce internationalization into
-your application. The only requirement is the use of
-`SQLAlchemy <http://www.sqlalchemy.org/>`_.
+SQLAlchemy-based python projects. The advantage of using ``traduki`` is that
+it removes the burden of defining translation tables, and provides
+a consistent, intuitive and easy way to introduce internationalization into
+your application. Minimalistic design allowed us to use only
+`SQLAlchemy <http://www.sqlalchemy.org/>`_ as a python dependency.
 
-Motivation
-==========
+Why we were in need of something different
+==========================================
 
 As Paylogic operates in several countries, internationalization is a strong
 requirement. However, we used to do internationalization differently than how
 we do it these days. Our former approach was to store translations in
 tables. We would then join the tables in order to obtain the translations. This
 allowed us to search on the internationalized fields, but it required a lot of
-joins, even in cases where searching was not a requirement. When we would not
-eagerly join, and we would access an internationalized property, we would cause
+joins, even in cases where searching was not a requirement. We could either
+`eager load <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html#eager-loading>`_,
+load relationships at the same time as the parent, or
+`lazy load <http://docs.sqlalchemy.org/en/rel_0_9/glossary.html#term-lazy-loading>`_,
+load relationships the first time they are accessed. When we would lazy load,
+and we would access an internationalized property, we would cause
 two queries per property.
 
 One of these queries would be to the translations table, and the other one
@@ -58,14 +62,31 @@ where the :code:`text_id` references the :code:`title_id` and
 1     10          11
 ====  ==========  =============
 
-This approach was inefficient because for :code:`n` properties and :code:`m`
-languages, we would need to do :code:`n*m` joins. The difficult part comes from
-the fact that it was cumbersome to write those queries. It was already
-cumbersome in raw sql, more so using SQLAlchemy. The end-result was that we did
-not do this, and we were doing more one-row queries.
+This approach was inefficient because for ``n`` properties and ``m``
+languages, we would need to do ``n*m`` joins. The difficult part comes from
+the fact that it was cumbersome to write those queries. In the case of
+the previous example,
+
+.. code-block:: python
+
+    Translations.query().
+        .join(Events, Translations)
+        .filter(Translations.language_code.in_('en', 'nl'))
+        .all()
+
+The end-result was that we did not do this, and we were doing more one-row queries.
+
+.. code-block:: python
+
+    Translations.query().
+
+It should be mentioned that normally we don't need objects to have dynamic list
+of available languages. Maybe it is a strict requirement in other use cases,
+but in our use case it is enough to just use ``static`` set of available languages,
+which change infrequently.
 
 Another issue with this approach was that the number of results returned from
-queries was not deterministic. Most of the times you want to use eager loading.
+queries was not deterministic. Most of the times you want to eager load relationships.
 However, in this case you can never apply a limit or offset because you cannot
 trust the number of rows returned.
 
@@ -75,12 +96,17 @@ Another requirement was that we wanted language chains. What this means is that
 that if your language is Dutch, but only the English version of the text is
 available, we should display by default the English version of it.
 
-Design
-======
+Advantages of the new design
+============================
 
-Taking into consideration our motivation and requirements, we changed our
-approach to solve the problem of internationalization. The following example
-illustrates our current approach using :code:`traduki`. Lets assume that we
+We did a deep research on how to make an efficient design. We tried lots of
+ways to minimize the timing of the queries for large datasets. Also we've looked
+around for existing solutions, such as `SQLAlchemy-i18n <https://github.com/kvesteri/sqlalchemy-i18n>`_.
+It did not work for us, ...
+
+In the end, taking into consideration our motivation and requirements, we came up
+with our solution on how to solve the problem of i18n. The following
+example illustrates our current approach using ``traduki``. Lets assume that we
 have a table :code:`Events`, and we want the ``title`` and ``subtitle`` to be
 translated into English and Dutch. The :code:`Events` table contains the ids of
 the fields that we wish to have available in those two languages. Lets also
@@ -119,10 +145,16 @@ translated texts by joining the :code:`Events` and :code:`Translations` tables.
 
 The advantage of this approach is that with a simple join between these tables
 on the id of the text (for example the ``title_id``), we get one row with all
-the translations. This reduces the number of joins from :code:`n*m` to
-:code:`n`, making them also more intuitive since all translated items are
+the translations.
+
+.. code:: python
+
+    Translations.query().join(Events, Events.title_id==Translations.id)
+
+As it can be seen from the query, this reduces the number of joins from ``n*m`` to
+``n``, making them also more intuitive since all translated items are
 foreign keys to the :code:`Translations` table, joining once per foreign key.
-Additionally, :code:`traduki` returns a user-friendly format of this result as
+Additionally, ``traduki`` returns a user-friendly format of this result as
 a dictionary of language codes and translations. For example:
 
 .. code-block:: python
@@ -130,7 +162,7 @@ a dictionary of language codes and translations. For example:
     {'en': 'English title 1', 'nl': 'Dutch title 1'}
 
 In case of the second event, where the Dutch translation is not available,
-:code:`traduki` fall-backs to the language that we have defined, in this
+``traduki`` falls-back to the language that we have defined, in this
 case English. So it will return:
 
 .. code-block:: python
@@ -142,19 +174,18 @@ to alter the translations table to include it. This operation can be expensive.
 However, we found out that the gains in performance are higher, as we search
 and sort much more often than we add new languages.
 
-Usage
-=====
+How it works
+============
 
-:code:`traduki` is very simple to use. The following example is a concise and
-stand-alone application that illustrates the use of :code:`traduki`. It is
+``traduki`` is very simple to use. The following example is a concise and
+stand-alone application that illustrates the use of ``traduki``. It is
 split in parts, to better explain how each part works.
 
 Example
 -------
 
-The first part is quite
-straightforward. We import the appropriate :code:`sqlalchemy` objects, create
-the engine (in this case the database will be in memory), and define the
+The first part is quite straightforward. We do standard sqlalchemy imports,
+create the engine (in this case the database will be in memory), and define the
 declarative base for our models.
 
 .. code-block:: python
@@ -169,13 +200,13 @@ declarative base for our models.
 
     Base = declarative_base()
 
-The next part is where :code:`traduki` is used. We define two callbacks, one
+The next part is where ``traduki`` is used. We define two callbacks, one
 for getting the current language and one for getting the language chain. Here
-we just return hard coded data for simplicity. We could read these data from a
-current :code:`request` object, for example something like
-:code:`request.locale` to get the current language. We use these callbacks when
-we deal with the initialization of the :code:`i18n_attributes`. :code:`traduki`
-at the moment of the initialization creates the translations table and sets up
+we just return hard coded data for simplicity. We could read this data from a
+current ``request`` object, for example using `Flask <http://flask.pocoo.org/>`_
+request, something like :code:`flask.request.locale` to get the current language.
+We use these callbacks when we deal with the initialization of the :code:`i18n_attributes`.
+``traduki`` at the moment of the initialization creates the translations table and sets up
 all the appropriate relationships.
 
 .. code-block:: python
@@ -193,7 +224,7 @@ all the appropriate relationships.
         Base, ['en', 'nl'], get_current_language, get_language_chain)
 
 We then define our model and we use the column and relation provided by
-:code:`traduki`. The rest is just to have a complete and running example.
+``traduki``. The rest is just to have a complete and running example.
 
 .. code-block:: python
 
@@ -248,12 +279,9 @@ instances that have only English translation for their :code:`title`.
         .filter(i18n_attributes.Translation.en != None)
     )
 
-Conclusion
-==========
+Final words
+===========
 
-:code:`traduki` provides an intuitive and consistent way to solve the problem
-of internationalisation in SQLAlchemy-based python projects. It is very easy to
-set up and use, and it removes the burden from developers to maintain
-structures of language codes and translations. It helped us improve the
-performance when searching/sorting and accessing internationalized fields on
-various parts of our system.
+Before ``traduki``, there was (almost) nothing else done in i18n in open source. We
+provided this great and efficient solution. We are waiting for your feedback
+and recommendations. Check `traduki <https://github.com/paylogic/traduki>`_ in our github profile.
