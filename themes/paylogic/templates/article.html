@@ -5,7 +5,6 @@
 {% block content %}
 <section class="pl-section">
     <div class="uk-container uk-container-center">
-        {% if article.toc %}
         <div class="uk-grid" data-uk-grid-margin>
             <div class="uk-width-medium-1-4 uk-hidden-small">
                 <div class="toc uk-text-small" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
@@ -56,34 +55,6 @@
                 </article>
             </div>
         </div>
-        {% else %}
-        <article class="uk-article">
-            <div class="uk-article-meta">
-                {% if article.author %}
-                    Written by <a class="url fn" href="{{ SITEURL }}/{{ article.author.url }}">{{ article.author }}</a>
-                {% endif %}
-                on {{ article.locale_date }}<br />Posted in <a href="{{ SITEURL }}/{{ article.category.url }}">{{ article.category }}</a>
-            </div>
-            <h1 class="uk-article-title">{{ article.title }}</h1>
-            <hr class="uk-article-divider">
-            <div class="pl-article-content">{{ article.content }}</div>
-            {% if DISQUS_SITENAME %}
-                <hr class="uk-article-divider">
-                <div class="comments">
-                    <h2>Comments</h2>
-                    <div id="disqus_thread"></div>
-                    <script type="text/javascript">
-                        var disqus_identifier = "{{ article.url }}";
-                        (function() {
-                            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                            dsq.src = 'http://{{ DISQUS_SITENAME }}.disqus.com/embed.js';
-                            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-                        })();
-                    </script>
-                </div>
-            {% endif %}
-        </article>
-        {% endif %}
     </div>
 </section>
 {% endblock %}
