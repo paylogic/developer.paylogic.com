@@ -5,6 +5,7 @@
 :author: Spyros Ioakeimidis
 :slug: articles/settei
 :tags: open source, python, settings, entry points, setuptools
+:email: spyrosikmd@gmail.com
 
 .. contents:: Table of Contents
    :depth: 2

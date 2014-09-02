@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import hashlib
 import logging
-import os
+import six
 
 from pelican.contents import Content, is_valid_content
 from pelican.generators import Generator
 from pelican import signals
-
-from pelicanconf import SITEURL
 
 
 logger = logging.getLogger(__name__)
@@ -35,18 +34,12 @@ class AuthorBiographyManager(object):
         content = self.contents.get(slug, "")
         return getattr(content, "content", "")
 
-    def getAvatar(self, slug, default):
+    def get_gravatar(self, slug):
         content = self.contents.get(slug, "")
-
-        try:
-            avatarExists = os.path.isfile("content/images/avatars/{avatar}".format(
-                avatar=getattr(content, "avatar", "")))
-            avatar = "<img src='{site_url}/images/{avatar}' />".format(
-                site_url=SITEURL, avatar=getattr(content, "avatar", ""))
-        except IOError as e:
-            print "I/O error({0}): {1}".format(e.errno, e.strerror)
-
-        return avatar if avatarExists else default
+        email = getattr(content, "email", "")
+        if email:
+            email_bytes = six.b(email).lower()
+            return "http://www.gravatar.com/avatar/" + hashlib.md5(email_bytes).hexdigest()
 
 
 class AuthorBiographyGenerator(Generator):

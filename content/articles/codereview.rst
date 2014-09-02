@@ -5,6 +5,7 @@
 :author: Anatoly Bubenkov
 :slug: articles/codereview
 :tags: code review, gatekeeper, fogbugz, review, rietveld, open source
+:email: bubenkoff@gmail.com
 
 .. contents:: Table of Contents
    :depth: 2

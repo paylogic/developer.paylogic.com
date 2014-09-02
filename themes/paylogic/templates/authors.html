@@ -10,9 +10,6 @@
             {%- for author, articles in authors|sort %}
                 <h2>
                     <a href="{{ SITEURL }}/{{ author.url }}">
-                        <div class="uk-thumbnail">
-                            {{ authors_info.getAvatar(author, '<i class="uk-icon-user"></i>') }}
-                        </div>
                         {{ author }}
                         <span class="uk-text-muted pl-text-normal">({{ articles|count }} article{% if articles|count > 1 %}s{% endif %})</span>
                     </a>

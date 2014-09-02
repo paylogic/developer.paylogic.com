@@ -35,7 +35,7 @@ THEME = os.path.join(os.path.dirname(__file__), 'themes', 'paylogic')
 
 DISQUS_SITENAME = 'paylogicdevportal'
 
-PLUGINS = ('plugins.pelican_extended_authors', 'plugins.extract_toc')
+PLUGINS = ('plugins.pelican_extended_authors', 'plugins.extract_toc', 'plugins.gravatar')
 
 # Exclude author pages from other content.
 ARTICLE_EXCLUDES = ['pages', 'authors', ]

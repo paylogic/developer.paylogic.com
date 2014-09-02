@@ -1,5 +1,5 @@
 :slug: berco-beute
-:avatar: berco_beute.jpg
+:email:
 
 Berco is CTO of Paylogic. Besides being CTO and running a high-tech company
 he loves everything related to software engineering. Whether it's diving

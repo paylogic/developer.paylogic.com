@@ -5,6 +5,7 @@
 :author: Anatoly Bubenkov
 :slug: articles/test-p14n
 :tags: testing, parallelization, pytest, pytest-xdist
+:email: bubenkoff@gmail.com
 
 .. contents:: Table of Contents
    :depth: 2

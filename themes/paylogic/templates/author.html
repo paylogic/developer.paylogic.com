@@ -8,7 +8,11 @@
         <div class="uk-panel">
             <h1 class="uk-panel-title">
                 <div class="uk-thumbnail">
-                    {{ authors_info.getAvatar(author, '<i class="uk-icon-user"></i>') }}
+                {% if authors_info.get_gravatar(author) %}
+                    <img src="{{ authors_info.get_gravatar(author) }}" alt="{{ author }}" />
+                {% else %}
+                    <i class="uk-icon-user"></i>
+                {% endif %}
                 </div>
                 {{ author }}
             </h1>

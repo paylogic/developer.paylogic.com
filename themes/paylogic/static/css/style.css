@@ -152,6 +152,15 @@ tt {
     font-family: 'Open Sans', sans-serif;
 }
 
+.uk-table td.pl-heading {
+    background: #eeeeee;
+}
+
+.uk-table td.pl-content {
+    background: #fafafa;
+    padding: 16px;
+}
+
 /* ========================================================================
    Component: Article
 ========================================================================== */

@@ -5,6 +5,7 @@
 :date: 2013-05-14 00:28
 :slug: articles/pip-accel
 :tags: python, deployment, virtual environments, automation, pip, open source, packaging
+:email: peter@peterodding.com
 
 .. contents:: Table of Contents
    :depth: 2

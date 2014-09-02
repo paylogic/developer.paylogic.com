@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ article.title|striptags }}{% endblock %}
+{% block title %}{{ article.title|striptags }} by {{ article.author }}{% endblock %}
 
 {% block content %}
 <section class="pl-section">
@@ -19,7 +19,11 @@
                             <tr>
                                 <td>
                                     <div class="uk-thumbnail uk-margin-right">
-                                        {{ authors_info.getAvatar(article.author, '<i class="uk-icon-user uk-icon-large"></i>') }}
+                                    {% if article.author_gravatar %}
+                                        <img src="{{ article.author_gravatar }}" alt="{{ article.author }}" />
+                                    {% else %}
+                                        <i class="uk-icon-user uk-icon-large"></i>
+                                    {% endif %}
                                     </div>
                                 </td>
                                 <td>
@@ -58,7 +62,7 @@
                 {% if article.author %}
                     Written by <a class="url fn" href="{{ SITEURL }}/{{ article.author.url }}">{{ article.author }}</a>
                 {% endif %}
-                on {{ article.locale_date }} - Posted in <a href="{{ SITEURL }}/{{ article.category.url }}">{{ article.category }}</a>
+                on {{ article.locale_date }}<br />Posted in <a href="{{ SITEURL }}/{{ article.category.url }}">{{ article.category }}</a>
             </div>
             <h1 class="uk-article-title">{{ article.title }}</h1>
             <hr class="uk-article-divider">

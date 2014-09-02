@@ -5,6 +5,7 @@
 :author: Spyros Ioakeimidis
 :slug: articles/prefill-registration
 :tags: integration
+:email: spyrosikmd@gmail.com
 
 .. contents:: Table of Contents
    :depth: 2
