@@ -101,11 +101,6 @@ available, we should display by default the English version of it.
 Advantages of the new design
 ============================
 
-We did a deep research on how to make an efficient design. We tried lots of
-ways to minimize the timing of the queries for large datasets. Also we've looked
-around for existing solutions, such as `SQLAlchemy-i18n <https://github.com/kvesteri/sqlalchemy-i18n>`_.
-It did not work for us, ...
-
 In the end, taking into consideration our motivation and requirements, we came up
 with our solution on how to solve the problem of i18n. The following
 example illustrates our current approach using ``traduki``. Lets assume that we
@@ -210,8 +205,8 @@ we just return hard coded data for simplicity. We could read this data from a
 current ``request`` object, for example using `Flask <http://flask.pocoo.org/>`_
 request, something like :code:`flask.request.locale` to get the current language.
 We use these callbacks when we deal with the initialization of the :code:`i18n_attributes`.
-``traduki`` at the moment of the initialization creates the translations table and sets up
-all the appropriate relationships.
+``traduki`` at the moment of initialization declares the model for the translations
+dynamically and sets up all the appropriate relationships.
 
 .. code-block:: python
 
@@ -227,16 +222,32 @@ all the appropriate relationships.
     i18n_attributes = traduki.initialize(
         Base, ['en', 'nl'], get_current_language, get_language_chain)
 
-We then define our model and we use the column and relation provided by
+The language list that we pass to :code:`traduki.initialize` function is used
+to declare language columns in translations model. So if we use :code:`['en', 'nl']`
+the resulting translations model would be something similar to the following declaration.
+
+.. code-block:: python
+
+    class Translation:
+
+        __tablename__ = 'traduki_translation'
+
+        id = Column(Integer, primary_key=True)
+
+        en = Column(UnicodeText, nullable=True)
+        nl = Column(UnicodeText, nullable=True)
+
+Back to our example, we define our model and use the column and relation provided by
 ``traduki``. The rest is just to have a complete and running example.
 
 .. code-block:: python
 
     class Model(Base):
 
-        __tablename__ = "model"
+        __tablename__ = 'model'
 
         id = Column(Integer, primary_key=True)
+
         title_id = i18n_attributes.i18n_column(nullable=False, unique=False)
         title = i18n_attributes.i18n_relation(title_id)
         """Title."""
@@ -252,15 +263,20 @@ We then define our model and we use the column and relation provided by
     session.commit()
 
     session.refresh(model)
-    model = session.query(MyModel).first()
+    model = session.query(Model).first()
 
     assert model.title.get_dict() == {'en': 'English title', 'nl': 'Dutch title'}
+    assert model.title.en == 'English title'
 
 To run this example, copy and paste these parts in an ``example.py`` file, and
 use the following commands to install the required packages and run the
 example:
 
 .. code-block:: bash
+
+    virtualenv env
+
+    source env/bin/activate
 
     pip install sqlalchemy traduki
 
@@ -283,7 +299,26 @@ instances that have English translation for their :code:`title`.
         .filter(i18n_attributes.Translation.en != None)
     )
 
-:code:`i18n_attributes.Translation` is ...
+:code:`i18n_attributes.Translation` is the translations model declared during initialization
+of ``traduki``. It provides helper methods to get the text of a specified language
+and get the available languages as a dictionary. It also contains language fields as attributes,
+which is nice as it enables directly attribute access to get a language for a specific field
+:code:`model.title.en`.
+
+Similar projects
+================
+
+We did a deep research on how to make an efficient design. We tried lots of
+ways to minimize the timing of the queries for large datasets. Also we've looked
+around for existing solutions, such as `SQLAlchemy-i18n <https://github.com/kvesteri/sqlalchemy-i18n>`_.
+
+The approach of this project is to create a separate translations table and each row in the table
+is a translation in a specific language for a specific field. This is similar to our
+previous approach and has the same limitations in performance. You need to explicit
+query for languages and fields and do lots of joins. In our case, we load all the languages
+and translation for a field. This might sound like a lot of overhead at first, but in modern
+applications you usually have 10-12 languages and you want them to be available all at once in
+the client.
 
 Final words
 ===========
