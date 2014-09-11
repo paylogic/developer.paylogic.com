@@ -9,6 +9,10 @@ The git repository is hosted on our GitHub_ account and we use `GitHub Pages`_
 with a custom DNS name for hosting.
 
 
+.. image:: https://travis-ci.org/paylogic/developer.paylogic.com.svg?branch=master
+    :target: https://travis-ci.org/paylogic/developer.paylogic.com
+    
+
 Running it locally
 ------------------
 
