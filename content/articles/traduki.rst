@@ -1,10 +1,10 @@
 :title: Traduki
 :date: 2014-08-27 10:00
-:summary: Internationalisation made easier with the help of SQLAlchemy.
+:summary: Internationalization made easier with the help of SQLAlchemy.
 :category: Open Source
 :author: Spyros Ioakeimidis
 :slug: articles/traduki
-:tags: internationalisation, sqlalchemy, python, database
+:tags: internationalization, sqlalchemy, python, database
 
 .. contents::
 
@@ -12,7 +12,7 @@ Introduction
 ============
 
 ``traduki`` is an `open source <https://github.com/paylogic/traduki>`_
-package, which consists of internationalisation helper classes targeted for
+package, which consists of internationalization helper classes targeted for
 SQLAlchemy-based python projects. The advantage of using ``traduki`` is that
 it removes the burden of defining translation tables, and provides
 a consistent, intuitive and easy way to introduce internationalization into
@@ -45,10 +45,12 @@ all the properties in one row. For example,
 -------------------------------------------------
  id    language_code    text_id   localized_text
 ====  ===============  ========= ================
-1     en               10        English title
-2     nl               10        Dutch title
+1     en               10        English title 1
+2     nl               10        Dutch title 1
 3     en               11        English subtitle
 4     nl               11        Dutch subtitle
+5     en               12        English title 2
+6     nl               12        Dutch title 2
 ====  ===============  ========= ================
 
 where the :code:`text_id` references the :code:`title_id` and
@@ -60,6 +62,7 @@ where the :code:`text_id` references the :code:`title_id` and
  id    title_id    subtitle_id
 ====  ==========  =============
 1     10          11
+2     12          13
 ====  ==========  =============
 
 This approach was inefficient because for ``n`` properties and ``m``
@@ -69,18 +72,17 @@ the previous example,
 
 .. code-block:: python
 
-    Translations.query().
-        .join(Events, Translations)
-        .filter(Translations.language_code.in_('en', 'nl'))
-        .all()
+    a_alias = aliased(Translations)
+
+    q = session.query(Events).\
+        join(Translations).\
+        filter(Translations.text_id==Events.title_id).\
+        filter(a_alias.text_id==Events.subtitle_id).\
+        filter(Events.id.in_(event_ids)).\
+        all()
 
 The end-result was that we did not do this, and we were doing more one-row queries.
-
-.. code-block:: python
-
-    Translations.query().
-
-It should be mentioned that normally we don't need objects to have dynamic list
+We should mention that normally we don't need objects to have dynamic list
 of available languages. Maybe it is a strict requirement in other use cases,
 but in our use case it is enough to just use ``static`` set of available languages,
 which change infrequently.
@@ -171,8 +173,10 @@ case English. So it will return:
 
 This approach has one drawback. When a new language is introduced then we need
 to alter the translations table to include it. This operation can be expensive.
-However, we found out that the gains in performance are higher, as we search
-and sort much more often than we add new languages.
+This was by design so we were aware of our use case. We found out that
+the gains in performance are higher, because we search and sort much more often
+than we add new languages. However, the most important things for us is not
+adding new languages but having ``static`` set of available languages.
 
 How it works
 ============
@@ -240,15 +244,15 @@ We then define our model and we use the column and relation provided by
     Base.metadata.create_all(engine)
 
     Session = sessionmaker(bind=engine)
-    sess = Session()
+    session = Session()
 
     model = Model()
     model.title = {'en': 'English title', 'nl': 'Dutch title'}
-    sess.add(model)
-    sess.commit()
+    session.add(model)
+    session.commit()
 
-    sess.refresh(model)
-    model = sess.query(MyModel).first()
+    session.refresh(model)
+    model = session.query(MyModel).first()
 
     assert model.title.get_dict() == {'en': 'English title', 'nl': 'Dutch title'}
 
@@ -266,18 +270,20 @@ Querying
 --------
 
 Querying translations can also be done using usual SQLAlchemy techniques.
-From the previous example, lets assume that we want to get all :code:`Model`
-instances that have only English translation for their :code:`title`.
+From the previous example, lets assume that we want to get all 239 :code:`Model`
+instances that have English translation for their :code:`title`.
 
 .. code-block:: python
 
     english_title_objects = (
-        sess.query(Model)
+        session.query(Model)
         .join(
             i18n_attributes.Translation,
             Model.title_id == i18n_attributes.Translation.id)
         .filter(i18n_attributes.Translation.en != None)
     )
+
+:code:`i18n_attributes.Translation` is ...
 
 Final words
 ===========
