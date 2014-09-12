@@ -42,7 +42,7 @@ row, which made it inefficient and difficult to get all the translations for
 all the properties in one row. For example,
 
 ====  ===============  ========= ================
- Translations
+ Translation
 -------------------------------------------------
  id    language_code    text_id   localized_text
 ====  ===============  ========= ================
@@ -55,10 +55,10 @@ all the properties in one row. For example,
 ====  ===============  ========= ================
 
 where the :code:`text_id` references the :code:`title_id` and
-:code:`subtitle_id` fields from a hypothetical :code:`Events` table.
+:code:`subtitle_id` fields from a hypothetical :code:`Event` table.
 
 ====  ==========  =============
- Events
+ Event
 -------------------------------
  id    title_id    subtitle_id
 ====  ==========  =============
@@ -73,13 +73,13 @@ the previous example,
 
 .. code-block:: python
 
-    a_alias = aliased(Translations)
+    a_alias = aliased(Translation)
 
-    q = session.query(Events).\
-        join(Translations).\
-        filter(Translations.text_id==Events.title_id).\
-        filter(a_alias.text_id==Events.subtitle_id).\
-        filter(Events.id.in_(event_ids)).\
+    q = session.query(Event).\
+        join(Translation).\
+        filter(Translation.text_id==Event.title_id).\
+        filter(a_alias.text_id==Event.subtitle_id).\
+        filter(Event.id.in_(event_ids)).\
         all()
 
 The end-result was that we did not do this, and we were doing more one-row queries.
@@ -106,14 +106,14 @@ Advantages of the new design
 In the end, taking into consideration our motivation and requirements, we came up
 with our solution on how to solve the problem of i18n. The following
 example illustrates our current approach using ``traduki``. Lets assume that we
-have a table :code:`Events`, and we want the ``title`` and ``subtitle`` to be
-translated into English and Dutch. The :code:`Events` table contains the ids of
+have a table :code:`Event`, and we want the ``title`` and ``subtitle`` to be
+translated into English and Dutch. The :code:`Event` table contains the ids of
 the fields that we wish to have available in those two languages. Lets also
 assume that for the event with :code:`id = 8`, the Dutch translation is not
 available.
 
 ====  ==========  =============
- Events
+ Event
 -------------------------------
  id    title_id    subtitle_id
 ====  ==========  =============
@@ -122,16 +122,16 @@ available.
 8     25          26
 ====  ==========  =============
 
-The :code:`Translations` table would then contain a reference to those fields
+The :code:`Translation` table would then contain a reference to those fields
 that we wish to have translated. The :code:`id = 10` for the ``title`` and
 :code:`id = 11` for the ``subtitle`` of the first event, and :code:`id = 25`
 and :code:`id = 26` for the ``title`` and ``subtitle`` for the second event
 respectively. It also contains the translated texts in English and Dutch
 (only for the first event). With this approach, we can easily get the
-translated texts by joining the :code:`Events` and :code:`Translations` tables.
+translated texts by joining the :code:`Event` and :code:`Translation` tables.
 
 ====  ===================  ===================
- Translations
+ Translation
 ----------------------------------------------
  id    en                    nl
 ====  ===================  ===================
@@ -148,11 +148,11 @@ the translations.
 
 .. code:: python
 
-    q = session.query(Translations).join(Events, Events.title_id==Translations.id)
+    q = session.query(Translation).join(Event, Event.title_id==Translation.id)
 
 As it can be seen from the query, for ``n`` properties and ``m`` languages,
 the number of joins is reduced from ``n*m`` to ``n``, making them also more
-intuitive since all translated items are foreign keys to the :code:`Translations`
+intuitive since all translated items are foreign keys to the :code:`Translation`
 table, joining once per foreign key. Additionally, ``traduki`` returns a user-friendly
 format of this result as a dictionary of language codes and translations. For example:
 
@@ -293,12 +293,12 @@ instances that have English translation for their :code:`title`.
 .. code-block:: python
 
     english_title_objects = (
-        session.query(Model).
-        join(
+        session.query(Model)
+        .join(
             i18n_attributes.Translation,
-            Model.title_id == i18n_attributes.Translation.id).
-        filter(i18n_attributes.Translation.en.isnot(None)).
-        all()
+            Model.title_id == i18n_attributes.Translation.id)
+        .filter(i18n_attributes.Translation.en.isnot(None))
+        .all()
     )
 
 :code:`i18n_attributes.Translation` is the translations model declared during initialization
