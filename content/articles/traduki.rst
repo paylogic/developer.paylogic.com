@@ -1,12 +1,14 @@
 :title: Traduki
 :date: 2014-08-27 10:00
-:summary: Internationalization made easier with the help of SQLAlchemy.
+:summary: Internationalization made easy with the help of SQLAlchemy.
 :category: Open Source
 :author: Spyros Ioakeimidis
 :slug: articles/traduki
-:tags: internationalization, sqlalchemy, python, database
+:tags: internationalization, sqlalchemy, python, database, i18n
+:email: spyrosikmd@gmail.com
 
-.. contents::
+.. contents:: Table of Contents
+   :depth: 2
 
 Introduction
 ============
@@ -19,17 +21,16 @@ a consistent, intuitive and easy way to introduce internationalization into
 your application. Minimalistic design allowed us to use only
 `SQLAlchemy <http://www.sqlalchemy.org/>`_ as a python dependency.
 
-Why we were in need of something different
-==========================================
+Why we were in a need of something different
+============================================
 
 As Paylogic operates in several countries, internationalization is a strong
 requirement. However, we used to do internationalization differently than how
-we do it these days. Our former approach was to store translations in
-tables. We would then join the tables in order to obtain the translations. This
-allowed us to search on the internationalized fields, but it required a lot of
-joins, even in cases where searching was not a requirement. We could either
-`eager load <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html#eager-loading>`_,
-load relationships at the same time as the parent, or
+we do it these days. Our former approach was to join translation tables in order
+to obtain the translations. This allowed us to search on the internationalized
+fields, but it required a lot of joins, even in cases where searching was not a requirement.
+We could either `eager load <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html#eager-loading>`_,
+load relationships at the same time the parent is loaded, or
 `lazy load <http://docs.sqlalchemy.org/en/rel_0_9/glossary.html#term-lazy-loading>`_,
 load relationships the first time they are accessed. When we would lazy load,
 and we would access an internationalized property, we would cause
@@ -88,7 +89,8 @@ but in our use case it is enough to just use ``static`` set of available languag
 which change infrequently.
 
 Another issue with this approach was that the number of results returned from
-queries was not deterministic. Most of the times you want to eager load relationships.
+queries was not deterministic, so required left joins which is even worse
+performance-wise. Most of the times you want to eager load relationships.
 However, in this case you can never apply a limit or offset because you cannot
 trust the number of rows returned.
 
@@ -146,20 +148,20 @@ the translations.
 
 .. code:: python
 
-    Translations.query().join(Events, Events.title_id==Translations.id)
+    q = session.query(Translations).join(Events, Events.title_id==Translations.id)
 
-As it can be seen from the query, this reduces the number of joins from ``n*m`` to
-``n``, making them also more intuitive since all translated items are
-foreign keys to the :code:`Translations` table, joining once per foreign key.
-Additionally, ``traduki`` returns a user-friendly format of this result as
-a dictionary of language codes and translations. For example:
+As it can be seen from the query, for ``n`` properties and ``m`` languages,
+the number of joins is reduced from ``n*m`` to ``n``, making them also more
+intuitive since all translated items are foreign keys to the :code:`Translations`
+table, joining once per foreign key. Additionally, ``traduki`` returns a user-friendly
+format of this result as a dictionary of language codes and translations. For example:
 
 .. code-block:: python
 
     {'en': 'English title 1', 'nl': 'Dutch title 1'}
 
 In case of the second event, where the Dutch translation is not available,
-``traduki`` falls-back to the language that we have defined, in this
+``traduki`` falls back to the language that we have defined, in this
 case English. So it will return:
 
 .. code-block:: python
@@ -228,14 +230,14 @@ the resulting translations model would be something similar to the following dec
 
 .. code-block:: python
 
-    class Translation:
+    class Translation(Base):
 
         __tablename__ = 'traduki_translation'
 
         id = Column(Integer, primary_key=True)
 
-        en = Column(UnicodeText, nullable=True)
-        nl = Column(UnicodeText, nullable=True)
+        en = Column(UnicodeText, nullable=True, index=True)
+        nl = Column(UnicodeText, nullable=True, index=True)
 
 Back to our example, we define our model and use the column and relation provided by
 ``traduki``. The rest is just to have a complete and running example.
@@ -263,7 +265,6 @@ Back to our example, we define our model and use the column and relation provide
     session.commit()
 
     session.refresh(model)
-    model = session.query(Model).first()
 
     assert model.title.get_dict() == {'en': 'English title', 'nl': 'Dutch title'}
     assert model.title.en == 'English title'
@@ -286,17 +287,18 @@ Querying
 --------
 
 Querying translations can also be done using usual SQLAlchemy techniques.
-From the previous example, lets assume that we want to get all 239 :code:`Model`
+From the previous example, lets assume that we want to get all :code:`Model`
 instances that have English translation for their :code:`title`.
 
 .. code-block:: python
 
     english_title_objects = (
-        session.query(Model)
-        .join(
+        session.query(Model).
+        join(
             i18n_attributes.Translation,
-            Model.title_id == i18n_attributes.Translation.id)
-        .filter(i18n_attributes.Translation.en != None)
+            Model.title_id == i18n_attributes.Translation.id).
+        filter(i18n_attributes.Translation.en.isnot(None)).
+        all()
     )
 
 :code:`i18n_attributes.Translation` is the translations model declared during initialization
