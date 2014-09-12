@@ -5,7 +5,10 @@
 :author: Anatoly Bubenkov
 :slug: articles/pytest-xdist-and-session-scoped-fixtures
 :tags: testing, pytest, pytest-xdist, fixtures, session
+:email: bubenkoff@gmail.com
 
+.. contents:: Table of Contents
+   :depth: 2
 
 Introduction
 ============
@@ -167,7 +170,7 @@ So now our application fixture looks like this:
 .. code-block:: python
 
     import atexit
-    
+
     import execnet
 
     @pytest.fixture(scope='session')
@@ -204,7 +207,7 @@ there will be multiple sessions involved on a single test node.
 The result of the first call of the ``application`` function will be cached as an attribute on the application function.
 Subsequent calls will just return the cached value.
 Note that instead of ``request.addfinalizer`` we use ``atexit.register``. This is because memoization has it's downside - we cannot use
-pytest's normal fixture finalizers simply because there's no scope higher than ``session`` at the moment.  
+pytest's normal fixture finalizers simply because there's no scope higher than ``session`` at the moment.
 
 
 Conclusion

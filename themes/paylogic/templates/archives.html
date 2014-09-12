@@ -1,31 +1,29 @@
 {% extends "base.html" %}
 
+{% block title %}Articles archive{%endblock%}
+
 {% block content %}
 <section class="pl-section">
     <div class="uk-container uk-container-center">
         <div class="uk-panel">
-            {% block content_title %}
-            <h1 class="uk-panel-title">All articles</h1>
-            {% endblock %}
+            <h1 class="uk-panel-title">Articles archive</h1>
 
-            <ul class="uk-list uk-list-space">
-                {% for article in articles_page.object_list %}
+            <ul class="uk-list uk-list-space uk-list-line">
+                {% for article in articles %}
+                {% if article.category != "General" %}
                 <li>
                     <h3 class="uk-margin-bottom-remove">
                         <a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a>
                     </h3>
                     <div class="uk-text-muted uk-text-small uk-margin-small-bottom">
-                        Written by <a href="{{ SITEURL }}/{{ article.author.url }}">{{ article.author }}</a> on {{ article.locale_date }}
+                        Written by <a href="{{ SITEURL }}/{{article.author.url }}">{{ article.author}}</a> on {{ article.locale_date }} - Posted in <a href="{{ SITEURL }}/{{ article.category.url }}">{{ article.category }}</a>
                     </div>
                     <div class="pl-article-intro">{{ article.summary }}</div>
                 </li>
+                {% endif %}
                 {% endfor %}
             </ul>
-
-            <div class="uk-text-center pl-pagination">
-                {% include 'pagination.html' %}
-            </div>
         </div>
     </div>
 </section>
-{% endblock content %}
+{% endblock %}

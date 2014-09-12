@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import hashlib
 import logging
+import six
 
 from pelican.contents import Content, is_valid_content
 from pelican.generators import Generator
@@ -31,6 +33,13 @@ class AuthorBiographyManager(object):
     def get(self, slug):
         content = self.contents.get(slug, "")
         return getattr(content, "content", "")
+
+    def get_gravatar(self, slug):
+        content = self.contents.get(slug, "")
+        email = getattr(content, "email", "")
+        if email:
+            email_bytes = six.b(email).lower()
+            return "http://www.gravatar.com/avatar/" + hashlib.md5(email_bytes).hexdigest()
 
 
 class AuthorBiographyGenerator(Generator):
@@ -67,6 +76,7 @@ class AuthorBiographyGenerator(Generator):
 def get_generators(generators):
     """Helper function for Pelican to get generator."""
     return AuthorBiographyGenerator
+
 
 def register():
     """Starting point for Pelican to instantiate plugin."""

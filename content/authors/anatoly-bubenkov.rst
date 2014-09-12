@@ -1,4 +1,5 @@
 :slug: anatoly-bubenkov
+:email: bubenkoff@gmail.com
 
 Anatoly is a software engineer in the core development team of Paylogic. His day to day job is a
 combination of devops, team management, contact with other departments in

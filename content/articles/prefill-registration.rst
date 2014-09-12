@@ -5,6 +5,10 @@
 :author: Spyros Ioakeimidis
 :slug: articles/prefill-registration
 :tags: integration
+:email: spyrosikmd@gmail.com
+
+.. contents:: Table of Contents
+   :depth: 2
 
 *Paylogic offers a feature to allow the prefilling of the personal data of a
 consumer during the sales process via a personalized URL. This can be used

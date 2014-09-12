@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }}{%endblock%}
+
+{% block content %}
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-panel">
+            <h1 class="uk-panel-title">{{ page.title }}</h1>
+
+            {% import 'translations.html' as translations with context %}
+            {{ translations.translations_for(page) }}
+
+            {{ page.content }}
+        </div>
+    </div>
+</section>
+{% endblock %}
