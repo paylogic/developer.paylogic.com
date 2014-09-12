@@ -25,18 +25,17 @@ Why we were in a need of something different
 ============================================
 
 As Paylogic operates in several countries, internationalization is a strong
-requirement. However, we used to do internationalization differently than how
+requirement. However, we used to do internationalization differently from how
 we do it these days. Our former approach was to join translation tables in order
 to obtain the translations. This allowed us to search on the internationalized
 fields, but it required a lot of joins, even in cases where searching was not a requirement.
 We could either `eager load <http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html#eager-loading>`_,
 load relationships at the same time the parent is loaded, or
 `lazy load <http://docs.sqlalchemy.org/en/rel_0_9/glossary.html#term-lazy-loading>`_,
-load relationships the first time they are accessed. When we would lazy load,
-and we would access an internationalized property, we would cause
-two queries per property.
+load relationships the first time they are accessed. When we lazy load,
+and access an internationalized property, we cause two queries per property.
 
-One of these queries would be to the translations table, and the other one
+One of these queries is to the translations table, and the other one
 to a table with only the ids. The translations table had one translation per
 row, which made it inefficient and difficult to get all the translations for
 all the properties in one row. For example,
@@ -85,19 +84,19 @@ the previous example,
 The end-result was that we did not do this, and we were doing more one-row queries.
 We should mention that normally we don't need objects to have dynamic list
 of available languages. Maybe it is a strict requirement in other use cases,
-but in our use case it is enough to just use ``static`` set of available languages,
+but in our use case it is enough to just use a static set of available languages,
 which change infrequently.
 
 Another issue with this approach was that the number of results returned from
-queries was not deterministic, so required left joins which is even worse
-performance-wise. Most of the times you want to eager load relationships.
+queries was not deterministic, and required left joins which is even worse
+performance-wise. Most of the time you want to eager load relationships.
 However, in this case you can never apply a limit or offset because you cannot
 trust the number of rows returned.
 
 The aforementioned approach had performance issues. We wanted to be able to
 search on the internationalized fields and search fast, which was not possible.
 Another requirement was that we wanted language chains. What this means is that
-that if your language is Dutch, but only the English version of the text is
+if your language is Dutch, but only the English version of the text is
 available, we should display by default the English version of it.
 
 Advantages of the new design
@@ -105,10 +104,10 @@ Advantages of the new design
 
 In the end, taking into consideration our motivation and requirements, we came up
 with our solution on how to solve the problem of i18n. The following
-example illustrates our current approach using ``traduki``. Lets assume that we
+example illustrates our current approach using ``traduki``. Let's assume that we
 have a table :code:`Event`, and we want the ``title`` and ``subtitle`` to be
 translated into English and Dutch. The :code:`Event` table contains the ids of
-the fields that we wish to have available in those two languages. Lets also
+the fields that we wish to have available in those two languages. Let's also
 assume that for the event with :code:`id = 8`, the Dutch translation is not
 available.
 
@@ -150,7 +149,7 @@ the translations.
 
     q = session.query(Translation).join(Event, Event.title_id==Translation.id)
 
-As it can be seen from the query, for ``n`` properties and ``m`` languages,
+As can be seen from the query, for ``n`` properties and ``m`` languages,
 the number of joins is reduced from ``n*m`` to ``n``, making them also more
 intuitive since all translated items are foreign keys to the :code:`Translation`
 table, joining once per foreign key. Additionally, ``traduki`` returns a user-friendly
@@ -173,7 +172,7 @@ to alter the translations table to include it. This operation can be expensive.
 This was by design so we were aware of our use case. We found out that
 the gains in performance are higher, because we search and sort much more often
 than we add new languages. However, the most important things for us is not
-adding new languages but having ``static`` set of available languages.
+adding new languages but having a static set of available languages.
 
 How it works
 ============
@@ -185,7 +184,7 @@ split in parts, to better explain how each part works.
 Example
 -------
 
-The first part is quite straightforward. We do standard sqlalchemy imports,
+The first part is straightforward. We do standard sqlalchemy imports,
 create the engine (in this case the database will be in memory), and define the
 declarative base for our models.
 
@@ -310,21 +309,20 @@ which is nice as it enables directly attribute access to get a language for a sp
 Similar projects
 ================
 
-We did a deep research on how to make an efficient design. We tried lots of
+We conducted research on how to make an efficient design. We tried lots of
 ways to minimize the timing of the queries for large datasets. Also we've looked
 around for existing solutions, such as `SQLAlchemy-i18n <https://github.com/kvesteri/sqlalchemy-i18n>`_.
 
 The approach of this project is to create a separate translations table and each row in the table
 is a translation in a specific language for a specific field. This is similar to our
-previous approach and has the same limitations in performance. You need to explicit
-query for languages and fields and do lots of joins. In our case, we load all the languages
-and translation for a field. This might sound like a lot of overhead at first, but in modern
+previous approach and has the same limitations in performance. You need to explicitly
+query for languages and fields and do lots of joins. In our case, you load all the languages
+and translations for a field. This might sound like a lot of overhead at first, but in modern
 applications you usually have 10-12 languages and you want them to be available all at once in
 the client.
 
-Final words
-===========
+Conclusion
+==========
 
-Before ``traduki``, there was (almost) nothing else done in i18n in open source. We
-provided this great and efficient solution. We are waiting for your feedback
+Before ``traduki``, there was little done in i18n in open source.  We are waiting for your feedback
 and recommendations. Check `traduki <https://github.com/paylogic/traduki>`_ in our github profile.
