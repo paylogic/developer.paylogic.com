@@ -168,11 +168,10 @@ case English. So it will return:
     {'en': 'English title 2', 'nl': 'English title 2'}
 
 This approach has one drawback. When a new language is introduced then we need
-to alter the translations table to include it. This operation can be expensive.
-This was by design so we were aware of our use case. We found out that
-the gains in performance are higher, because we search and sort much more often
-than we add new languages. However, the most important things for us is not
-adding new languages but having a static set of available languages.
+to alter the translations table to include it. Although this operation can be expensive,
+we found out that the gains in performance are higher, because we search and sort much
+more often than we add new languages. Also, for us it is more important to have a static
+set of available languages than actually adding new languages.
 
 How it works
 ============
@@ -306,12 +305,12 @@ and get the available languages as a dictionary. It also contains language field
 which is nice as it enables directly attribute access to get a language for a specific field
 :code:`model.title.en`.
 
-Similar projects
-================
+The difference from SQLAlchemy-i18n
+===================================
 
 We conducted research on how to make an efficient design. We tried lots of
 ways to minimize the timing of the queries for large datasets. Also we've looked
-around for existing solutions, such as `SQLAlchemy-i18n <https://github.com/kvesteri/sqlalchemy-i18n>`_.
+around for existing solutions and we found `SQLAlchemy-i18n <https://github.com/kvesteri/sqlalchemy-i18n>`_.
 
 The approach of this project is to create a separate translations table and each row in the table
 is a translation in a specific language for a specific field. This is similar to our
@@ -324,5 +323,7 @@ the client.
 Conclusion
 ==========
 
-Before ``traduki``, there was little done in i18n in open source.  We are waiting for your feedback
-and recommendations. Check `traduki <https://github.com/paylogic/traduki>`_ in our github profile.
+In general, not much have been done on i18n in open source. We hope that ``traduki`` will prove
+useful for projects that require an efficient and easy to use internationalization system.
+We are waiting for your feedback and recommendations. Check `traduki <https://github.com/paylogic/traduki>`_
+in our github profile.
