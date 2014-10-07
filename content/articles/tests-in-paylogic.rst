@@ -1,27 +1,28 @@
-:title: How do we use pytest and pytest-bdd in Paylogic.
-:date: 2014-04-23 11:00
+:title: How we use pytest and pytest-bdd in Paylogic.
+:date: 2014-10-07 11:00
 :summary: Describing standards and best practices of using pytest and pytest-bdd in Paylogic
 :category: Open source
 :author: Andrey Makhnach
-:slug: articles/how-do-we-use-pytest-and-pytest-bdd-in-paylogic
+:slug: articles/how-we-use-pytest-and-pytest-bdd-in-paylogic
 :tags: open source, python, pytest, pytest-bdd
 
-************************************************
-How do we use pytest and pytest-bdd in Paylogic.
-************************************************
+********************************************
+How we use pytest and pytest-bdd in Paylogic
+********************************************
 
 
 .. contents::
 
-After some time of using pytest and pytest-bdd in Paylogic we created some standards in the structure of folders with
-tests and fixtures, and the usage of pytest and pytest-bdd functionality.
+After some time of using `pytest <http://pytest.org>`_ and `pytest-bdd <https://github.com/olegpidsadnyi/pytest-bdd>`_ 
+in Paylogic we developed some standards in the structure of folders with tests and fixtures, and the usage of pytest 
+and pytest-bdd functionality. This article describes those standards and our usage patterns.
 
-Folder structure and fixture imports.
-=====================================
+Folder structure
+================
 
-All our tests are stored in the tests folder in the root of the project folder and our tests are separated by category,
-such as unit, functional, blackbox, etc. The tests are stored in folders with names equal to their category. The
-structure of the tests folder looks as follows:
+All our tests are stored in the tests folder in the root of the project folder. Our tests are separated by category,
+such as unit, functional, blackbox, etc. The tests are stored in the folders of their category. The
+structure looks as follows:
 
 ::
 
@@ -39,14 +40,16 @@ structure of the tests folder looks as follows:
 
 In *tests/conftest.py* we register all global fixtures that represent objects, such as *event*, *order* and *merchant*.
 Here we also register fixtures that represent attributes of objects like event_title, product_title, etc. The fixtures
-which are related to pytest-bdd, for example *pytestbdd_window_size*, *pytestbdd_browser_load_timeout*, etc., are also
-registered in *tests/conftest.py* because they are common fixtures for functional and backoffice tests.
+which are related to pytest-bdd, for example *pytestbdd_window_size*, *pytestbdd_browser_load_timeout*, etc., are also 
+registered in *tests/conftest.py* because they are common fixtures for both our functional as well as our blackbox tests.
 
-I wrote "common fixtures" because *conftest.py* gives us possibility to separate fixtures, pytest and pytest's plugins
-hooks and register them only for those tests which are related to them. I mean that we have fixtures/hooks which are
+I use the term "common fixtures" because *conftest.py* gives us the possibility to separate fixtures and pytest's plugins
+hooks, and register them only for those tests that use them. In our case, we have fixtures/hooks which are
 common for all tests and at the same time we have fixtures/hooks which are related only to functional/blackbox tests,
-for example *pytestbdd_window_size*, this fixtures is used by pytestbdd and not used by our unit tests.
+for example *pytestbdd_window_size*. You can imagine that this fixture is only used by pytest-bdd and not by our unit tests.
 
+Fixture imports
+===============
 For registering fixtures we just import the fixtures from their packages. For example for registering the order fixture
 and fixtures that represent attributes of order object such as *order_title*, *order_point_of_sale*, etc. we just do:
 
@@ -82,26 +85,26 @@ A fixture that represents an object, e.g. an order, typically looks as follows:
             expiry_time=expiry_time
         )
 
-As you can see that our order fixture is a regular pytest fixture, nothing special. It returns an instance of the Order
+As you can see our order fixture is a regular pytest fixture, nothing special. It returns an instance of the Order
 model which in turn is created by the *create_test_order* testhelper function.
 
 We are using testhelper functions for creating fixtures and for populating the database with initial data after
-re-creating it. We use testhelpers instead of loading json or yaml fixtures just because attributes of models changing
-frequently and we decided that it will be better to just have a big file with a list of testhelpers that are called in
+re-creating it. We use testhelpers instead of loading JSON or YAML fixtures because attributes of models change
+frequently and we decided that it would be better and more flexible to just a list of testhelpers that are called in
 the right order for creating initial data.
 
 
-Fixture parametrization.
-========================
+Fixture parametrization
+=======================
 
-Overriding fixture parameters.
-------------------------------
+Overriding fixture parameters
+-----------------------------
 
 The order fixture inherits from lots of other fixtures because we want to have the possibility to override attributes
 with which the order will be created. We override these using @pytest.mark.parametrize or with argumented steps in
 pytest-bdd.
 
-For example if we need to test an order with a different *expiry_time* we just do it like this:
+For example if we need to test an order with a different *expiry_time* we do it like this:
 
 .. code-block:: python
 
@@ -110,9 +113,9 @@ For example if we need to test an order with a different *expiry_time* we just d
     @pytest.mark.parametrize(
         expiry_time,
         [
-    datetime.date.now()+datetime.timedelta(days=2),
-    datetime.date.now()-datetime.timedelta(days=2)
-    ]
+            datetime.date.now()+datetime.timedelta(days=2),
+            datetime.date.now()-datetime.timedelta(days=2)
+        ]
     )
     def test_complete_order(order):
         order.complete()
@@ -130,22 +133,22 @@ We also use *pytest.fixture(params=[...])* to set parameters for fixtures:
     def client_ip(request):
         return request.param
 
-From the example you can see that as soon as we will run tests with the *client_ip* fixture then pytest will run this
+From the example you can see that as soon as we run tests that use the *client_ip* fixture then pytest will run this
 test as many times as the number of parameters the *client_ip* fixture has defined (in this case of course two).
 
 Now the question is of course, what is the difference between those two parametrization methods? The difference is that
-*pytest.mark.parametrize* will influence only the test where it is defined, while *pytest.fixture(params=[..])*
-influences every tests that uses this fixture. If you would for example define three parameters, then each test which
-will use fixture which accepts params from params will be executed three times.
+*pytest.mark.parametrize* will influence only the test on which it is explicitly defined, while *pytest.fixture(params=[..])*
+influences every test that uses this fixture. If you would for example define three parameters for the above client_ip fixture,
+then each test using this fixture will now be executed three times, once for every param.
 
-To see how frequently we use *pytest.mark.parametrize* instead of *pytest.fixture(params=[...])*, I can say that the
-scope of using *pytest.mark.parametrize* is of course bigger than *pytest.fixture(params=[...])*. I think that it
-depends only on our code base, test code base and types of our tests.
+Regarding how frequently you would use *pytest.mark.parametrize* compared of *pytest.fixture(params=[...])*, it strongly
+depends on your code base, test code base and type of test. I don't think I can say anything meaningful about that in a 
+general sense based on just our experiences.
 
-Fixtures for mocking.
----------------------
+Fixtures for mocking
+--------------------
 
-We even use fixtures for mocking. For example in the `settei <https://github.com/paylogic/settei>`_  project we needed
+We also use fixtures for mocking. For example in the `settei <https://github.com/paylogic/settei>`_  project we needed
 to mock a required method of the *pkg_resources.EntryPoint* class, so we wrote the following fixture:
 
 .. code-block:: python
@@ -154,21 +157,21 @@ to mock a required method of the *pkg_resources.EntryPoint* class, so we wrote t
     ...
     @pytest.fixture
     def monkeypatch_entrypoint(monkeypatch, clean_config):
-        """Mokeypatching EntryPoint."""
+        """Monkeypatching EntryPoint."""
         monkeypatch.setattr(pkg_resources.EntryPoint, 'require', require)
         …
 
-Each time when your tests depends on this fixture you will get the mocked require method of the
-*pkg_resources.EntryPoint* class.
+Each time when your tests depends on this fixture, the require method of the
+*pkg_resources.EntryPoint* class would be mocked.
 
-Functional testing.
-===================
+Functional testing
+==================
 
-Parametrizing scenarios.
-------------------------
+Parametrizing scenarios
+-----------------------
 
-We also use *pytest.mark.parametrize* for functional testing. For example if you need to test the functionality of
-creating a product. The scenario of successfully creating a product can look like this:
+We also use *pytest.mark.parametrize* for functional testing with pytest-bdd. If you for example need to test the functionality of
+creating a product, the scenario of successfully creating a product can look like this:
 
 ::
 
@@ -199,8 +202,8 @@ quantity of the product cannot equal 0, then you will create another scenario. I
 
     Then I should see an error message
 
-As we can see there is double work and it is natural to wish avoid double work somehow. There is a solution. Let merge
-those two scenarios in one.
+As we can see there is a lot of double work here, which is something we should try to avoid. Luckily, there is a solution. Let's merge
+these two scenarios into one:
 
 ::
 
@@ -215,7 +218,7 @@ those two scenarios in one.
 
     Then I should see a <message_status> message
 
-Then in your tests file you will define the scenario like this:
+Then in your tests file you can define the scenario like this:
 
 .. code-block:: python
 
@@ -245,18 +248,18 @@ And now in your given, when and then steps you can ask for the *product_quantity
     def assert_that_i_see_message(message_status):
         …
 
-There is one more thing which we also use in testing, which is the step with arguments.
+There is one more thing which we also use in testing, which is the step with arguments (or argumented steps).
 
-Steps with arguments.
----------------------
+Steps with arguments
+--------------------
 
 Consider that, for some reason, you have a similar step in several scenarios, for example *"Given I have an event with
 2 products"* and *"Given I have an event with 5 products"*. In your test files you will then have two different steps
-defined that are actually almost the same. There is a solution however which can help you use the same step for several
+defined that are actually almost the same. There is a solution which can help you use the same step for several
 scenarios with different behaviour.
 
-In your scenarios you write *"Given I have an event with 2 products"* and *"Given I have an event with 5 products"*, as
-you did before, but now you need to create a steps package with a given.py file. In this file, add the following:
+In your scenarios you just write *"Given I have an event with 2 products"* and *"Given I have an event with 5 products"*, as
+you did before, but in your given.py file you write the following:
 
 .. code-block:: python
 
@@ -268,14 +271,17 @@ you did before, but now you need to create a steps package with a given.py file.
     def i_have_an_event_with_products(product_quantity):
         """I have an event with products."""
 
-Now, if your event fixture uses the *product_quantity* fixture, then for each scenario you will have the event with
+Now, if your event fixture uses the *product_quantity* fixture, then for each scenario you will get the event with a
 different quantity of products, depending on what you write in your feature file.
 
 Scenario outlines
 -----------------
 
-Scenarios also can be parametrized to cover few cases. In Gherkin the variable templates are written using corner
-braces as <somevalue>.
+Scenarios can also be parametrized to cover multiple cases. In the `Gherkin language <http://docs.behat.org/en/v2.5/guides/1.gherkin.html>`_ 
+the variable templates are written using corner braces, like so: <somevalue>. Scenario outlines are supported by pytest-bdd 
+exactly as described in the `behave docs <http://docs.behat.org/en/v2.5/guides/1.gherkin.html#scenario-outlines>`_.
+
+A full example of a scenario outline can be found below.
 
 ::
 
@@ -322,10 +328,14 @@ braces as <somevalue>.
         assert start_cucumbers['eat'] == eat
 
 
-Code also shows possibility to pass example converters which may be useful if you need parameter types different than
-strings.
+This code also shows the possibility to use converters which may be useful if you need parameter
+types different than strings.
 
-There are two types for outlines horizontal and vertical
+There are two types of outlines, namely horizontal and vertical. These merely
+state how you write the possible values of the attributes. We saw an example of
+a horizontal outline above; the below is an example of a vertical outline. Note
+that you have to explicitly state "Vertical" to indicate that you are using the
+vertical outline type, otherwise pytest-bdd will default to horizontal.
 
 ::
 
@@ -341,7 +351,7 @@ There are two types for outlines horizontal and vertical
 
 
 
-Finally, you should not forget to register the given steps from *functional/steps/give.py* in the
+Finally, you should not forget to register the given steps from *functional/steps/given.py* in
 *functional/conftest.py* in the functional folder.
 
 .. code-block:: python
@@ -366,5 +376,5 @@ Now your folder structure should look like this:
         unit/
         conftest.py
 
-All things registered in *tests/functional/conftest.py* will be accessible only in scope of the functional tests.
+All things registered in *tests/functional/conftest.py* will now only be accessible in the scope of the functional tests.
 
