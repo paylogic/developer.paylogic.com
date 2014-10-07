@@ -1,6 +1,9 @@
+._*
 .*.sw?
 .sw?
 *~
+.nfs.*
+*.DS_Store
 output/
 *.pid
 *.pyc
@@ -11,3 +14,6 @@ output/
 /env
 .Python
 .ropeproject
+*.sublime-project
+*.sublime-workspace
+cache/

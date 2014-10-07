@@ -1,4 +1,5 @@
 :slug: oscar-vilaplana
+:email:
 
 Òscar is one of Paylogic's architecture team. He's currently working on the
 Paylogic's new API that will allow third parties to sell tickets using Paylogic

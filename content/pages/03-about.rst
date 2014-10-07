@@ -1,16 +1,16 @@
 :title: About
 
-About the developer portal
-##########################
+Developers portal
+#################
 
-The Paylogic developer portal was created as a portal between the technical
+The Paylogic developers portal was created as a portal between the technical
 teams working at Paylogic and the rest of the (tech) world. This site is
 published using Pelican_, a static site generator written in Python. Pelican
 allows us to write our articles in reStructuredText_ and given our experience
 with both Python and reStructuredText, what's not to love?
 
-About Paylogic International
-############################
+Paylogic International
+######################
 
 Paylogic offers event organizers high end technological solutions for them to
 gain full control over ticket sales (strategies) and access management. Full
@@ -31,7 +31,7 @@ sales and access management both prior and during the event. Paylogic
 additionally provides dedicated account management services to assist event
 organizers in strengthening the relationship with their visitors.
 
-For more information visit www.paylogic.com_.
+For more information visit www.paylogic.com_
 
 .. External references:
 .. _event specific seating solutions: http://www.paylogic.com/en/unique-solutions/seating-solutions/

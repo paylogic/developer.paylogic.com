@@ -5,11 +5,13 @@
 :date: 2013-05-14 00:28
 :slug: articles/debian-packages
 :tags: python, deployment, automation, debian, packaging
+:email: peter@peterodding.com
+
+.. contents:: Table of Contents
+   :depth: 2
 
 At Paylogic we use Debian packages to deploy our Python applications. This
 article explains how we got started.
-
-.. contents::
 
 This is a large article but if you just want to get started building Debian
 packages you can jump straight to the section on `getting started with Debian
