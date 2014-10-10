@@ -26,8 +26,7 @@ things with them to solve problems. One of these things is of course Paylogic,
 but another (and the thing that we will actually talk about here) is `Trello`_.
 
 In this article you will see how we at Paylogic use Trello, combined with custom
-tooling through the power of API's, to make our development process just a bit
-better.
+tooling through the power of API's, to improve our development process.
 
 In the beginning
 ================
@@ -69,8 +68,8 @@ other work) to be undocumented and as such invisible, which made controlling the
 sprint even harder.
 
 And of course, by using stickies there was no log of past sprints, a huge
-downside as well. And it didn't scale. And stickies started falling of the wall.
-You get my point.
+downside as well. And it didn't scale. And stickies started falling off the
+wall. You get my point.
 
 Enter Trello
 ============
@@ -91,13 +90,13 @@ A typical sprint board of one of our teams looks something like this:
 
 Let's go through the columns (or lists in Trello's terminology).
 
-- **User stories**: The user stories committed for this sprint. Each of these has
-  a case number, written before its nameof it, and an estimate, written behind
-  it between brackets. You can read "knots" basically as `story points`_.
-- **User stories - Done in sprint**: The user stories that fulfill the Definition
-  of Done, at least for within the sprint. In our case, user stories often
-  aren't deployed during a sprint, so there's a separate Definition of Done for
-  that.
+- **User stories**: The user stories committed for this sprint. Each of these
+  has a case number, written before its name, and an estimate, written behind it
+  between brackets. You can read "knots" basically as `story points`_.
+- **User stories - Done in sprint**: The user stories that fulfill the
+  Definition of Done, at least for within the sprint. In our case, user stories
+  often aren't deployed during a sprint, so there's a separate Definition of
+  Done for that.
 - **To Do**: This column contains the *tasks* of the user stories that still
   have to be done. The tasks are not really linked to user stories (Trello does
   not provide such functionality between cards), but by using the same case
