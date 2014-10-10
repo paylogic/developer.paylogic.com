@@ -26,13 +26,12 @@ things with them to solve problems. One of these things is of course Paylogic,
 but another (and the thing that we will actually talk about here) is `Trello`_.
 
 In this article you will see how we at Paylogic use Trello, combined with custom
-tooling through the power of API's, to make our development process just a bit
-better.
+tooling through the power of API's, to improve our development process.
 
 In the beginning
 ================
 
-The earth was flat, and Paylogic only used `FogBugz`_. If you're not familiar
+The world was flat, and Paylogic only used `FogBugz`_. If you're not familiar
 with FogBugz, it's a bug tracking tool created by `Fog Creek`_ that is fairly
 easily extensible with `plugins`_. Back then, everyone got assigned a case at
 the start of the sprint, and you worked on your case until it was finished. When
@@ -69,8 +68,8 @@ other work) to be undocumented and as such invisible, which made controlling the
 sprint even harder.
 
 And of course, by using stickies there was no log of past sprints, a huge
-downside as well. And it didn't scale. And stickies started falling of the wall.
-You get my point.
+downside as well. And it didn't scale. And stickies started falling off the
+wall. You get my point.
 
 Enter Trello
 ============
@@ -91,13 +90,13 @@ A typical sprint board of one of our teams looks something like this:
 
 Let's go through the columns (or lists in Trello's terminology).
 
-- **User stories**: The user stories committed for this sprint. Each of these has
-  a case number, written before its nameof it, and an estimate, written behind
-  it between brackets. You can read "knots" basically as `story points`_.
-- **User stories - Done in sprint**: The user stories that fulfill the Definition
-  of Done, at least for within the sprint. In our case, user stories often
-  aren't deployed during a sprint, so there's a separate Definition of Done for
-  that.
+- **User stories**: The user stories committed for this sprint. Each of these
+  has a case number, written before its name, and an estimate, written behind it
+  between brackets. You can read "knots" basically as `story points`_.
+- **User stories - Done in sprint**: The user stories that fulfill the
+  Definition of Done, at least for within the sprint. In our case, user stories
+  often aren't deployed during a sprint, so there's a separate Definition of
+  Done for that.
 - **To Do**: This column contains the *tasks* of the user stories that still
   have to be done. The tasks are not really linked to user stories (Trello does
   not provide such functionality between cards), but by using the same case
@@ -114,9 +113,9 @@ of the commitment, so this is automatically generated.
 
 Important to note is that the team itself is in full charge of this board. Not
 the team leader, not the SCRUM master, but the team. More complicated or
-cumbersome tools are often managed by a single person, which is actually a bad
-thing as the responsibility of owning and administrating the work (and
-commitment) is then not correctly distributed. Thanks to Trello being so
+cumbersome tools are often by necessity managed by a single person, which is
+actually a bad thing as the responsibility of owning and administrating the work
+(and commitment) is then not correctly distributed. Thanks to Trello being so
 accessible and easy to use, it is no problem to have the team be the owner of
 this as well.
 
@@ -126,7 +125,7 @@ picking up the next one. When all tasks of a story are done, the user story can
 be moved to Done in sprint (after creating a codereview for the Gatekeepers in
 FogBugz), and you can start work on another task. Easy as that!
 
-There are a few other things that are worthy of pointing out:
+There are a few other things worth pointing out about the sprint boards:
 
 - People assign themselves to cards as soon as they start work on a story. If a
   story isn't started yet, it probably won't have anyone assigned to it (unless
@@ -182,7 +181,7 @@ Fortunately, Trello has an excellent `REST API`_, which makes it quite easy to
 get the data needed for a simple burndown. We started off with a `burndown chart
 in Google Docs`_, which is a nice and lightweight way to start using Trello for
 your sprints. It turned out we needed a bit more flexibility however, so we
-developed our own burndown application.
+developed our own burndown application, which can be seen below.
 
 .. image:: |filename|/images/trello/burndown.png
     :align: center
@@ -204,8 +203,8 @@ FogBugz
 
 Another thing that Trello doesn't have is time tracking. There is a Chrome
 extension to allow time tracking in Trello using `Harvest`_, but the thing is we
-don't use Harvest; we use Fogbugz. So we developed a simple synchronization tool
-for that, which we sadly haven't open sourced yet.
+don't use Harvest; we use Fogbugz. So we developed and open sourced a `simple
+synchronization tool`_ for that.
 
 What it does is it periodically looks at the task a member has in the "Doing"
 column, finds the case corresponding to that task in FogBugz, and starts
@@ -228,9 +227,10 @@ Closing thoughts
 So that's in a nutshell how we use Trello for our sprints. We've been using it
 for our sprint boards for nearly two years now, and it definitely has stood the
 test of time. We've been using it for other things as well, such as for project
-management, as Kanban board for our Operational IT team, and for storing code
-snippets. The fact that there is Google Apps integration is quite a bonus there
-for us as well.
+management (for which the `calendar view`_ is quite useful), as Kanban board for
+our Operational IT team, and for storing code snippets. The fact that there is
+Google Apps integration is quite a bonus for us as well (although that is only
+part of their paid `business class`_ subscription).
 
 Now it has to be mentioned that there are many other tools out there that
 attempt to solve all of our problems in a single tool. This would of course be
@@ -257,7 +257,10 @@ And don't forget to check out the `taco game`_.
 .. _Greasemonkey: http://www.greasespot.net/
 .. _REST API: https://trello.com/docs/
 .. _Harvest: https://www.getharvest.com/trello/
+.. _simple synchronization tool: https://github.com/paylogic/trello_workon/tree/oop-refactor
 .. _Fogbugz's less than awesome API: http://help.fogcreek.com/8202/xml-api
+.. _calendar view: http://help.trello.com/customer/portal/articles/1262881-viewing-cards-in-a-calendar-view
+.. _business class: https://trello.com/business-class
 .. _Scrum for Trello: https://chrome.google.com/webstore/detail/scrum-for-trello/jdbcdblgjdpmfninkoogcfpnkjmndgje?hl=en
 .. _Kanban plugin: http://www.fogcreek.com/fogbugz/plugins/plugin.aspx?ixPlugin=15
 .. _burndown chart in Google Docs: http://echobehind.wordpress.com/2012/06/28/create-your-own-burndown-chart-using-trello-api-and-google-apps-script/
