@@ -315,7 +315,7 @@ around for existing solutions and we found `SQLAlchemy-i18n <https://github.com/
 The approach of this project is to create a separate translations table and each row in the table
 is a translation in a specific language for a specific field. This is similar to our
 previous approach and has the same limitations in performance. You need to explicitly
-query for languages and fields and do lots of joins. In our case, you load all the languages
+query for languages and fields and do lots of joins. What ``traduki`` does, is load all the languages
 and translations for a field. This might sound like a lot of overhead at first, but in modern
 applications you usually have 10-12 languages and you want them to be available all at once in
 the client.
@@ -323,7 +323,7 @@ the client.
 Conclusion
 ==========
 
-In general, not much have been done on i18n in open source. We hope that ``traduki`` will prove
+In general, not much has been done on i18n in open source. We hope that ``traduki`` will prove
 useful for projects that require an efficient and easy to use internationalization system.
 We are waiting for your feedback and recommendations. Check `traduki <https://github.com/paylogic/traduki>`_
 in our github profile.
