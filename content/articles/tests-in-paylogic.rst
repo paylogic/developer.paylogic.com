@@ -13,8 +13,8 @@ How we use pytest and pytest-bdd in Paylogic
 
 .. contents::
 
-After some time of using `pytest <http://pytest.org>`_ and `pytest-bdd <https://github.com/olegpidsadnyi/pytest-bdd>`_ 
-in Paylogic we developed some standards in the structure of folders with tests and fixtures, and the usage of pytest 
+After some time of using `pytest <http://pytest.org>`_ and `pytest-bdd <https://github.com/olegpidsadnyi/pytest-bdd>`_
+in Paylogic we developed some standards in the structure of folders with tests and fixtures, and the usage of pytest
 and pytest-bdd functionality. This article describes those standards and our usage patterns.
 
 Folder structure
@@ -40,7 +40,7 @@ structure looks as follows:
 
 In *tests/conftest.py* we register all global fixtures that represent objects, such as *event*, *order* and *merchant*.
 Here we also register fixtures that represent attributes of objects like event_title, product_title, etc. The fixtures
-which are related to pytest-bdd, for example *pytestbdd_window_size*, *pytestbdd_browser_load_timeout*, etc., are also 
+which are related to pytest-bdd, for example *pytestbdd_window_size*, *pytestbdd_browser_load_timeout*, etc., are also
 registered in *tests/conftest.py* because they are common fixtures for both our functional as well as our blackbox tests.
 
 I use the term "common fixtures" because *conftest.py* gives us the possibility to separate fixtures and pytest's plugins
@@ -50,8 +50,8 @@ for example *pytestbdd_window_size*. You can imagine that this fixture is only u
 
 Fixture imports
 ===============
-For registering fixtures we just import the fixtures from their packages. For example for registering the order fixture
-and fixtures that represent attributes of order object such as *order_title*, *order_point_of_sale*, etc. we just do:
+For registering fixtures we just import the fixtures from their packages. For example for registering the *order* fixture
+and fixtures that represent attributes of *order* object such as *order_title*, *order_point_of_sale*, etc. we just do:
 
 .. code-block:: python
 
@@ -90,7 +90,7 @@ model which in turn is created by the *create_test_order* testhelper function.
 
 We are using testhelper functions for creating fixtures and for populating the database with initial data after
 re-creating it. We use testhelpers instead of loading JSON or YAML fixtures because attributes of models change
-frequently and we decided that it would be better and more flexible to just a list of testhelpers that are called in
+frequently and we decided that it would be better and more flexible to use just a list of testhelpers that are called in
 the right order for creating initial data.
 
 
@@ -139,10 +139,11 @@ test as many times as the number of parameters the *client_ip* fixture has defin
 Now the question is of course, what is the difference between those two parametrization methods? The difference is that
 *pytest.mark.parametrize* will influence only the test on which it is explicitly defined, while *pytest.fixture(params=[..])*
 influences every test that uses this fixture. If you would for example define three parameters for the above client_ip fixture,
-then each test using this fixture will now be executed three times, once for every param.
+then each test using this fixture will now be executed three times, once for every param. You are basically creating
+three fixtures but each time you will have different value.
 
 Regarding how frequently you would use *pytest.mark.parametrize* compared of *pytest.fixture(params=[...])*, it strongly
-depends on your code base, test code base and type of test. I don't think I can say anything meaningful about that in a 
+depends on your code base, test code base and type of test. I don't think I can say anything meaningful about that in a
 general sense based on just our experiences.
 
 Fixtures for mocking
@@ -161,7 +162,7 @@ to mock a required method of the *pkg_resources.EntryPoint* class, so we wrote t
         monkeypatch.setattr(pkg_resources.EntryPoint, 'require', require)
         …
 
-Each time when your tests depends on this fixture, the require method of the
+Each time when your tests depends on this fixture, the *require* method of the
 *pkg_resources.EntryPoint* class would be mocked.
 
 Functional testing
@@ -277,8 +278,8 @@ different quantity of products, depending on what you write in your feature file
 Scenario outlines
 -----------------
 
-Scenarios can also be parametrized to cover multiple cases. In the `Gherkin language <http://docs.behat.org/en/v2.5/guides/1.gherkin.html>`_ 
-the variable templates are written using corner braces, like so: <somevalue>. Scenario outlines are supported by pytest-bdd 
+Scenarios can also be parametrized to cover multiple cases. In the `Gherkin language <http://docs.behat.org/en/v2.5/guides/1.gherkin.html>`_
+the variable templates are written using corner braces, like so: <somevalue>. Scenario outlines are supported by pytest-bdd
 exactly as described in the `behave docs <http://docs.behat.org/en/v2.5/guides/1.gherkin.html#scenario-outlines>`_.
 
 A full example of a scenario outline can be found below.
