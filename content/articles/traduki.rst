@@ -1,5 +1,5 @@
 :title: Traduki
-:date: 2014-08-27 10:00
+:date: 2014-10-27 10:00
 :summary: Internationalization made easy with the help of SQLAlchemy.
 :category: Open Source
 :author: Spyros Ioakeimidis
