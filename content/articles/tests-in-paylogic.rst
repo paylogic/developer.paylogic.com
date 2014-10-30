@@ -140,7 +140,7 @@ Now the question is of course, what is the difference between those two parametr
 *pytest.mark.parametrize* will influence only the test on which it is explicitly defined, while *pytest.fixture(params=[..])*
 influences every test that uses this fixture. If you would for example define three parameters for the above client_ip fixture,
 then each test using this fixture will now be executed three times, once for every param. You are basically creating
-three fixtures but each time you will have different value.
+three fixtures.
 
 Regarding how frequently you would use *pytest.mark.parametrize* compared of *pytest.fixture(params=[...])*, it strongly
 depends on your code base, test code base and type of test. I don't think I can say anything meaningful about that in a
