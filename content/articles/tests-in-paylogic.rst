@@ -379,3 +379,12 @@ Now your folder structure should look like this:
 
 All things registered in *tests/functional/conftest.py* will now only be accessible in the scope of the functional tests.
 
+
+Conclusion
+==========
+
+That is how our core of storing/creating our tests looks like. I hope that this article will
+be useful for you. There are always ways to improve it and you are welcome in comments with your thoughts. We are
+planning to improve a relation between code and tests, fixtures.
+
+Thank you for reading.
