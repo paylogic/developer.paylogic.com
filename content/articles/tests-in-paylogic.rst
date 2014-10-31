@@ -1,7 +1,7 @@
 :title: How we use pytest and pytest-bdd in Paylogic.
 :date: 2014-10-31 11:00
 :summary: Describing standards and best practices of using pytest and pytest-bdd in Paylogic
-:category: Open source
+:category: Testing
 :author: Andrey Makhnach
 :slug: articles/how-we-use-pytest-and-pytest-bdd-in-paylogic
 :tags: open source, python, pytest, pytest-bdd
