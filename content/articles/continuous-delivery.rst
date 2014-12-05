@@ -5,6 +5,7 @@
 :author: Òscar Vilaplana
 :slug: articles/continuous-delivery
 :tags: agile, continuous delivery, deployment, release, testing, qa
+:email: dev@oscarvilaplana.cat
 
 .. contents:: Table of Contents
    :depth: 2
