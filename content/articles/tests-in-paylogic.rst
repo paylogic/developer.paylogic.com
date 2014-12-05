@@ -5,6 +5,7 @@
 :author: Andrey Makhnach
 :slug: articles/how-we-use-pytest-and-pytest-bdd-in-paylogic
 :tags: open source, python, pytest, pytest-bdd
+:email: andrey.makhnach@gmail.com
 
 ********************************************
 How we use pytest and pytest-bdd in Paylogic
