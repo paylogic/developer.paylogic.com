@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}{{ article.title|striptags }} by {{ article.author }}{% endblock %}
+{% block title %}{{ article.title|striptags }} by {{article.authors|join(', ')|safe}}{% endblock %}
 
 {% block content %}
 <section class="pl-section">
@@ -27,7 +27,13 @@
                                 </td>
                                 <td>
                                     <div class="uk-article-meta">
-                                        Written by <a class="url fn" href="{{ SITEURL }}/{{ article.author.url }}">{{ article.author }}</a>
+                                        Written by
+                                        {% for author in article.authors %}
+                                            <a class="url fn" href="{{ SITEURL }}/{{ author.url }}">{{ author }}</a>
+                                        {% if not loop.last %}
+                                            ,
+                                        {% endif %}
+                                        {% endfor %}
                                         on {{ article.locale_date }}<br />Posted in <a href="{{ SITEURL }}/{{ article.category.url }}">{{ article.category }}</a>
                                     </div>
                                 </td>

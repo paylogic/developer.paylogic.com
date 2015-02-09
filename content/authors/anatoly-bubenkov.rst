@@ -8,4 +8,5 @@ Paylogic and contact with external parties (technology partners).
 He has been programming for more than 11 years now.
 He started with python at 2006 and is still in love with it. However, he always liked
 functional programming, and in particular `clojure <http://clojure.org>`_.
-You can contact him via email at `bubenkoff@gmail.com <bubenkoff@gmail.com>`_ or via `linkedin <http://www.linkedin.com/in/bubenkoff>`_.
+You can contact him via email at `bubenkoff@gmail.com <bubenkoff@gmail.com>`_ or
+via `linkedin <http://www.linkedin.com/in/bubenkoff>`_.

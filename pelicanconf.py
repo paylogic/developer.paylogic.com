@@ -1,3 +1,4 @@
+"""Pelican configuration."""
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- #
 
@@ -28,14 +29,21 @@ SOCIAL = (('Our GitHub account', 'http://github.com/paylogic'),
 
 DEFAULT_PAGINATION = 10
 
-STATIC_PATHS = ['images']
+STATIC_PATHS = ['images', 'videos']
 
 # Custom theme for Paylogic.
 THEME = os.path.join(os.path.dirname(__file__), 'themes', 'paylogic')
 
 DISQUS_SITENAME = 'paylogicdevportal'
 
-PLUGINS = ('plugins.pelican_extended_authors', 'plugins.extract_toc', 'plugins.gravatar')
+PLUGIN_PATHS = ['./pelican-plugins']
+
+PLUGINS = (
+    'plugins.pelican_extended_authors',
+    'plugins.extract_toc',
+    'plugins.gravatar',
+    'html_rst_directive',
+)
 
 # Exclude author pages from other content.
 ARTICLE_EXCLUDES = ['pages', 'authors', ]
