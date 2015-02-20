@@ -1,6 +1,6 @@
 :title: pushserver
 :date: 2015-02-09 13:01
-:summary: Settings configuration system based on entry points of setuptools
+:summary: Pub/sub server to broadcast real-time updates from the server to the clients 
 :category: Open source
 :author: Anatoly Bubenkov
 :slug: articles/pushserver
