@@ -35,9 +35,7 @@ help:
 	@echo '    make github        upload the web site via gh-pages'
 	@echo ''
 
-html: clean $(OUTPUTDIR)/index.html
-
-$(OUTPUTDIR)/%.html:
+html: .env
 	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(CONFFILE) $(PELICANOPTS)
 
 clean:
