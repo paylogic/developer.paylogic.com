@@ -78,6 +78,7 @@ ifeq ($(TRAVIS_PULL_REQUEST), false)
 endif
 
 .env:
+	git submodule init
 	git submodule update
 	-rm -f .env/bin/python*
 	virtualenv .env -p python2.7
