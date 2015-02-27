@@ -55,6 +55,7 @@ RELATIVE_URLS = True
 DISPLAY_PAGES_ON_MENU = False
 MENUITEMS = (
     ("Integration", "/pages/integration.html"),
+    ("Articles", "/archives.html"),
     ("Authors", "/authors.html"),
 )
 
