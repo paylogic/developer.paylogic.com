@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+            <title>Lessons learned using SCRUM by Lars de Ridder - Paylogic Developers</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+                <link href="http://developer.paylogic.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Full Atom Feed">
+
+
+
+
+                <link href="http://developer.paylogic.com/feeds/agile.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Categories Atom Feed">
+
+
+
+
+            <link rel="shortcut icon" href="http://developer.paylogic.com/images/favicon.ico">
+
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.addons.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/style.css">
+    </head>
+
+    <body>
+
+        <nav class="uk-navbar" data-uk-sticky>
+            <div class="uk-container uk-container-center">
+                <a href="/" class="uk-navbar-brand"><img alt="Paylogic" src="http://developer.paylogic.com/images/paylogic.png" /></a>
+                <div class="uk-navbar-content"><a href="/" class="pl-text-light">Developers</a></div>
+                <ul class="uk-navbar-nav uk-float-right uk-hidden-small">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent" data-uk-dropdown>
+                        <a href="#">Categories<i class="uk-icon-angle-down uk-margin-small-left"></i></a>
+                        <div class="uk-dropdown uk-dropdown-flip uk-dropdown-navbar">
+                            <ul class="uk-nav uk-nav-navbar">
+                                        <li class="uk-active"><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <a href="#offcanvas-nav" class="uk-navbar-toggle uk-visible-small uk-float-right" data-uk-offcanvas></a>
+            </div>
+        </nav>
+
+        <div id="offcanvas-nav" class="uk-offcanvas">
+            <div class="uk-offcanvas-bar">
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{multiple:true}">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent">
+                        <a href="#">Categories</a>
+                        <ul class="uk-nav-sub">
+                                    <li class="uk-active"><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <main class="pl-content">
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+            <div class="uk-width-medium-1-4 uk-hidden-small">
+                <div class="toc uk-text-small" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
+                <div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id1">Introduction</a></li>
+<li><a class="reference internal" href="#when-doing-scrum-do-scrum" id="id2">When doing SCRUM, do SCRUM</a></li>
+<li><a class="reference internal" href="#there-really-isn-t-much-process" id="id3">There really isn't much process</a></li>
+<li><a class="reference internal" href="#the-process-that-exists-is-good" id="id4">The process that exists is good!</a></li>
+<li><a class="reference internal" href="#timebox-your-meetings" id="id5">Timebox your meetings</a></li>
+<li><a class="reference internal" href="#team-members-should-be-in-charge-of-their-individual-velocity" id="id6">Team members should be in charge of their individual velocity</a></li>
+<li><a class="reference internal" href="#use-proper-tooling" id="id7">Use proper tooling</a></li>
+<li><a class="reference internal" href="#plan-everything" id="id8">Plan everything</a></li>
+<li><a class="reference internal" href="#backlog-grooming-is-essential" id="id9">Backlog grooming is essential</a></li>
+<li><a class="reference internal" href="#a-team-also-needs-freedom-when-determining-what-to-do" id="id10">A team also needs freedom when determining what to do</a></li>
+<li><a class="reference internal" href="#commitment-vs-forecast" id="id11">Commitment vs forecast</a></li>
+<li><a class="reference internal" href="#multiple-teams-can-scrum-together" id="id12">Multiple teams can SCRUM together</a></li>
+<li><a class="reference internal" href="#closing-thoughts" id="id13">Closing thoughts</a></li>
+</ul>
+</div>
+                </div>
+            </div>
+            <div class="uk-width-medium-3-4">
+                <article class="uk-article">
+                    <table class="uk-table uk-table-middle pl-table-article-meta">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="uk-thumbnail uk-margin-right">
+                                        <img src="http://www.gravatar.com/avatar/654f7856c50932d9b8d9632b3410fbf4" alt="Lars de Ridder" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="uk-article-meta">
+                                        Written by
+                                            <a class="url fn" href="http://developer.paylogic.com/author/lars-de-ridder.html">Lars de Ridder</a>
+                                        on Thu 09 October 2014<br />Posted in <a href="http://developer.paylogic.com/category/agile.html">Agile</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h1 class="uk-article-title">Lessons learned using SCRUM</h1>
+                    <hr class="uk-article-divider">
+                    <div class="pl-article-content">
+<div class="section" id="introduction">
+<h2><a class="toc-backref" href="#id1">Introduction</a></h2>
+<p>Paylogic has been using <a class="reference external" href="https://www.scrum.org/">SCRUM</a> for its engineering process for years now.
+We've made quite a bunch of changes throughout this time and learned a lot.
+Right now we have a highly repeatable and predictable development process, which
+makes it very easy for new engineers to start and almost guarantees that a
+commitment will be met. I would like to share some of the most important things
+we've learned along the way.</p>
+</div>
+<div class="section" id="when-doing-scrum-do-scrum">
+<h2><a class="toc-backref" href="#id2">When doing SCRUM, do SCRUM</a></h2>
+<p>There are way too many companies out there doing something and calling it SCRUM
+(or agile), and not actually doing it. You have the opportunity to stand on the
+shoulders of giants. Use those giants, especially when just getting started.
+Understand why things are done, and only then modify if needed. Avoid <a class="reference external" href="https://www.scrum.org/scrumbut">ScrumButs</a>
+as much as possible.</p>
+<p>And if it turns out you don't like SCRUM, use something else, but don't play
+pretend.</p>
+</div>
+<div class="section" id="there-really-isn-t-much-process">
+<h2><a class="toc-backref" href="#id3">There really isn't much process</a></h2>
+<p>There's some, more than with ad hoc programming, and a bit more than with
+<a class="reference external" href="http://en.wikipedia.org/wiki/Kanban_%28development%29">Kanban</a>, but definitely not a lot.</p>
+<p>At Paylogic, in an average two week sprint with three teams of in total 14
+engineers, we spend two hours on sprint planning, half an hour per team on
+backlog grooming, about 20 minutes on the sprint demo and about 40 minutes on
+the sprint retrospective. Then we of course have standups, which take about 10
+minutes per day and are done on all days except for the sprint planning day.</p>
+<p>This totals to five hours of process per person per two weeks, or two and a half
+hours per week. Based on a 40 hour work week, that's about 6%.</p>
+</div>
+<div class="section" id="the-process-that-exists-is-good">
+<h2><a class="toc-backref" href="#id4">The process that exists is good!</a></h2>
+<p>Now 6% is all well and good, but every bit of process is too much if it has no
+outcome. However, the structure of SCRUM merely asks you to do what you should
+be doing already. Basically, you should:</p>
+<ol class="arabic simple">
+<li>Work in iterations;</li>
+<li>Make a plan for each iteration so that the business knows what's coming;</li>
+<li>Keep each other updated on your progress and your issues;</li>
+<li>Show off what you created; and</li>
+<li>Evaluate your iteration and take action to improve.</li>
+</ol>
+<p>I find it hard to find fault in any of those steps, and they are basically the
+only steps you have to do to implement SCRUM.</p>
+</div>
+<div class="section" id="timebox-your-meetings">
+<h2><a class="toc-backref" href="#id5">Timebox your meetings</a></h2>
+<p>Meetings have a tendency to drag on (see also <a class="reference external" href="http://en.wikipedia.org/wiki/Parkinson%27s_law">Parkinson's Law</a>). It's fairly
+simple to prevent this however.</p>
+<p>In all SCRUM meetings (and most productive meetings actually), you are dealing
+with a number of consecutive items, and when all are handled you're done. In the
+case of the sprint planning each item is every story that fits in the sprint,
+and in the case of a standup it's each member of the team. Simply set a deadline
+for each item and track and enforce this deadline. People will focus on the most
+important points to most optimally use their time, and after a few times, almost
+no-one will get even near to the deadline.</p>
+</div>
+<div class="section" id="team-members-should-be-in-charge-of-their-individual-velocity">
+<h2><a class="toc-backref" href="#id6">Team members should be in charge of their individual velocity</a></h2>
+<p>Engineers take pride in doing their work well. Creation is in our blood. It
+should be natural to leave it up to the engineer to determine the speed in which
+they feel they work, or want to work. Velocity should not automatically be
+computed by a script or mandated by a team leader, and should not be averaged
+out over a team. It is important to recognize the individuals in a team, and
+they should have the opportunity to set their own velocity based on past results
+and future ambitions.</p>
+<p>Next to that, it also makes planning a lot easier. If you have 80 story points
+available in a sprint, it usually doesn't mean that you can plan a single story
+estimated on 80 story points in that sprint. Work is often not that
+parallelizable. If two persons can work on this story, and each person has 20
+story points as their own velocity, then it's suddenly simple to see that you
+can do 40 story points of that story.</p>
+</div>
+<div class="section" id="use-proper-tooling">
+<h2><a class="toc-backref" href="#id7">Use proper tooling</a></h2>
+<p>I wrote an article on <a class="reference external" href="trello.html">how we use Trello</a>, but any tool or method that allows
+you to visualize the work being done and shows your progress towards the end of
+the sprint is fine. Don't skip this; not having it basically means flying blind,
+and you won't ever get controlled sprints.</p>
+</div>
+<div class="section" id="plan-everything">
+<h2><a class="toc-backref" href="#id8">Plan everything</a></h2>
+<p>Don't only plan for the user stories scheduled for a sprint. Recognize that
+other work also has to be done. In our case, we had a period where we had to
+reduce the commitment every sprint, because one of the engineers had to perform
+maintenance on the new Continuous Integration server regularly. Keep monitoring
+which work is actually done, and make sure to create space for this work to be
+planned as well.</p>
+</div>
+<div class="section" id="backlog-grooming-is-essential">
+<h2><a class="toc-backref" href="#id9">Backlog grooming is essential</a></h2>
+<p>We started <a class="reference external" href="http://scrummethodology.com/scrum-backlog-grooming/">backlog grooming</a> relatively late, as we didn't think we needed it.
+Turns out we did. It's really nobody's fault but the team's if it finds out
+during sprint planning that a user story isn't ready for the sprint. And then
+there's no time to correct it, with frustrations on all sides.</p>
+<p>Don't try to actually do estimations or even think of tasks during the grooming
+sessions. The team should simply review each user story to see if they can work
+on it in its current state.</p>
+</div>
+<div class="section" id="a-team-also-needs-freedom-when-determining-what-to-do">
+<h2><a class="toc-backref" href="#id10">A team also needs freedom when determining what to do</a></h2>
+<p>The product owner is of course responsible for the backlog, but to get good
+software, the team needs to be able to influence what they work on as well.  The
+team needs some room to, for example, improve its tooling and development
+environment and to iterate over earlier designs. It is essential for a product
+owner to take this into account.</p>
+<p>If this turns out to be difficult to negotiate, balance can be restored by
+allowing the team to schedule a portion of its time (say 10%) by itself,
+regardless of the backlog.</p>
+</div>
+<div class="section" id="commitment-vs-forecast">
+<h2><a class="toc-backref" href="#id11">Commitment vs forecast</a></h2>
+<p>In the official SCRUM description, there actually exists no such thing as a
+commitment. Instead, there is a <a class="reference external" href="https://www.scrum.org/About/All-Articles/articleType/ArticleView/articleId/95/Commitment-vs-Forecast-A-subtle-but-important-change-to-Scrum">forecast</a>. The idea of this forecast instead
+of commitment is great, the thing is however that often it doesn't matter.
+Whether you use the term forecast or commitment, business people will still
+expect you to deliver what you said you would deliver. Because that's how they
+work.</p>
+<p>There's no real cure for this. Communication is very important here, but in the
+end it's just something you should be aware of. Don't expect you can just win
+this by changing the term. You'll have to change a mindset, and sometimes even a
+culture, and that's much harder.</p>
+</div>
+<div class="section" id="multiple-teams-can-scrum-together">
+<h2><a class="toc-backref" href="#id12">Multiple teams can SCRUM together</a></h2>
+<p>Having a separate SCRUM team doesn't mean they have to have their own standups
+and retrospectives. In fact, that's often a bad idea. If the teams are
+completely independent, kind of like different companies, then it's of course
+fine. But usually, when you are part of the same company, you work together on
+different parts of the same whole, and communication between teams is just as
+important as communication within teams.</p>
+<p>In our case, the three teams consist of a total of about 14 members. This is
+small enough so that we can still have communal standups and retrospectives.
+Sprint planning and backlog grooming are done separately however.</p>
+<p>When teams get larger, a <a class="reference external" href="http://guide.agilealliance.org/guide/scrumofscrums.html">SCRUM of SCRUMS</a> can be used to keep communication
+going.</p>
+</div>
+<div class="section" id="closing-thoughts">
+<h2><a class="toc-backref" href="#id13">Closing thoughts</a></h2>
+<p>At Paylogic we've seen our process grow from being used in a single, small team,
+to a single large team, to scaling to three teams. We've seen people come and
+go, but the process is still going strong. I am very happy with it and with the
+performance of the teams as well.</p>
+<p>Regardless, there are other alternatives that can work just as well, or perhaps
+even better. When it comes to raw productivity, I actually think a Kanban
+process is just a little bit better. A sprint ending and beginning is still
+disruptive and does reduce productivity, more than just the hours spent on the
+meetings. Kanban, being a continuous process, doesn't have this.</p>
+<p>It does require more discipline to pull off correctly however, and I believe it
+is harder for a newcomer to get started with. I would like to try such a process
+in Paylogic however, so perhaps I'll write another article about that by that
+time.</p>
+<!-- External references: -->
+</div>
+</div>
+                        <hr class="uk-article-divider">
+                        <div class="comments">
+                            <h2>Comments</h2>
+                            <div id="disqus_thread"></div>
+                            <script type="text/javascript">
+                                var disqus_identifier = "articles/lessons-scrum.html";
+                                (function() {
+                                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                    dsq.src = 'http://paylogicdevportal.disqus.com/embed.js';
+                                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                })();
+                            </script>
+                        </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+        </main>
+
+        <footer class="pl-footer">
+            <div>
+                <div class="uk-container uk-container-center uk-text-center uk-text-small">
+                    <ul class="uk-subnav uk-subnav-line">
+                        <li><a href="http://developer.paylogic.com/pages/about.html">About</a></li>
+                        <li><a href="https://shopping-api-docs.sandbox.paylogic.com/" target="_blank">API</a></li>
+                        <li><a href="https://github.com/paylogic" target="_blank">GitHub</a></li>
+                        <li><a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a></li>
+                    </ul>
+                    Copyright (c) 2014 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
+                    built using the awesome <a href="http://getpelican.com" target="_blank">Pelican</a> static site generator.<br>
+                    This work is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+                </div>
+            </div>
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/uikit.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/sticky.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/cover.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/application.js"></script>
+
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-13304573-19', 'paylogic.com');
+            ga('send', 'pageview');
+        </script>
+
+    </body>
+</html>

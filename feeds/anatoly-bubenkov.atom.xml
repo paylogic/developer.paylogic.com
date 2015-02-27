@@ -1,0 +1,927 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/anatoly-bubenkov.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2015-02-09T13:01:00+01:00</updated><entry><title>pushserver</title><link href="http://developer.paylogic.com/articles/pushserver.html" rel="alternate"></link><updated>2015-02-09T13:01:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2015-02-09:articles/pushserver.html</id><summary type="html">
+&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Paylogic is constantly working to improve the user experience of it's ticketing platform. When buying a ticket, one of
+the most important things to know is the amount of available tickets. The Paylogic Frontoffice is one of the products
+Paylogic uses to allow event organizers to sell tickets for their events. It is a simple yet powerful and flexible web
+application. The purchasing process is set up as a wizard with a dynamic set of steps: select tickets, order overview,
+payment and so on. The availability counter shows the user how many tickets are still available for a certain event. At
+the moment the Paylogic Frontoffice does not have a real-time indication of the ticket availability. The user selects
+his tickets and pushes the "next" button. If all goes well the user is simply forwarded to the next step. If, however,
+there are not enough tickets available to satisfy the users request, he is send back to the ticket selection step and
+informed about this. This leads to a constant request-response football between the user and the backend just to figure
+out the maximum number of tickets the user can buy. In comes the &lt;a class="reference external" href="https://github.com/paylogic/pushserver"&gt;pushserver&lt;/a&gt;
+which enables the backend services to send real-time events to the web clients. This article describes the motivation
+and gives a brief overview of the technology and implementation details of a &lt;tt class="docutils literal"&gt;pushserver&lt;/tt&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="user-experience"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;User experience&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Paylogic is constantly improving the user experience of it's' products. The Frontoffice being the most important among
+them. The basic flow of the ticket sale can be simplified as the following steps:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Get the list of available ticket types&lt;/li&gt;
+&lt;li&gt;Select the requested ticket quantities&lt;/li&gt;
+&lt;li&gt;Check out the basket&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The second step becomes difficult for the user if the number of available tickets is limited. To allow the user to make
+the right choice he needs to know how many tickets are still available. The question becomes: how does the user get to
+know this, and more importantly, when. The user might be pondering over the available ticket types for a few minutes. At
+the same time another user might come in and take some tickets. How does the first user know that the number of
+available tickets was changed?&lt;/p&gt;
+&lt;p&gt;This problem can be solved in several ways:&lt;/p&gt;
+&lt;dl class="docutils"&gt;
+&lt;dt&gt;Update the availability when the choice is made.&lt;/dt&gt;
+&lt;dd&gt;If after clicking the next button it turns out there are not enough tickets available, an error will be send
+to the user with the updated availability counter. This is probably the simplest option to implement. However, from
+the user's perspective this process is unnatural and unintuitive. The user doesn't expect that there is only 1
+ticket left if the select box allowed him to select
+10.&lt;/dd&gt;
+&lt;dt&gt;Update the availability on an interval, e.g. every 10 seconds.&lt;/dt&gt;
+&lt;dd&gt;This is more user-friendly but if we take a very short period to emulate real-time updates, then this can be
+problematic for the server to handle. In essence it will look like DDOS attack, as during peak sales we have tens of
+thousands of users using the Frontoffice all at once.&lt;/dd&gt;
+&lt;dt&gt;Update the availability at the time it changes.&lt;/dt&gt;
+&lt;dd&gt;If there's no change, why bother the client's browser with information it already knows? This also allows the
+servers to not get overloaded as it is no longer the browser but the pushserver who is deciding on the amount of
+traffic.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/div&gt;
+&lt;div class="section" id="but-how-to-implement-this"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;But how to implement this?&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;So we need a way to send updates from the server to the client without the need for the browser to explicitly request
+the new information. There's a nice &lt;a class="reference external" href="http://stackoverflow.com/questions/11077857/what-are-long-polling-websockets-server-sent-events-sse-and-comet/12855533#12855533"&gt;answer&lt;/a&gt;
+at Stack Overflow which describes the basic options for such a scheme.&lt;/p&gt;
+&lt;p&gt;There are a few options available:&lt;/p&gt;
+&lt;dl class="docutils"&gt;
+&lt;dt&gt;&lt;a class="reference external" href="http://en.wikipedia.org/wiki/Push_technology#Long_polling"&gt;Long polling&lt;/a&gt;&lt;/dt&gt;
+&lt;dd&gt;Browser support is 100%. That's probably the only strong point of this technique. The problem of constantly
+reconnecting and state recovery is completely in the hands of the implementation. There are no helpers provided by
+any standard as there's no such thing. It really is just a normal HTTP request which takes a long time and to the
+browser it's just one big document.&lt;/dd&gt;
+&lt;dt&gt;&lt;a class="reference external" href="http://en.wikipedia.org/wiki/WebSocket"&gt;Websockets&lt;/a&gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;a class="reference external" href="http://caniuse.com/websockets"&gt;Browser support&lt;/a&gt; is not 100% but is very good. Is it what's needed for our
+problem? It could fit very well but it gives us much more than we need. Websockets provide a two-way communication
+channel but we don't really need that for our problem. All updates are coming &lt;tt class="docutils literal"&gt;from&lt;/tt&gt; the server. Updates from the
+client are done using normal requests (XMLHttpRequest or regular POST). Additionally websockets are not HTTP but raw
+TCP, HTTP is only used for the handshake. This means it requires much more hassle from the OPIT side as they will
+need to set up a raw TCP service next to the current web service.&lt;/dd&gt;
+&lt;dt&gt;&lt;a class="reference external" href="http://en.wikipedia.org/wiki/Server-sent_events"&gt;Server sent events (SSE)&lt;/a&gt;&lt;/dt&gt;
+&lt;dd&gt;Browser support is &lt;a class="reference external" href="http://caniuse.com/eventsource"&gt;not that bad&lt;/a&gt;, and increasing constantly. Server sent events
+provide a one-way communication channel. However, this channel has some very useful features provided by the
+browser:
+* Automatic reconnect in case of a connection problem
+* State restoration on reconnect (the browser sends the last event ID it received before the disconnect)
+* A very easy javascript interface&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;p&gt;Those options all provide the possibilities we need but they are not equal. SSE seems to be the most optimal for our use
+case. As we use Python a lot, we've looked around for some existing solutions which implement SSE server-side. We've
+found &lt;a class="reference external" href="https://github.com/DazWorrall/flask-sse"&gt;flask sse&lt;/a&gt;, which seems to be exactly what we need.&lt;/p&gt;
+&lt;p&gt;Flask-sse uses Redis &lt;a class="reference external" href="http://redis.io/topics/pubsub"&gt;pubsub&lt;/a&gt; as a backend for broadcasting the events from the server.
+It uses &lt;a class="reference external" href="http://redis.io/topics/cluster-spec"&gt;redis-cluster&lt;/a&gt; which is currently in beta, but &lt;a class="reference external" href="http://antirez.com/news/79"&gt;will be released soon&lt;/a&gt; (and is actually already used in production as reported by Salvatore Sanfilippo).
+Flask-sse on top of redis-cluster allows us to have a high available, scalable web service.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="use-case"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;Use-case&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;A possible use-case can be drawn as follows:&lt;/p&gt;
+&lt;img alt="pushserver use-case from the user perspective" class="align-center" src="http://developer.paylogic.com/images/pushserver/diagram-user-perspective.png"/&gt;
+&lt;p&gt;The actor changes some data on the backend via a normal request to the backend. All users receive the broadcasted
+message from the backend via long-lasting channel for server-sent events.&lt;/p&gt;
+&lt;p&gt;The deployment may look like this:&lt;/p&gt;
+&lt;img alt="pushserver use-case possible deployment schema" class="align-center" src="http://developer.paylogic.com/images/pushserver/diagram-deployment.png"/&gt;
+&lt;/div&gt;
+&lt;div class="section" id="sending-events-to-a-push-server"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;Sending events to a push server&lt;/a&gt;&lt;/h2&gt;
+&lt;pre class="literal-block"&gt;
+from flask.ext.sse import send_event
+
+send_event('myevent', {"message": "Hello!"}, channel='mychannel')
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div class="section" id="receiving-events-in-the-browser"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id6"&gt;Receiving events in the browser&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;On the client side you just need a javascipt handler function which will be called when a new message is pushed from the
+server.&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+var source = new EventSource('/stream?channel=mychannel');
+source.addEventListener('myevent', function (event) {
+     alert(event.data);
+};
+&lt;/pre&gt;
+&lt;p&gt;Server-Sent Events are &lt;a class="reference external" href="http://caniuse.com/#feat=eventsource"&gt;supported&lt;/a&gt; by recent Firefox, Chrome and Safari
+browsers. Internet Explorer does not yet support Server-Sent Events but there are two recommended Polyfills to support
+IE and older browsers:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://github.com/remy/polyfills/blob/master/EventSource.js"&gt;EventSource.js&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://github.com/rwldrn/jquery.eventsource"&gt;jquery.eventsource&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Mobile browsers have limited support, so test carefully whether it works for your target set of browsers.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="live-demo"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id7"&gt;Live demo&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Here is a small demo video of the potential of this technique: we use pushserver to update the ticket availability in
+our Frontoffice application. The left and right windows are operated by different users and are completely independent.
+When the ticket availability is changed by an action from the left window's operator, the right window changes instantly
+without any polling involved (you can see the network bar).&lt;/p&gt;
+&lt;p&gt;A simple Frontoffice where you can only select the quantity of tickets:&lt;/p&gt;
+&lt;video controls="" height="480" poster="/images/pushserver/pushserver-in-action.png" preload="none" src="/videos/pushserver-in-action.mov" width="720"&gt;&lt;/video&gt;&lt;p&gt;A More advanced example where you can pick a seat:&lt;/p&gt;
+&lt;video controls="" height="480" poster="/images/pushserver/pushserver-seating-demo.png" preload="none" src="/videos/pushserver-seating-demo.mov" width="720"&gt;&lt;/video&gt;&lt;/div&gt;
+&lt;div class="section" id="future-considerations-for-paylogic"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id8"&gt;Future considerations for Paylogic&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;We are considering creating a special stream API where API users can subscribe to events and get them instantly instead
+of needing to poll the state from time to time. This is especially important for things like collecting the result of
+payment processing, ticket availability changes, etc.&lt;/p&gt;
+&lt;p&gt;For now, Server sent events are more like an experiment for us, but it's a promising technology. We're eager to hear
+some feedback from developers who use our API on whether it will be useful for them to have a stream API.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="open source"></category><category term="python"></category><category term="redis-cluster"></category><category term="push notifications"></category><category term="server-sent events"></category><category term="SSE"></category><category term="html5"></category><category term="pub/sub"></category></entry><entry><title>Paylogic Code review tool</title><link href="http://developer.paylogic.com/articles/codereview.html" rel="alternate"></link><updated>2014-07-17T09:00:00+02:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-07-17:articles/codereview.html</id><summary type="html">
+&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;As open sourcing software is a strategic decision of Paylogic we decided not to make an exception for our
+development tools, in the hope that they are of use to the community. The code review tool is probably our most
+important development tool, so we decided to start with that. The Github repository can be found
+&lt;a class="reference external" href="https://github.com/paylogic/codereview"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="http://en.wikipedia.org/wiki/Code_review"&gt;Code review&lt;/a&gt; is one of the main pillars of the Paylogic development
+process. We have multiple projects ongoing, and none of the code changes can go into the stable repository
+without at least 2 code reviews. The last code review is done by a special company role - &lt;tt class="docutils literal"&gt;Gatekeeper&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;We will reveal more about the gatekeeper process in later articles, but you can already see that code reviewing
+is a very important process for us, so the tool we use for it is important as well.&lt;/p&gt;
+&lt;p&gt;This article covers and explains the choice of the tool, its customizations, and the use case.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="the-choice"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;The Choice&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;In 2011 we had to choose a code review tool, and after a thorough research
+&lt;a class="reference external" href="https://code.google.com/p/rietveld/"&gt;rietveld&lt;/a&gt; seemed one of the best solutions for our specific needs:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Web based.&lt;/li&gt;
+&lt;li&gt;Minimalistic, code centric interface.&lt;/li&gt;
+&lt;li&gt;Has keyboard shortcuts for easy code review navigation.&lt;/li&gt;
+&lt;li&gt;Written in python, so it's easy to change and maintain.&lt;/li&gt;
+&lt;li&gt;Has a community which improves it constantly.&lt;/li&gt;
+&lt;li&gt;Simple installation on a private server.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="customizations"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Customizations&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;So we decided to use rietveld. But we had to customize it significantly as our development process uses
+&lt;a class="reference external" href="https://www.fogcreek.com/fogbugz/"&gt;Fogbugz&lt;/a&gt; as a case management tool. This means that every change to the
+Paylogic codebase has a reference to a Fogbugz case, and the development itself is case-based.&lt;/p&gt;
+&lt;p&gt;The whole picture of our continuous integration will be described in later article(s), however there was a
+&lt;a class="reference external" href="http://www.slideshare.net/zittersteyn/advanced-continuous-integration-pygrunn-2014-dirk-zittersteyn"&gt;great talk&lt;/a&gt;
+at our &lt;a class="reference external" href="http://pygrunn.org/"&gt;PyGrunn&lt;/a&gt; conference
+on this topic from &lt;a class="reference external" href="http://nl.linkedin.com/in/dzittersteyn"&gt;Dirk Zittersteyn&lt;/a&gt;.  However, since it is important
+to understand the role the code review tool plays in our ecosystem, the below image shows a part of the process.&lt;/p&gt;
+&lt;img alt="gatekeepering and code review process" class="align-center" src="http://developer.paylogic.com/images/codereview/gatekeepering-and-code-review-process.png"/&gt;
+&lt;p&gt;As you can see from the diagram (and the Legend), the code review tool is a critical part of our process.&lt;/p&gt;
+&lt;p&gt;Before we continue, we'll give you a quick glossary for the rest of this article:&lt;/p&gt;
+&lt;dl class="docutils"&gt;
+&lt;dt&gt;&lt;tt class="docutils literal"&gt;original repository&lt;/tt&gt; (&lt;tt class="docutils literal"&gt;target repository&lt;/tt&gt;)&lt;/dt&gt;
+&lt;dd&gt;Version control repository which is considered as a target in which to merge some proposed set of changes.&lt;/dd&gt;
+&lt;dt&gt;&lt;tt class="docutils literal"&gt;original branch&lt;/tt&gt; (&lt;tt class="docutils literal"&gt;target branch&lt;/tt&gt;)&lt;/dt&gt;
+&lt;dd&gt;Version control branch in the &lt;tt class="docutils literal"&gt;original repository&lt;/tt&gt; in which to merge some proposed set of changes.&lt;/dd&gt;
+&lt;dt&gt;&lt;tt class="docutils literal"&gt;feature repository&lt;/tt&gt; (&lt;tt class="docutils literal"&gt;source repository&lt;/tt&gt;)&lt;/dt&gt;
+&lt;dd&gt;Version control repository which is considered as a source of the proposed set of changes. This can be the same as
+&lt;tt class="docutils literal"&gt;original repository&lt;/tt&gt;.&lt;/dd&gt;
+&lt;dt&gt;&lt;tt class="docutils literal"&gt;feature branch&lt;/tt&gt; (&lt;tt class="docutils literal"&gt;source branch&lt;/tt&gt;)&lt;/dt&gt;
+&lt;dd&gt;Version control branch in the &lt;tt class="docutils literal"&gt;source repository&lt;/tt&gt; which is considered as a source of the proposed
+set of changes.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;p&gt;With the customizations we've made to &lt;tt class="docutils literal"&gt;rietveld&lt;/tt&gt;, we can now:&lt;/p&gt;
+&lt;div class="section" id="use-corporate-single-sign-on-to-authorize-users-in-the-code-review-tool"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id4"&gt;Use corporate single sign-on to authorize users in the code review tool&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;It's important to remove unnecessary additional user management responsibilities from our Operational IT team. And of
+course, from the user's perspective it's much less effort, as they can use a single corporate account to log in
+(we use &lt;a class="reference external" href="http://www.google.com/enterprise/apps/business/"&gt;Google Apps for Business&lt;/a&gt;)&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="create-code-review-issues-patchsets-taking-any-required-information-from-the-corresponding-fogbugz-case"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id5"&gt;Create code review issues (patchsets), taking any required information from the corresponding Fogbugz case&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;This feature is implemented by creating a special endpoint on the code review tool which gets the case number as
+a parameter, and retrieves the following fields from that case through the
+&lt;a class="reference external" href="http://help.fogcreek.com/8202/xml-api"&gt;Fogbugz API&lt;/a&gt;:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Original (target) branch (for example &lt;tt class="docutils literal"&gt;master&lt;/tt&gt; or &lt;tt class="docutils literal"&gt;default&lt;/tt&gt;) - implemented using a custom field in Fogbugz.&lt;/li&gt;
+&lt;li&gt;Feature (source) branch (for example &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;nice-feature&lt;/span&gt;&lt;/tt&gt;) - implemented using a custom field in Fogbugz.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For custom fields, we use the &lt;a class="reference external" href="http://www.fogcreek.com/fogbugz/plugins/plugin.aspx?ixPlugin=1"&gt;Custom Fields&lt;/a&gt; plugin.
+From the Fogbugz side, it looks like this:&lt;/p&gt;
+&lt;img alt="create patchset from Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/create-patchset.png"/&gt;
+&lt;/div&gt;
+&lt;div class="section" id="apply-custom-validations-for-any-patchsets-created"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id6"&gt;Apply custom validations for any patchsets created&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;We implement some critical checks, where we for example don't allow the changing of certain non-editable files.
+If any of the validations didn't pass, creation of the issue (i.e. an additional patchset) fails and shows an error
+to the user.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="implement-gatekeepering-process-support"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id7"&gt;Implement Gatekeepering process support&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Users with a special role can now &lt;tt class="docutils literal"&gt;approve&lt;/tt&gt; a certain revision of the feature branch.&lt;/p&gt;
+&lt;p&gt;This is, again, implemented using a special custom field in Fogbugz called
+&lt;tt class="docutils literal"&gt;approved revision&lt;/tt&gt;, together with the Fogbugz API to set it from the code review tool.&lt;/p&gt;
+&lt;p&gt;In the code review tool:&lt;/p&gt;
+&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="http://developer.paylogic.com/images/codereview/approve-revision-click.png"/&gt;
+&lt;p&gt;And in Fogbugz:&lt;/p&gt;
+&lt;img alt="approved revision and ci project fields set in the Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/approved-revision-field.png"/&gt;
+&lt;/div&gt;
+&lt;div class="section" id="allow-gatekeepers-to-set-and-select-from-the-dropdown-the-target-branch-for-a-given-ci-project"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id8"&gt;Allow gatekeepers to set (and select from the dropdown) the target branch for a given CI project&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Both &lt;tt class="docutils literal"&gt;target branch&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;CI project&lt;/tt&gt; are custom fields of a Fogbugz case.&lt;/p&gt;
+&lt;p&gt;In the code review tool:&lt;/p&gt;
+&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="http://developer.paylogic.com/images/codereview/approve-revision-target-branch.png"/&gt;
+&lt;p&gt;And in Fogbugz:&lt;/p&gt;
+&lt;img alt="target branch field in the Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/target-branch-field.png"/&gt;
+&lt;/div&gt;
+&lt;div class="section" id="support-creation-of-an-issue-patchset-using-bzr-git-and-mercurial-repositories"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id9"&gt;Support creation of an issue (patchset), using bzr, git and mercurial repositories&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;All combinations are accepted for &lt;tt class="docutils literal"&gt;original&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;feature&lt;/tt&gt; branch fields in Fogbugz.
+As additional protection from &lt;tt class="docutils literal"&gt;phishing&lt;/tt&gt; on the &lt;tt class="docutils literal"&gt;original&lt;/tt&gt; branch, the latest revision from
+the &lt;tt class="docutils literal"&gt;source repository&lt;/tt&gt;'s &lt;tt class="docutils literal"&gt;original branch&lt;/tt&gt; will be used to calculate a diff between
+the &lt;tt class="docutils literal"&gt;source repository&lt;/tt&gt;'s &lt;tt class="docutils literal"&gt;feature branch&lt;/tt&gt; and the &lt;tt class="docutils literal"&gt;original repository&lt;/tt&gt;'s &lt;tt class="docutils literal"&gt;original branch&lt;/tt&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="problems-using-rietveld"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id10"&gt;Problems using rietveld&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;rietveld was developed specially for &lt;a class="reference external" href="https://developers.google.com/appengine/?csw=1"&gt;Google App Engine&lt;/a&gt;.
+It has lots of benefits for developers who don't want to bother with any OpIT related tasks.
+As we however have a strict requirement to host the code (and thus the code review tool) on our private servers, we used
+&lt;a class="reference external" href="http://django-gae2django.googlecode.com/svn/trunk/examples/rietveld/README"&gt;gae2django&lt;/a&gt; to deploy rietveld locally.
+What gae2django does is convert models that are supposed to be used with the
+Google App Engine datastore to Django ORM models. This allows us to deploy the
+application using relational databases such as (in our case) MySQL.&lt;/p&gt;
+&lt;p&gt;This was &lt;tt class="docutils literal"&gt;good enough&lt;/tt&gt; for us, as up till now rietveld was using GAE DB (ext.db). But this is no longer the case.
+Now rietveld uses &lt;a class="reference external" href="https://developers.google.com/appengine/docs/python/ndb/"&gt;NDB&lt;/a&gt; for its models. And it's simply
+&lt;tt class="docutils literal"&gt;not possible&lt;/tt&gt; to implement automatic mapping from NDB-based models to django ORM models
+because the difference is huge.&lt;/p&gt;
+&lt;p&gt;So currently, we are in the situation that we cannot receive any updates from the rietveld repository any more,
+so instead we have to support our &lt;tt class="docutils literal"&gt;fork&lt;/tt&gt; ourselves. For now this is &lt;tt class="docutils literal"&gt;acceptable&lt;/tt&gt;,
+but we are considering moving to a different code review tool.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="want-to-use-it-or-to-try-it"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id11"&gt;Want to use it or to try it?&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The &lt;a class="reference external" href="https://github.com/paylogic/codereview/blob/master/README.rst"&gt;readme&lt;/a&gt; on Github contains all the information
+required to set up the code review tool on your server. Don't hesitate to try it out.
+If you have any problems with installation, please create an &lt;a class="reference external" href="https://github.com/paylogic/codereview/issues/"&gt;issue&lt;/a&gt;
+on Github.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="future-considerations"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id12"&gt;Future considerations&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;As was mentioned earlier, &lt;tt class="docutils literal"&gt;Review Board&lt;/tt&gt; will probably be the replacement for
+our current solution. However, if we'll switch to git completely (which we haven't done yet) there are
+some other alternatives to consider as well, such as:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://www.gitlab.com/"&gt;GitLab&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://code.google.com/p/gerrit/"&gt;Gerrit&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Any new tool we might choose will have to be customized in order to be an integral part of our development process.
+This new customization will be open sourced as well.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="thanks-questions"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id13"&gt;"Thanks! Questions?"&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;So regarding the code review, we've put all our cards on the table: from decision making to implementation,
+support, and use cases. We hope that it will be useful for the community.
+Feedback is, as usual, more than appreciated. Happy code reviewing, we wish you 0 comments on your reviews!&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="code review"></category><category term="gatekeeper"></category><category term="fogbugz"></category><category term="review"></category><category term="rietveld"></category><category term="open source"></category></entry><entry><title>pytest-xdist and session-scoped fixtures</title><link href="http://developer.paylogic.com/articles/pytest-xdist-and-session-scoped-fixtures.html" rel="alternate"></link><updated>2014-05-28T12:36:00+02:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-05-28:articles/pytest-xdist-and-session-scoped-fixtures.html</id><summary type="html">
+&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;In the earlier &lt;a class="reference external" href="test-p14n"&gt;article on Test parallelization&lt;/a&gt; we unveiled how we &lt;tt class="docutils literal"&gt;parallelize&lt;/tt&gt; our tests.
+There we gave a few examples of services we run for the tests. However, due to implementation details of
+&lt;a class="reference external" href="https://pytest.org"&gt;pytest&lt;/a&gt; and &lt;a class="reference external" href="https://pytest.org/latest/xdist.html"&gt;pytest-xdist&lt;/a&gt;, it is not possible
+to implement service starting and stopping efficiently out of the box. That's why we developed our own solution,
+described in this article.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="back-to-the-example-where-the-problem-starts"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Back to the example, where the problem starts&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;execnet&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;channel&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start web application.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param channel: execnet channel to talk to the master process.&lt;/span&gt;
+&lt;span class="sd"&gt;    :param str database_connection: the database connection string.&lt;/span&gt;
+&lt;span class="sd"&gt;    :param port: the port number that will be used by runserver.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# monkey patch the database connection&lt;/span&gt;
+    &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database&lt;/span&gt;
+    &lt;span class="n"&gt;database&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;
+
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.httpserver&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.ioloop&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.web&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.wsgi&lt;/span&gt;
+
+    &lt;span class="n"&gt;wsgi_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wsgi&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WSGIContainer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;app_wsgi_handler&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;tornado_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;r"/media/(.*)"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;StaticFileHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;"path"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;media_path&lt;/span&gt;&lt;span class="p"&gt;}),&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'.*'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FallbackHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fallback&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;wsgi_app&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt;
+    &lt;span class="p"&gt;])&lt;/span&gt;
+
+    &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;httpserver&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;HTTPServer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tornado_app&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;channel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'started app on port: {0}'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ioloop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;IOLoop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;instance&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scope&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'session'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;application&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start application in a separate process.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param port: a random port the application should listen to.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# create execnet gateway&lt;/span&gt;
+    &lt;span class="n"&gt;gw&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;execnet&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;makegateway&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="c"&gt;# set the same python system path on remote python as on current one&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+    &lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remote_exec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="p"&gt;[&lt;/span&gt;
+            &lt;span class="s"&gt;"import sys"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s"&gt;"sys.path = {0}"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;waitclose&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="c"&gt;# create channel running worker function&lt;/span&gt;
+    &lt;span class="n"&gt;channel&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remote_exec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;addfinalizer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exit&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;gw&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;What is extremely important here is that we instantiate things like applications and services
+only once per test run, because it takes a lot of time to start / stop applications and/or services,
+to create databases, etc.&lt;/p&gt;
+&lt;p&gt;According to &lt;a class="reference external" href="https://pytest.org/latest/fixture.html"&gt;pytest fixtures&lt;/a&gt;, our application will be instantiated
+on demand and should live during the whole test session time. Which is fine, as long as you do
+not &lt;tt class="docutils literal"&gt;parallelize&lt;/tt&gt; tests, and therefore do not use &lt;a class="reference external" href="https://pytest.org/latest/xdist.html"&gt;pytest-xdist&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;But when you do use it, it's &lt;strong&gt;not guaranteed&lt;/strong&gt; that test nodes will have only one test session!&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="pytest-xdist-internals"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;pytest-xdist internals&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;To simplify things, let's concentrate on the &lt;tt class="docutils literal"&gt;stages&lt;/tt&gt; that &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pytest-xdist&lt;/span&gt;&lt;/tt&gt; uses to run tests in a distributed way:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p class="first"&gt;Collect all nodes checking the connection&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Rsync files needed&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Collect all tests on every node&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Start 'initial distribution' test sessions over nodes using the number of tests calculated by the following formula:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;div class="formula"&gt;
+&lt;i&gt;ntests&lt;/i&gt; = &lt;i&gt;Ntests&lt;/i&gt; ⁄ (&lt;i&gt;Knodes&lt;/i&gt;*4)
+&lt;/div&gt;
+&lt;dl class="docutils"&gt;
+&lt;dt&gt;where:&lt;/dt&gt;
+&lt;dd&gt;&lt;ul class="first last simple"&gt;
+&lt;li&gt;ntests - number of tests to run for test node session&lt;/li&gt;
+&lt;li&gt;Ntests - total number of tests&lt;/li&gt;
+&lt;li&gt;Knodes - number of test nodes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Start more test sessions for nodes which are done with initial test sessions using the same formula&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We see here that the more tests you have for the same amount of nodes, the more test sessions will be started!&lt;/p&gt;
+&lt;p&gt;In the below diagram we can see how it works in a more visual way:&lt;/p&gt;
+&lt;img alt="pytest-xdist in action" class="align-center" src="http://developer.paylogic.com/images/pytest-xdist-in-action.png" style="width: 75%;"/&gt;
+&lt;/div&gt;
+&lt;div class="section" id="how-to-avoid-multiple-sessions-on-single-node"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;How to avoid multiple sessions on single node&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;So we know that it's possible to get not one but several sessions during the test run on a single node.
+How can we avoid that? Fortunately, even though we have multiple sessions per node, it's still the same python process,
+so we can cache objects on module level. In this way we &lt;em&gt;invent&lt;/em&gt; a new fixture scope - &lt;tt class="docutils literal"&gt;test run&lt;/tt&gt;.
+For fixtures within this scope, the fixture and its finalizer will be called only once per whole test run on a given test node.
+Here is the implementation of the utility decorator that we use:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;decorator&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pytest&lt;/span&gt;
+
+&lt;span class="n"&gt;marker&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;_memoize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kw&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Memoization helper to cache function's return value as an attribute of this function."""&lt;/span&gt;
+    &lt;span class="n"&gt;cache&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;getattr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'_cache'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;marker&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;cache&lt;/span&gt; &lt;span class="ow"&gt;is&lt;/span&gt; &lt;span class="n"&gt;marker&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_cache&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kw&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;func&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_cache&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;cache&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;memoize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Decorator which caches the return value of the function."""&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;decorator&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;decorator&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;_memoize&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;As you can see it's a pretty straightforward application of the &lt;a class="reference external" href="http://en.wikipedia.org/wiki/Memoization"&gt;memoization
+technique&lt;/a&gt; using function object as
+a cache storage based on the &lt;a class="reference external" href="https://pypi.python.org/pypi/decorator/3.4.0"&gt;decorator&lt;/a&gt; package.
+The &lt;tt class="docutils literal"&gt;decorator&lt;/tt&gt; package is needed to preserve the function
+prototype which is important for the &lt;tt class="docutils literal"&gt;pytest fixture dependency injection mechanism&lt;/tt&gt;.&lt;/p&gt;
+&lt;p&gt;So now our application fixture looks like this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;atexit&lt;/span&gt;
+
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;execnet&lt;/span&gt;
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scope&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'session'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nd"&gt;@memoize&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;application&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start application in a separate process.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param port: a random port the application should listen to.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# create execnet gateway&lt;/span&gt;
+    &lt;span class="n"&gt;gw&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;execnet&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;makegateway&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="c"&gt;# set the same python system path on remote python as on current one&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+    &lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remote_exec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="p"&gt;[&lt;/span&gt;
+            &lt;span class="s"&gt;"import sys"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s"&gt;"sys.path = {0}"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;waitclose&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="c"&gt;# create channel running worker function&lt;/span&gt;
+    &lt;span class="n"&gt;channel&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remote_exec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;atexit&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exit&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;gw&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;By using the &lt;tt class="docutils literal"&gt;memoize&lt;/tt&gt; decorator we avoid calling the &lt;tt class="docutils literal"&gt;application&lt;/tt&gt; function multiple times during the test run, even if
+there will be multiple sessions involved on a single test node.
+The result of the first call of the &lt;tt class="docutils literal"&gt;application&lt;/tt&gt; function will be cached as an attribute on the application function.
+Subsequent calls will just return the cached value.
+Note that instead of &lt;tt class="docutils literal"&gt;request.addfinalizer&lt;/tt&gt; we use &lt;tt class="docutils literal"&gt;atexit.register&lt;/tt&gt;. This is because memoization has it's downside - we cannot use
+pytest's normal fixture finalizers simply because there's no scope higher than &lt;tt class="docutils literal"&gt;session&lt;/tt&gt; at the moment.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="conclusion"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id6"&gt;Conclusion&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;We identified a few advantages of using the approach discussed in the previous sections.
+This approach allowed us to considerably reduce our test execution time.
+It also improved the test stability, because the OS performs better as it doesn't need to spawn and kill lots
+of processes. We hope that you will find our approach useful, especially if you use &lt;tt class="docutils literal"&gt;pytest&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pytest-xdist&lt;/span&gt;&lt;/tt&gt;,
+as you will probably run into the same issues as we did.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="testing"></category><category term="pytest"></category><category term="pytest-xdist"></category><category term="fixtures"></category><category term="session"></category></entry><entry><title>Test parallelization</title><link href="http://developer.paylogic.com/articles/test-p14n.html" rel="alternate"></link><updated>2014-01-31T10:37:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-01-31:articles/test-p14n.html</id><summary type="html">
+&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Automated tests are awesome. A good test suite makes refactoring easier and allows
+developers to catch bugs before the code is deployed on live or is spotted
+by a tester.&lt;/p&gt;
+&lt;p&gt;Once the advantages of automated testing are discovered, the number of tests increases
+exponentially. At Paylogic, there were about 200 tests in the early testing stage.
+The tests took about 5 minutes to run. At the moment, we have about 2500 tests and using
+a single test process it takes 1 hour and 40 minutes to execute.&lt;/p&gt;
+&lt;p&gt;For developers, it's simply not an option to wait for 2 hours until the whole test suite finishes,
+as they want results as soon as possible. They might then take the risk
+to push the code untested. However, as we have continuous integration in place, if there are any failing
+tests, the developers will get their work back to fix them anyway. This is something that
+costs extra time.&lt;/p&gt;
+&lt;p&gt;It became clear that something had to be changed. We could completely rewrite the tests, make
+them very focused and try mock most of the things (such as the database). However,
+this means that the team would have to exclusively dedicate a few months to improve the tests and
+stop developing new features.&lt;/p&gt;
+&lt;p&gt;Another solution would involve test distribution over several executors that
+might run on one or several machines. The same tests run in parallel on
+many nodes reduces &lt;a class="reference external" href="http://en.wikipedia.org/wiki/Wall-clock_time"&gt;wall time&lt;/a&gt;.
+Everybody is happy: developers do not need to wait hours to get their test
+results and get an excuse to go for a coffee.  Product managers do not need to
+change the long term planning. Customers are happy.  Profit.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="a-closer-look-to-the-test-suite"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;A closer look to the test suite&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The testing tool we use is &lt;a class="reference external" href="http://pytest.org/"&gt;py.test&lt;/a&gt;. We keep our tests in
+a separate folder called tests, which is organized like this:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+tests
+├── conftest.py
+├── deployment
+├── fixtures
+├── functional
+├── __init__.py
+└── unit
+&lt;/pre&gt;
+&lt;p&gt;In &lt;tt class="docutils literal"&gt;conftest.py&lt;/tt&gt; we store the &lt;tt class="docutils literal"&gt;py.test&lt;/tt&gt; configuration and import fixtures which are
+defined in the &lt;cite&gt;fixtures&lt;/cite&gt; folder. The folder &lt;cite&gt;functional&lt;/cite&gt; contains functional tests, &lt;cite&gt;unit&lt;/cite&gt;
+contains unit tests and so on.&lt;/p&gt;
+&lt;p&gt;The tests require the database to be available, as well as memcache. Functional tests
+also expect the &lt;tt class="docutils literal"&gt;web servers&lt;/tt&gt; required for the tests to listen on specific ports. By &lt;tt class="docutils literal"&gt;web servers&lt;/tt&gt; I
+mean those servers that serve applications whose code we cover with our tests. Among them can be
+the &lt;a class="reference external" href="https://www.djangoproject.com/"&gt;Django&lt;/a&gt; development server, the
+&lt;a class="reference external" href="http://flask.pocoo.org/"&gt;Flask&lt;/a&gt; development server, &lt;a class="reference external" href="http://pythonpaste.org/modules/httpserver.html"&gt;paste&lt;/a&gt;
+http server and so on.&lt;/p&gt;
+&lt;p&gt;A typical development session looks like this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;virtualenv env  &lt;span class="c"&gt;# Create a virtualenv.&lt;/span&gt;
+&lt;span class="nb"&gt;source &lt;/span&gt;env/bin/activate  &lt;span class="c"&gt;# Activate it.&lt;/span&gt;
+pip install -r requirements-testing.txt  &lt;span class="c"&gt;# Install all the needed packages.&lt;/span&gt;
+&amp;lt;generate settings &lt;span class="nb"&gt;command&lt;/span&gt;&amp;gt;  &lt;span class="c"&gt;# Generate settings (set up the database connection string etc).&lt;/span&gt;
+&amp;lt;database schema generation &lt;span class="nb"&gt;command&lt;/span&gt;&amp;gt; &lt;span class="c"&gt;# Generate the database schema and insert initial data into it.&lt;/span&gt;
+
+&lt;span class="c"&gt;# Implement changes for given feature.&lt;/span&gt;
+
+&lt;span class="c"&gt;# Start web application(s)&lt;/span&gt;
+
+py.test tests  &lt;span class="c"&gt;# Run the tests.&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Dependency satisfaction, configuration, database instantiation and population
+together with the startup of the required web application(s) is done outside of the test run.
+This makes sense, because none of them has to be done before every test run.
+Clearly, a developer has to install a package when a new dependency is
+introduced and regenerate settings if a new configuration parameter is added.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="test-parallelization-in-theory-and-practice"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Test parallelization in theory and practice&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;If we run tests in parallel, for example in two sessions, each session will share the same
+settings (most importantly the database connection string) and the same web
+applications. This has several limitations. If we have two tests that access
+the same application simultaneously, their requests will be processed by only one
+application worker, which of course leads to a performance decrease.&lt;/p&gt;
+&lt;p&gt;Another more serious limitation comes from the way our tests are written. There
+are for example tests for ticket generation that check PDF generation. On a high level the tests
+look like this:&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;Create an order.&lt;/li&gt;
+&lt;li&gt;Execute the ticket generation function.&lt;/li&gt;
+&lt;li&gt;Check that 1 ticket was generated.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The trick is in the second step. The ticket generation function is triggered by
+a periodical job. It selects from the database all the orders for which tickets have
+to be generated and generates them. In a sequential test run this is not a big
+deal because there will never be a situation that one call to the ticket
+generation function generates more than one ticket. The performed actions are:&lt;/p&gt;
+&lt;table border="1" class="docutils"&gt;
+&lt;colgroup&gt;
+&lt;col width="16%"&gt;&lt;/col&gt;
+&lt;col width="84%"&gt;&lt;/col&gt;
+&lt;/colgroup&gt;
+&lt;thead valign="bottom"&gt;
+&lt;tr&gt;&lt;th class="head"&gt;&lt;strong&gt;Time&lt;/strong&gt;&lt;/th&gt;
+&lt;th class="head"&gt;&lt;strong&gt;Action&lt;/strong&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr&gt;&lt;td colspan="2"&gt;Test 1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Create an order.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;Execute the ticket generation function.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;Check that 1 ticket was generated.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2"&gt;Test 2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;Create another order.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;Execute the ticket generation function.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;Check that 1 ticket was generated.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;In a parallel run however, two orders may be generated simultaneously. Then, the
+generation function will get both orders, and consequently generate tickets for both.
+Imagine situations like this:&lt;/p&gt;
+&lt;table border="1" class="docutils"&gt;
+&lt;colgroup&gt;
+&lt;col width="5%"&gt;&lt;/col&gt;
+&lt;col width="47%"&gt;&lt;/col&gt;
+&lt;col width="47%"&gt;&lt;/col&gt;
+&lt;/colgroup&gt;
+&lt;thead valign="bottom"&gt;
+&lt;tr&gt;&lt;th class="head"&gt;&lt;strong&gt;Time&lt;/strong&gt;&lt;/th&gt;
+&lt;th class="head"&gt;&lt;strong&gt;Action&lt;/strong&gt;&lt;/th&gt;
+&lt;th class="head"&gt;&lt;strong&gt;Action&lt;/strong&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr&gt;&lt;td colspan="2"&gt;Test 1&lt;/td&gt;
+&lt;td&gt;Test 2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Create an order.&lt;/td&gt;
+&lt;td rowspan="2"&gt;Create another order.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;Execute the ticket generation function. (Generates 2 tickets.)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;Check that 1 ticket was generated. (Fails! 2 tickets were generated.)&lt;/td&gt;
+&lt;td&gt;Execute the ticket generation. (Does nothing!)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt; &lt;/td&gt;
+&lt;td&gt;Check that 1 ticket was generated. (Fails! 0 tickets were generated.)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Because tests are not always meant to be run in parallel when they are written,
+situations like this can happen quite often.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="the-art-of-mocking"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;The art of mocking&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The simplest way to avoid situations where tests influence each other is to get
+rid of the shared resources. In our case, this means that each test session would have its own
+unique database connection string, which leads to a non-shared database.&lt;/p&gt;
+&lt;p&gt;The problem is that we, using a common-use approach, store settings in python modules and instantiate them from
+templates before the test run! An example of configuration using python modules can be found in
+&lt;a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/settings"&gt;Django settings&lt;/a&gt;,
+&lt;a class="reference external" href="http://flask.pocoo.org/docs/api/#flask.Config.from_object"&gt;Flask configuration&lt;/a&gt;, etc.&lt;/p&gt;
+&lt;p&gt;We could checkout the sources of Paylogic to two folders and change the settings
+to the ones we want. This would entail some crazy text file editing scripts to
+alter settings. In addition, it is not the way &lt;a class="reference external" href="https://pypi.python.org/pypi/pytest-xdist"&gt;pytest-xdist&lt;/a&gt; works.&lt;/p&gt;
+&lt;p&gt;Another way is to mock the connection string using a fixture:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scope&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'session'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;database_settings&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Mock the database settings.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param str database_connection: the database connection string.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# Reset the connection string.&lt;/span&gt;
+    &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database&lt;/span&gt;
+    &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;To make the mock successful, our code should behave accordingly. Instead of:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config.database&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;connect_to_db&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Connect to the database,&lt;/span&gt;
+
+&lt;span class="sd"&gt;    A completely made up function to illustrate *incorrect* settings import.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;we write:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;connect_to_db&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Connect to the database,&lt;/span&gt;
+
+&lt;span class="sd"&gt;    A completely made up function to illustrate a *better* settings import.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;database&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="section" id="web-applications"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id5"&gt;Web applications&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;For the unit tests, mocking the database connection is sufficient. If we want to
+start two instances of a web application, we need to change:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;The database connection string.&lt;/li&gt;
+&lt;li&gt;The port the application is listening on.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;An application could be a fixture that starts a subprocess and passes the custom
+port, if we use &lt;a class="reference external" href="https://circus.readthedocs.org/en/latest/"&gt;Circus&lt;/a&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;circus.watcher&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Watcher&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scope&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'session'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;application&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;app_script&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start application in a separate process.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param port: a random port the application should listen to.&lt;/span&gt;
+&lt;span class="sd"&gt;    :param app_script: the path to application runner script.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+
+    &lt;span class="n"&gt;watcher&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Watcher&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'application'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;app_script&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'runserver {0}'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="n"&gt;watcher&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;addfinalizer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;watcher&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;watcher&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This is a rather limited solution, because we did not set up the database
+connection string. Furthermore, we couldn't pass it as an environment variable, nor
+pass the path to the custom settings. It is however possible to pass parameters to
+the script (app_script) in the example. This would help us to override the needed settings on the
+&lt;strong&gt;remote&lt;/strong&gt; side. But then we should somehow marshal the complex data structures via the command line.
+This would require more custom code to write.&lt;/p&gt;
+&lt;p&gt;The first solution that came to mind was to use
+&lt;a class="reference external" href="http://docs.python.org/2/library/multiprocessing.html#the-process-class"&gt;multiprocessing&lt;/a&gt;. This way we can use
+a python function instead of a file script to be a worker for our application. Code would look as follows:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;multiprocessing&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start web application.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param str database_connection: the database connection string.&lt;/span&gt;
+&lt;span class="sd"&gt;    :param port: the port number that will be used by runserver.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# Remove modules that happen to be imported by the parent process.&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;module&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;modules&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;difference&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;builtin_module_names&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'multiprocessing'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;module&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;del&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;modules&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+    &lt;span class="c"&gt;# monkey patch the database connection&lt;/span&gt;
+    &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database&lt;/span&gt;
+    &lt;span class="n"&gt;database&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;
+
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.httpserver&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.ioloop&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.web&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.wsgi&lt;/span&gt;
+
+    &lt;span class="n"&gt;wsgi_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wsgi&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WSGIContainer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;app_wsgi_handler&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;tornado_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;r"/media/(.*)"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;StaticFileHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;"path"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;media_path&lt;/span&gt;&lt;span class="p"&gt;}),&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'.*'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FallbackHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fallback&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;wsgi_app&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt;
+    &lt;span class="p"&gt;])&lt;/span&gt;
+
+    &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;httpserver&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;HTTPServer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tornado_app&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;channel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'started app on port: {0}'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ioloop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;IOLoop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;instance&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scope&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'session'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;application&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start application in a separate process.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param port: a random port the application should listen to.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="n"&gt;process&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;multiprocessing&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Process&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;targer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;addfinalizer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;process&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;terminate&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;process&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;process&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This has one big downside: memory. Multiprocessing uses &lt;a class="reference external" href="http://docs.python.org/2/library/os.html#os.fork"&gt;fork&lt;/a&gt; to
+do its work. This means that a lot of memory you've earned in the parent process will be copied into the child process.
+Of course it's declared to be copy-on-write but in reality python is not that efficient here.&lt;/p&gt;
+&lt;p&gt;So we decided to combine these 2 approaches: use a subprocess to run python but don't bother with marshalling
+the parameters manually via command line. The nice &lt;a class="reference external" href="http://codespeak.net/execnet"&gt;execnet&lt;/a&gt; library allows us to
+transparently run some python function inside of a remote python process. Here is the comprehensive example:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;execnet&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;channel&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start web application.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param channel: execnet channel to talk to the master process.&lt;/span&gt;
+&lt;span class="sd"&gt;    :param str database_connection: the database connection string.&lt;/span&gt;
+&lt;span class="sd"&gt;    :param port: the port number that will be used by runserver.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# monkey patch the database connection&lt;/span&gt;
+    &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database&lt;/span&gt;
+    &lt;span class="n"&gt;database&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;
+
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.httpserver&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.ioloop&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.web&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.wsgi&lt;/span&gt;
+
+    &lt;span class="n"&gt;wsgi_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wsgi&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WSGIContainer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;app_wsgi_handler&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;tornado_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;r"/media/(.*)"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;StaticFileHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;"path"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;media_path&lt;/span&gt;&lt;span class="p"&gt;}),&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'.*'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FallbackHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fallback&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;wsgi_app&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt;
+    &lt;span class="p"&gt;])&lt;/span&gt;
+
+    &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;httpserver&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;HTTPServer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tornado_app&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;channel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'started app on port: {0}'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ioloop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;IOLoop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;instance&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scope&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'session'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;application&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start application in a separate process.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param port: a random port the application should listen to.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# create execnet gateway&lt;/span&gt;
+    &lt;span class="n"&gt;gw&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;execnet&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;makegateway&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="c"&gt;# set the same python system path on remote python as on current one&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+    &lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remote_exec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="p"&gt;[&lt;/span&gt;
+            &lt;span class="s"&gt;"import sys"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s"&gt;"sys.path = {0}"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;waitclose&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="c"&gt;# create channel running worker function&lt;/span&gt;
+    &lt;span class="n"&gt;channel&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remote_exec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;addfinalizer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exit&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;gw&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;In this way we can attach any customizations before starting the application.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="other-isolated-resources"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id6"&gt;Other isolated resources&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Apart from the database connection string, there are other shared resources. One
+of them can be some folder where file artifacts need to be stored. They have to be isolated as
+well, because the filenames can clash in concurrent test processes (a.k.a. sessions).
+However, mocking can be done here in the same way as in the case of the connection string.&lt;/p&gt;
+&lt;p&gt;It is also possible to use only one server but with isolated databases. We then start as many MySQL
+instances as we have concurrent test sessions.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="requirements"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id7"&gt;Requirements&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Another nontrivial part is to distribute requirements to each node. We do this
+together with the code distribution as a virtualenv. Each node then activates
+it before running the tests:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;pytest_addoption&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Add options custom pytest options."""&lt;/span&gt;
+    &lt;span class="n"&gt;group&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getgroup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"xdist"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"distributed and subprocess32 testing"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;group&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_addoption&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="s"&gt;'--activate-script'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"store"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dest&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"activate_script"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'env/bin/activate_this.py'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"Activate virtual environment script (relative path). "&lt;/span&gt;
+        &lt;span class="s"&gt;"This is to make remote python aware about all the dependencies project needs."&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;pytest_configure_node&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Configure node information before it gets instantiated.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    Activate the virtual env, so the node is able to import Paylogic&lt;/span&gt;
+&lt;span class="sd"&gt;    dependencies.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+
+    &lt;span class="n"&gt;here&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;basename&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__file__&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+    &lt;span class="n"&gt;activate_script&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;normpath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;here&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;option&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;activate_script&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+    &lt;span class="c"&gt;# remove pyc files and activate the virtual environment on the remote side.&lt;/span&gt;
+    &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remote_exec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="p"&gt;[&lt;/span&gt;
+            &lt;span class="s"&gt;"import os.path"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s"&gt;"import subprocess"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="sd"&gt;"""subprocess.check_call(['find', '-name', '"*.pyc"', '-delete'])"""&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s"&gt;"activate_this = '{0}'"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;activate_script&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+            &lt;span class="s"&gt;"if os.path.exists(activate_this):"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s"&gt;"    execfile(activate_this, {'__file__': activate_this})"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;waitclose&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="results"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id8"&gt;Results&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Test parallelization dramatically reduced the time needed to run unit and
+functional tests. It takes about 5 minutes to run unit and functional tests on a
+cluster of 6 old dual core machines, each of them running 2 sessions.&lt;/p&gt;
+&lt;p&gt;An experiment in the early stages gave these results:&lt;/p&gt;
+&lt;img alt="parallelization performance comparison graph" class="align-center" src="http://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
+&lt;p&gt;The blue line is the test distribution over cluster machines, one worker on each
+of them. The pink line represents the "ideal situation", where doubling the
+number of works decreases the tests execution time by a factor of 2. Finally, the
+yellow line is the run executed on a &lt;a class="reference external" href="http://www.asus.com/Notebooks_Ultrabooks/ASUS_ZENBOOK_UX32VD/#specifications"&gt;developer's machine&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;py.test-xdist behaves very well when it comes to parallel execution and the
+overhead is relatively small.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="open-source"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id9"&gt;Open source&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;We announce the open source pytest plugins which simplify the process of running services (memcached, mysql, etc)
+on demand for every concurrent test session.  We also will open source a helper
+for scheduling test jobs among test slave nodes.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="conclusion"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id10"&gt;Conclusion&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Automated testing facilitates development of complex software. However, if a
+lot of time is required to get a test result, automated testing will be rejected
+by the majority of the team. Test parallelization and execution over several nodes
+solves this problem, with as trade-off the extra effort needed to make the tests ready for
+parallelization.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="testing"></category><category term="parallelization"></category><category term="pytest"></category><category term="pytest-xdist"></category></entry></feed>

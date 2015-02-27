@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/integration.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2013-12-02T10:56:00+01:00</updated><entry><title>Prefill Registration Data</title><link href="http://developer.paylogic.com/articles/prefill-registration.html" rel="alternate"></link><updated>2013-12-02T10:56:00+01:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2013-12-02:articles/prefill-registration.html</id><summary type="html">
+&lt;p&gt;&lt;em&gt;Paylogic offers a feature to allow the prefilling of the personal data of a
+consumer during the sales process via a personalized URL. This can be used
+whenever a merchant already has the data of the consumers and wants to offer
+these consumers a more personalized and smooth ticketing process, or when a
+pre-registration step is used. The following sections describe the steps that
+third parties have to implement in order to provide the possibility of
+prefilling the registration form in the front office.&lt;/em&gt;&lt;/p&gt;
+&lt;div class="section" id="json-data-format"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;JSON data format&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The first step is to construct the data. The data should be structured using
+JSON. The JSON data should adhere to the following format:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="s2"&gt;"first_name"&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"Test Client First Name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s2"&gt;"last_name"&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"Test Client Last Name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s2"&gt;"email"&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"test@testmail.com"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s2"&gt;"gender"&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"1"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s2"&gt;"birth_date"&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"1978-10-07"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s2"&gt;"phone_number"&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"0123456789"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s2"&gt;"address"&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"Address 1A"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s2"&gt;"postal_code"&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"9999AB"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s2"&gt;"city"&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"Groningen"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+  &lt;span class="s2"&gt;"country"&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"NL"&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The &lt;code&gt;gender&lt;/code&gt; attribute should contain a code according to &lt;a class="reference external" href="http://en.wikipedia.org/wiki/ISO/IEC_5218"&gt;ISO 5218&lt;/a&gt;, which specifies the following
+codes:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;0 = not known&lt;/li&gt;
+&lt;li&gt;1 = male&lt;/li&gt;
+&lt;li&gt;2 = female&lt;/li&gt;
+&lt;li&gt;9 = not applicable&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The format of the &lt;code&gt;birth_date&lt;/code&gt; attribute should be &lt;code&gt;YYYY-MM-DD&lt;/code&gt;.
+This format is according to &lt;a class="reference external" href="http://en.wikipedia.org/wiki/ISO_8601"&gt;ISO 8601&lt;/a&gt;.
+Finally, the &lt;code&gt;country&lt;/code&gt; code attribute should contain a value according to
+&lt;a class="reference external" href="http://www.iso.org/iso/country_codes/iso_3166_code_lists/country_names_and_code_elements.htm"&gt;ISO 3166&lt;/a&gt;.
+For example, for The Netherlands the country code &lt;code&gt;NL&lt;/code&gt; should be used. It
+should be mentioned that no certain format is required for &lt;code&gt;postal_code&lt;/code&gt;,
+as long as its length is less than or equal to 12.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="compression-and-encoding"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;Compression and Encoding&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The second step is to compress and encode the data. Compression helps to reduce
+the length of the data, as the URL should contain up to a maximum number of
+characters. It is not only that the JSON data itself might be long. Encoding
+also increases the length of the data by approximately 33%.&lt;/p&gt;
+&lt;p&gt;The pseudo code below illustrates the process of encoding and compression. It
+also includes the creation of the JSON data. The data should first be compressed
+and then encoded.&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;
+create the JSON data
+
+create a string out of the JSON data
+
+compress the data using gzip compatible compression
+
+encode the data using base64 and make them url safe
+&lt;/pre&gt;
+&lt;p&gt;The way encoding and compression can be implemented depends on which programming
+language is used. A simple implementation is illustrated both for Python and
+PHP. If there are any questions regarding the implementation, then please contact
+the Paylogic support team.&lt;/p&gt;
+&lt;div class="section" id="python"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id5"&gt;Python&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;The compression is done using the &lt;a class="reference external" href="http://www.zlib.net/"&gt;zlib&lt;/a&gt;
+standard python module. The data is encoded to utf-8 prior to compression. Data
+encoding is performed using base64 as specified in &lt;a class="reference external" href="http://tools.ietf.org/html/rfc3548.html"&gt;RFC 3548&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;json&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;zlib&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;base64&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;urlsafe_b64encode&lt;/span&gt;
+
+&lt;span class="c"&gt;# construct the json data&lt;/span&gt;
+&lt;span class="n"&gt;json_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;"first_name"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s"&gt;"Test Client First Name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;...&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="c"&gt;# create a string of the json data&lt;/span&gt;
+&lt;span class="n"&gt;json_data_string&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;json&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dumps&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;json_data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c"&gt;# encode the data to utf8 and compress it&lt;/span&gt;
+&lt;span class="n"&gt;compressed_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;zlib&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;compress&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;json_data_string&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;encode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'utf8'&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+&lt;span class="c"&gt;# encode the data using base64 and urlsafe&lt;/span&gt;
+&lt;span class="n"&gt;encoded&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;urlsafe_b64encode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;compressed_data&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="php"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id6"&gt;PHP&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;The compression is done using the &lt;a class="reference external" href="http://php.net/manual/en/function.gzcompress.php"&gt;gzcompress&lt;/a&gt;
+method, which uses the &lt;a class="reference external" href="http://www.zlib.net/"&gt;zlib&lt;/a&gt; data format. The data is
+encoded to utf-8 prior to compression. Data encoding is performed using base64
+as specified in &lt;a class="reference external" href="http://tools.ietf.org/html/rfc3548.html"&gt;RFC 3548&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;&amp;lt;?php&lt;/span&gt;
+&lt;span class="c1"&gt;# create a string of the json data&lt;/span&gt;
+&lt;span class="nv"&gt;$json_data_string&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'{"first_name": "Test Client First Name", ... }'&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="c1"&gt;# encode data to utf8 and compress it&lt;/span&gt;
+&lt;span class="nv"&gt;$compressed_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;gzcompress&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;utf8_encode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;$json_data_string&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+
+&lt;span class="c1"&gt;# encode the data using base64&lt;/span&gt;
+&lt;span class="nv"&gt;$encoded_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;base64_encode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nv"&gt;$compressed_data&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+
+&lt;span class="c1"&gt;# make data urlsafe&lt;/span&gt;
+&lt;span class="nv"&gt;$encoded_data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;str_replace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'+'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s1"&gt;'/'&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="k"&gt;array&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'-'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s1"&gt;'_'&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="nv"&gt;$encoded_data&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="cp"&gt;?&amp;gt;&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="transferring-the-data"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id7"&gt;Transferring the data&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The third step is to append the encoded and compressed data to the landing page
+URL. The landing page URL is the URL that is usually included within the
+invitation emails. The encoded and compressed data should be appended to the
+landing page URL &lt;strong&gt;after&lt;/strong&gt; the fragment identifier (&lt;strong&gt;#&lt;/strong&gt;). The advantage of
+this approach is that data after the fragment identifier is not sent over the
+network and is only used client-side.&lt;/p&gt;
+&lt;p&gt;The implementation of this is left to the third parties. The only constraint is
+that the appended data should have a specific form. We assume that the landing
+page URL contains some query parameters (substituted with '...' in the
+following example for clarity) and &lt;code&gt;FGRAhdfhasAHDFA&lt;/code&gt; is the encoded and
+compressed data. Then, a landing page URL with the appended data would have the
+following form:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+http://tickets.company.com/?...#pld=FGRAhdfhasAHDFA
+&lt;/pre&gt;
+&lt;p&gt;It is important to use &lt;code&gt;pld&lt;/code&gt; as a parameter, as this is also used on the
+side of Paylogic, when retrieving the data from the URL. The above method will
+work if Paylogic handles the creation of the landing page.&lt;/p&gt;
+&lt;div class="section" id="third-party-handles-landing-page"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id8"&gt;Third party handles landing page&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;In case a third party handles the creation of the landing page, then one more
+step needs to be performed. The Javascript code below should be appended at the
+end of the landing page HTML document. This ensures that the data is read from
+the landing page URL and that it is appended in the queue URL, which resides as
+an iframe inside the landing page HTML document.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;script &lt;/span&gt;&lt;span class="na"&gt;type=&lt;/span&gt;&lt;span class="s"&gt;"text/javascript"&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;getHashParam&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+  &lt;span class="nb"&gt;window&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;location&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;hash&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;replace&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sr"&gt;/([^#&amp;amp;]+)/g&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;match&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="c1"&gt;// This is to ensure that if the variable contains '=' then they remain in the value.&lt;/span&gt;
+    &lt;span class="c1"&gt;// for example: pld=FHadfsdhFJASDF3423==&lt;/span&gt;
+    &lt;span class="c1"&gt;// In this case:&lt;/span&gt;
+    &lt;span class="c1"&gt;//   key: pld&lt;/span&gt;
+    &lt;span class="c1"&gt;//   value: FHadfsdhFJASDF3423==&lt;/span&gt;
+    &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;param&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;match&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;split&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="sr"&gt;/=(.+)?/&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;param&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;===&lt;/span&gt; &lt;span class="s2"&gt;"pld"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="nx"&gt;queue&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;document&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getElementById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;'paylogic-frontoffice'&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+        &lt;span class="nx"&gt;queue&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;src&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;queue&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;src&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;'#'&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nx"&gt;param&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="s1"&gt;'='&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nx"&gt;param&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+  &lt;span class="p"&gt;});&lt;/span&gt;
+&lt;span class="p"&gt;};&lt;/span&gt;
+&lt;span class="nx"&gt;getHashParam&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</summary><category term="integration"></category></entry></feed>

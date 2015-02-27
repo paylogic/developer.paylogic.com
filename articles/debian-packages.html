@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+            <title>Using Debian packages for Python deployments by Peter Odding - Paylogic Developers</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+                <link href="http://developer.paylogic.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Full Atom Feed">
+
+
+
+
+                <link href="http://developer.paylogic.com/feeds/devops.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Categories Atom Feed">
+
+
+
+
+            <link rel="shortcut icon" href="http://developer.paylogic.com/images/favicon.ico">
+
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.addons.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/style.css">
+    </head>
+
+    <body>
+
+        <nav class="uk-navbar" data-uk-sticky>
+            <div class="uk-container uk-container-center">
+                <a href="/" class="uk-navbar-brand"><img alt="Paylogic" src="http://developer.paylogic.com/images/paylogic.png" /></a>
+                <div class="uk-navbar-content"><a href="/" class="pl-text-light">Developers</a></div>
+                <ul class="uk-navbar-nav uk-float-right uk-hidden-small">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent" data-uk-dropdown>
+                        <a href="#">Categories<i class="uk-icon-angle-down uk-margin-small-left"></i></a>
+                        <div class="uk-dropdown uk-dropdown-flip uk-dropdown-navbar">
+                            <ul class="uk-nav uk-nav-navbar">
+                                        <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                        <li class="uk-active"><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <a href="#offcanvas-nav" class="uk-navbar-toggle uk-visible-small uk-float-right" data-uk-offcanvas></a>
+            </div>
+        </nav>
+
+        <div id="offcanvas-nav" class="uk-offcanvas">
+            <div class="uk-offcanvas-bar">
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{multiple:true}">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent">
+                        <a href="#">Categories</a>
+                        <ul class="uk-nav-sub">
+                                    <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                    <li class="uk-active"><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <main class="pl-content">
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+            <div class="uk-width-medium-1-4 uk-hidden-small">
+                <div class="toc uk-text-small" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
+                <div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#disadvantages-of-python-packages" id="id3">Disadvantages of Python packages</a><ul>
+<li><a class="reference internal" href="#virtual-environments" id="id4">Virtual environments</a></li>
+<li><a class="reference internal" href="#making-sense-of-the-python-packaging-ecosystem" id="id5">Making sense of the Python packaging ecosystem</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#advantages-of-debian-packages" id="id6">Advantages of Debian packages</a></li>
+<li><a class="reference internal" href="#id1" id="id7">Getting started with Debian packaging</a><ul>
+<li><a class="reference internal" href="#creating-your-first-debian-package" id="id8">Creating your first Debian package</a></li>
+<li><a class="reference internal" href="#creating-a-debian-package-repository" id="id9">Creating a Debian package repository</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#wrapping-up" id="id10">Wrapping up</a></li>
+</ul>
+</div>
+                </div>
+            </div>
+            <div class="uk-width-medium-3-4">
+                <article class="uk-article">
+                    <table class="uk-table uk-table-middle pl-table-article-meta">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="uk-thumbnail uk-margin-right">
+                                        <img src="http://www.gravatar.com/avatar/f8d3b4213f6ac612d8d14f097defcbc3" alt="Peter Odding" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="uk-article-meta">
+                                        Written by
+                                            <a class="url fn" href="http://developer.paylogic.com/author/peter-odding.html">Peter Odding</a>
+                                        on Tue 14 May 2013<br />Posted in <a href="http://developer.paylogic.com/category/devops.html">DevOps</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h1 class="uk-article-title">Using Debian packages for Python deployments</h1>
+                    <hr class="uk-article-divider">
+                    <div class="pl-article-content">
+<p>At Paylogic we use Debian packages to deploy our Python applications. This
+article explains how we got started.</p>
+<p>This is a large article but if you just want to get started building Debian
+packages you can jump straight to the section on <a class="reference internal" href="#getting-started-with-debian-packaging">getting started with Debian
+packaging</a>.</p>
+<div class="section" id="disadvantages-of-python-packages">
+<h2><a class="toc-backref" href="#id3">Disadvantages of Python packages</a></h2>
+<p>Python has its own packaging infrastructure and there are a lot of people who
+like it, but for us it doesn't come close to a full solution:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://pypi.python.org">PyPI</a> and/or distribution websites go down regularly, usually at the exact
+time you need them to perform a live deployment :-)</li>
+<li>Python packages cannot and therefore do not declare their binary dependencies,
+because there is no portable way to do so (the packages names are different
+in every Linux distribution, let alone other operating systems)</li>
+<li>Python packages don't control init.d scripts, cron tabs, configuration files,
+etc. while we really do need to install and manage these files...</li>
+<li>What's with the whole <a class="reference external" href="http://docs.python.org/2/library/distutils.html">Distutils</a>, <a class="reference external" href="https://pypi.python.org/pypi/setuptools">Setuptools</a>, <a class="reference external" href="https://pypi.python.org/pypi/distribute">Distribute</a>, <a class="reference external" href="https://pypi.python.org/pypi/Distutils2">Distutils2</a> and
+<a class="reference external" href="https://pypi.python.org/pypi/distlib">Distlib</a> confusion?! Please for the love of god just merge the common
+subset, bless one tool and get this whole mess over with already! For more
+details about this subject see <a class="reference external" href="http://stackoverflow.com/questions/6344076/differences-between-distribute-distutils-setuptools-and-distutils2/14753678#14753678">Differences between distribute, distutils,
+setuptools and distutils2?</a></li>
+</ul>
+<div class="section" id="virtual-environments">
+<h3><a class="toc-backref" href="#id4">Virtual environments</a></h3>
+<p>There's one more significant thing, which is that Python packages favor virtual
+environments over system wide installations. Why do we say this?</p>
+<ul class="simple">
+<li><tt class="docutils literal">easy_install</tt> doesn't support removal of packages</li>
+<li><tt class="docutils literal">pip</tt> does support removal of packages but does not support anything like
+<tt class="docutils literal"><span class="pre">apt-get</span> autoremove</tt></li>
+</ul>
+<p>One of our problems with virtual environments is that we've seen them break in
+various ways, for example because of security updates to the system-wide Python
+installation (Google for <a class="reference external" href="https://www.google.com/search?q=ImportError%3A%20cannot%20import%20name%20urandom">ImportError: cannot import name urandom</a>). This is
+one of the reasons why we prefer virtual machines over virtual environments to
+isolate our production deployments.</p>
+</div>
+<div class="section" id="making-sense-of-the-python-packaging-ecosystem">
+<h3><a class="toc-backref" href="#id5">Making sense of the Python packaging ecosystem</a></h3>
+<p>As mentioned above the Python packaging ecosystem is a bit of a mess. For an
+overview of the situation and some of the problems, refer to the following
+external resources:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://guide.python-distribute.org/introduction.html#current-state-of-packaging">The Hitchhiker's Guide to Packaging: Current State of Packaging</a></li>
+<li><a class="reference external" href="http://lucumr.pocoo.org/2012/6/22/hate-hate-hate-everywhere/">Python Packaging: Hate, hate, hate everywhere</a></li>
+<li><a class="reference external" href="http://blog.workaround.org/setuptools-versioning-wtf">setuptools versioning - wtf?</a></li>
+</ul>
+<p>I sometimes hear people call Debian package management complex. They certainly
+have a point, but as a DevOps who wants to do their work properly, Debian and
+Python are both complex, the difference is that Debian is (mostly) a pleasure
+to work with... The Python packaging ecosystem is very fragmented and
+underdocumented while in Debian there is almost always a canonical, documented
+way to do things properly.</p>
+</div>
+</div>
+<div class="section" id="advantages-of-debian-packages">
+<h2><a class="toc-backref" href="#id6">Advantages of Debian packages</a></h2>
+<p>Here are a couple of notable advantages of using Debian packages:</p>
+<ul class="simple">
+<li>They provide a controlled process for installing, removing, upgrading and
+downgrading packages (for example for doing new releases, but also rolling
+back existing releases)</li>
+<li>Dependencies on operating system packages are formalized as proper package
+dependencies instead of being written down in wiki pages, personal notes, or
+worse, not written down at all...</li>
+<li>The steps that should be executed in every environment where a package is
+deployed are formalized in pre/post installation/removal scripts</li>
+<li>The packages are built on a dedicated host so production machines don't need
+a build environment</li>
+</ul>
+<p>There's also the fact that we get to use <tt class="docutils literal"><span class="pre">apt-get</span></tt> more and we (generally)
+love <tt class="docutils literal"><span class="pre">apt-get</span></tt> :-)</p>
+</div>
+<div class="section" id="id1">
+<span id="getting-started-with-debian-packaging"></span><h2><a class="toc-backref" href="#id7">Getting started with Debian packaging</a></h2>
+<p>Debian package management is a complex topic, however getting started requires
+little upfront knowledge nor does it require a complex build environment. In
+fact most of the tools you'll need are probably already installed if you're
+running Debian or a derivative Linux distribution!</p>
+<div class="section" id="creating-your-first-debian-package">
+<h3><a class="toc-backref" href="#id8">Creating your first Debian package</a></h3>
+<p>To create a simple Debian package we only need a single file and a single
+command. Here's how you get started:</p>
+<div class="highlight"><pre><span class="c"># Create a directory to hold the files contained in the package.</span>
+mkdir my-package <span class="o">&amp;&amp;</span> <span class="nb">cd </span>my-package
+
+<span class="c"># Create a directory with the package's control files.</span>
+mkdir DEBIAN
+
+<span class="c"># Create the main control file with package metadata.</span>
+cat &gt; DEBIAN/control <span class="s">&lt;&lt; EOF</span>
+<span class="s">Package: name-of-package</span>
+<span class="s">Version: 1.0</span>
+<span class="s">Section: universe/web</span>
+<span class="s">Priority: optional</span>
+<span class="s">Architecture: all</span>
+<span class="s">Installed-Size: 1</span>
+<span class="s">Maintainer: $USER</span>
+<span class="s">Description: Explanation of why name-of-package is so cool</span>
+<span class="s">EOF</span>
+
+<span class="c"># Build the package using the accepted naming scheme.</span>
+<span class="nv">NAME</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">'/^Package:/ {print $2}'</span> DEBIAN/control<span class="k">)</span>
+<span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">'/^Version:/ {print $2}'</span> DEBIAN/control<span class="k">)</span>
+<span class="nv">ARCH</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">'/^Architecture:/ {print $2}'</span> DEBIAN/control<span class="k">)</span>
+dpkg-deb --build . <span class="nv">$NAME_</span><span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>_<span class="nv">$ARCH</span>.deb
+</pre></div>
+<p>Assuming you're on a Debian/Ubuntu system, the above commands should be enough
+to build a simple package. Any files in the working directory (excluding the
+special <tt class="docutils literal">DEBIAN</tt> directory) will be included in the package as if the
+directory containing the <tt class="docutils literal">DEBIAN</tt> package is the root of the file system.</p>
+<p>The resulting <tt class="docutils literal">*.deb</tt> file can be installed using <tt class="docutils literal">dpkg <span class="pre">-i</span> $filename</tt>,
+however this won't automatically install dependencies, instead <tt class="docutils literal">dpkg</tt> will
+error out when dependencies are missing... When this happens you can run
+<tt class="docutils literal"><span class="pre">apt-get</span> install <span class="pre">-f</span></tt> to install the dependencies. After that you can rerun
+the <tt class="docutils literal">dpkg</tt> command; it should now succeed. Read on if you're interested in a
+more streamlined experience.</p>
+</div>
+<div class="section" id="creating-a-debian-package-repository">
+<h3><a class="toc-backref" href="#id9">Creating a Debian package repository</a></h3>
+<p>As mentioned earlier <tt class="docutils literal">dpkg</tt> doesn't automatically pull in dependencies. If
+you use <tt class="docutils literal"><span class="pre">apt-get</span></tt> it will do what you expect however <tt class="docutils literal"><span class="pre">apt-get</span></tt> does not
+support installation of local <tt class="docutils literal">*.deb</tt> archives; it needs a repository. In
+other words, once you start using dependencies you will want to setup a Debian
+package repository for your packages! Here's how you get started:</p>
+<div class="highlight"><pre><span class="c"># Create repository layout, copy packages.</span>
+mkdir -p repo/binary
+cp *.deb repo/binary
+<span class="nb">cd </span>repo
+
+<span class="c"># Create list of packages.</span>
+rm -f Packages Packages.gz Release Release.gpg  <span class="c"># cleanup after previous run</span>
+dpkg-scanpackages -m . <span class="p">|</span> sed <span class="s1">'s@: \./@: @'</span> &gt; Packages
+
+<span class="c"># Create compressed copy of list.</span>
+cat Packages <span class="p">|</span> gzip &gt; Packages.gz
+
+<span class="c"># Generate release file.</span>
+rm -f Release Release.gpg  <span class="c"># cleanup after previous run</span>
+<span class="nv">LANG</span><span class="o">=</span> apt-ftparchive release . &gt; Release.tmp
+mv Release.tmp Release
+
+<span class="c"># Sign release file.</span>
+rm -f Release.gpg  <span class="c"># cleanup after previous run</span>
+gpg -abs -o Release.gpg Release
+</pre></div>
+<p>There are several gotcha's in the above piece of shell script:</p>
+<ul class="simple">
+<li>We cleanup generated files from previous runs because their presence
+corrupts the generated files</li>
+<li>We modify the output of <tt class="docutils literal"><span class="pre">dpkg-scanpackages</span></tt> to change for example
+<tt class="docutils literal">./test_1.0_all.deb</tt> to <tt class="docutils literal">test_1.0_all.deb</tt> (for some reason <tt class="docutils literal"><span class="pre">apt-get</span></tt>
+doesn't like <tt class="docutils literal">Packages</tt> files with leading <tt class="docutils literal">./</tt> fragments)</li>
+<li>We clear the <tt class="docutils literal">$LANG</tt> environment variable so that we are sure the
+<tt class="docutils literal">Release</tt> file is properly formatted regardless of the value of <tt class="docutils literal">$LANG</tt></li>
+<li>You need to have a private GPG key to sign the <tt class="docutils literal">Release</tt> file; if you don't
+have one yet you'll need to create one using the command <tt class="docutils literal">gpg <span class="pre">--gen-key</span></tt>
+(you may find this <a class="reference external" href="http://www.madboa.com/geek/gpg-quickstart/">GPG quick start</a> useful)</li>
+</ul>
+<div class="section" id="hosting-the-package-repository">
+<h4>Hosting the package repository</h4>
+<p>After running the above commands, the directory <cite>repo/</cite> can be served using a
+regular web server (e.g. <a class="reference external" href="http://httpd.apache.org/">Apache</a> or <a class="reference external" href="http://nginx.org/">Nginx</a>). No specific configuration is
+required because the repository contains only static files.</p>
+</div>
+<div class="section" id="using-the-package-repository">
+<h4>Using the package repository</h4>
+<p>The package repository can be registered in a Debian/Ubuntu system by creating
+the file <tt class="docutils literal">/etc/apt/sources.list.d/example.sources.list</tt> with the following
+contents:</p>
+<pre class="literal-block">
+deb http://server-address ./
+</pre>
+</div>
+<div class="section" id="installing-the-gpg-key">
+<h4>Installing the GPG key</h4>
+<p>Before the package repository can be used from remote machines, the GPG key
+used to sign the Release file has to be installed on the remote machines.
+Assuming you have SSH and sudo access to the server where you generated the GPG
+key <cite>and</cite> the one where you want to install the GPG key, the following command
+will install the GPG key:</p>
+<div class="highlight"><pre>ssh build-server sudo -i gpg --armor --export <span class="p">|</span> ssh target-host sudo apt-key add -
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="wrapping-up">
+<h2><a class="toc-backref" href="#id10">Wrapping up</a></h2>
+<p>That's it really, at least to get started. Now consider how easy it is to write
+some Python scripts that automatically build these packages for you based on
+the contents of one or more version control systems and suddenly you're looking
+at a viable deployment strategy!</p>
+<p>There are even people who build Python <a class="reference external" href="http://www.virtualenv.org/en/latest/">virtual environments</a> and ship those
+in Debian packages. It may sound revolting at first, but give it a moment to
+sink in; it has its advantages :-)</p>
+<p>In future articles we'll dive into more advanced topics like pre/post
+installation/removal scripts, dpkg triggers and generation of configuration
+files. Stay tuned!</p>
+<!-- External references: -->
+</div>
+</div>
+                        <hr class="uk-article-divider">
+                        <div class="comments">
+                            <h2>Comments</h2>
+                            <div id="disqus_thread"></div>
+                            <script type="text/javascript">
+                                var disqus_identifier = "articles/debian-packages.html";
+                                (function() {
+                                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                    dsq.src = 'http://paylogicdevportal.disqus.com/embed.js';
+                                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                })();
+                            </script>
+                        </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+        </main>
+
+        <footer class="pl-footer">
+            <div>
+                <div class="uk-container uk-container-center uk-text-center uk-text-small">
+                    <ul class="uk-subnav uk-subnav-line">
+                        <li><a href="http://developer.paylogic.com/pages/about.html">About</a></li>
+                        <li><a href="https://shopping-api-docs.sandbox.paylogic.com/" target="_blank">API</a></li>
+                        <li><a href="https://github.com/paylogic" target="_blank">GitHub</a></li>
+                        <li><a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a></li>
+                    </ul>
+                    Copyright (c) 2014 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
+                    built using the awesome <a href="http://getpelican.com" target="_blank">Pelican</a> static site generator.<br>
+                    This work is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+                </div>
+            </div>
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/uikit.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/sticky.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/cover.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/application.js"></script>
+
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-13304573-19', 'paylogic.com');
+            ga('send', 'pageview');
+        </script>
+
+    </body>
+</html>

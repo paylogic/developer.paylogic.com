@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/peter-odding.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2013-05-14T00:28:00+02:00</updated><entry><title>Using Debian packages for Python deployments</title><link href="http://developer.paylogic.com/articles/debian-packages.html" rel="alternate"></link><updated>2013-05-14T00:28:00+02:00</updated><author><name>Peter Odding</name></author><id>tag:developer.paylogic.com,2013-05-14:articles/debian-packages.html</id><summary type="html">
+&lt;p&gt;At Paylogic we use Debian packages to deploy our Python applications. This
+article explains how we got started.&lt;/p&gt;
+&lt;p&gt;This is a large article but if you just want to get started building Debian
+packages you can jump straight to the section on &lt;a class="reference internal" href="#getting-started-with-debian-packaging"&gt;getting started with Debian
+packaging&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="section" id="disadvantages-of-python-packages"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Disadvantages of Python packages&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Python has its own packaging infrastructure and there are a lot of people who
+like it, but for us it doesn't come close to a full solution:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://pypi.python.org"&gt;PyPI&lt;/a&gt; and/or distribution websites go down regularly, usually at the exact
+time you need them to perform a live deployment :-)&lt;/li&gt;
+&lt;li&gt;Python packages cannot and therefore do not declare their binary dependencies,
+because there is no portable way to do so (the packages names are different
+in every Linux distribution, let alone other operating systems)&lt;/li&gt;
+&lt;li&gt;Python packages don't control init.d scripts, cron tabs, configuration files,
+etc. while we really do need to install and manage these files...&lt;/li&gt;
+&lt;li&gt;What's with the whole &lt;a class="reference external" href="http://docs.python.org/2/library/distutils.html"&gt;Distutils&lt;/a&gt;, &lt;a class="reference external" href="https://pypi.python.org/pypi/setuptools"&gt;Setuptools&lt;/a&gt;, &lt;a class="reference external" href="https://pypi.python.org/pypi/distribute"&gt;Distribute&lt;/a&gt;, &lt;a class="reference external" href="https://pypi.python.org/pypi/Distutils2"&gt;Distutils2&lt;/a&gt; and
+&lt;a class="reference external" href="https://pypi.python.org/pypi/distlib"&gt;Distlib&lt;/a&gt; confusion?! Please for the love of god just merge the common
+subset, bless one tool and get this whole mess over with already! For more
+details about this subject see &lt;a class="reference external" href="http://stackoverflow.com/questions/6344076/differences-between-distribute-distutils-setuptools-and-distutils2/14753678#14753678"&gt;Differences between distribute, distutils,
+setuptools and distutils2?&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="section" id="virtual-environments"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id4"&gt;Virtual environments&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;There's one more significant thing, which is that Python packages favor virtual
+environments over system wide installations. Why do we say this?&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;tt class="docutils literal"&gt;easy_install&lt;/tt&gt; doesn't support removal of packages&lt;/li&gt;
+&lt;li&gt;&lt;tt class="docutils literal"&gt;pip&lt;/tt&gt; does support removal of packages but does not support anything like
+&lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;apt-get&lt;/span&gt; autoremove&lt;/tt&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;One of our problems with virtual environments is that we've seen them break in
+various ways, for example because of security updates to the system-wide Python
+installation (Google for &lt;a class="reference external" href="https://www.google.com/search?q=ImportError%3A%20cannot%20import%20name%20urandom"&gt;ImportError: cannot import name urandom&lt;/a&gt;). This is
+one of the reasons why we prefer virtual machines over virtual environments to
+isolate our production deployments.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="making-sense-of-the-python-packaging-ecosystem"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id5"&gt;Making sense of the Python packaging ecosystem&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;As mentioned above the Python packaging ecosystem is a bit of a mess. For an
+overview of the situation and some of the problems, refer to the following
+external resources:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://guide.python-distribute.org/introduction.html#current-state-of-packaging"&gt;The Hitchhiker's Guide to Packaging: Current State of Packaging&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://lucumr.pocoo.org/2012/6/22/hate-hate-hate-everywhere/"&gt;Python Packaging: Hate, hate, hate everywhere&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://blog.workaround.org/setuptools-versioning-wtf"&gt;setuptools versioning - wtf?&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I sometimes hear people call Debian package management complex. They certainly
+have a point, but as a DevOps who wants to do their work properly, Debian and
+Python are both complex, the difference is that Debian is (mostly) a pleasure
+to work with... The Python packaging ecosystem is very fragmented and
+underdocumented while in Debian there is almost always a canonical, documented
+way to do things properly.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="advantages-of-debian-packages"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id6"&gt;Advantages of Debian packages&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Here are a couple of notable advantages of using Debian packages:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;They provide a controlled process for installing, removing, upgrading and
+downgrading packages (for example for doing new releases, but also rolling
+back existing releases)&lt;/li&gt;
+&lt;li&gt;Dependencies on operating system packages are formalized as proper package
+dependencies instead of being written down in wiki pages, personal notes, or
+worse, not written down at all...&lt;/li&gt;
+&lt;li&gt;The steps that should be executed in every environment where a package is
+deployed are formalized in pre/post installation/removal scripts&lt;/li&gt;
+&lt;li&gt;The packages are built on a dedicated host so production machines don't need
+a build environment&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;There's also the fact that we get to use &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;apt-get&lt;/span&gt;&lt;/tt&gt; more and we (generally)
+love &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;apt-get&lt;/span&gt;&lt;/tt&gt; :-)&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id1"&gt;
+&lt;span id="getting-started-with-debian-packaging"&gt;&lt;/span&gt;&lt;h2&gt;&lt;a class="toc-backref" href="#id7"&gt;Getting started with Debian packaging&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Debian package management is a complex topic, however getting started requires
+little upfront knowledge nor does it require a complex build environment. In
+fact most of the tools you'll need are probably already installed if you're
+running Debian or a derivative Linux distribution!&lt;/p&gt;
+&lt;div class="section" id="creating-your-first-debian-package"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id8"&gt;Creating your first Debian package&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;To create a simple Debian package we only need a single file and a single
+command. Here's how you get started:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# Create a directory to hold the files contained in the package.&lt;/span&gt;
+mkdir my-package &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="nb"&gt;cd &lt;/span&gt;my-package
+
+&lt;span class="c"&gt;# Create a directory with the package's control files.&lt;/span&gt;
+mkdir DEBIAN
+
+&lt;span class="c"&gt;# Create the main control file with package metadata.&lt;/span&gt;
+cat &amp;gt; DEBIAN/control &lt;span class="s"&gt;&amp;lt;&amp;lt; EOF&lt;/span&gt;
+&lt;span class="s"&gt;Package: name-of-package&lt;/span&gt;
+&lt;span class="s"&gt;Version: 1.0&lt;/span&gt;
+&lt;span class="s"&gt;Section: universe/web&lt;/span&gt;
+&lt;span class="s"&gt;Priority: optional&lt;/span&gt;
+&lt;span class="s"&gt;Architecture: all&lt;/span&gt;
+&lt;span class="s"&gt;Installed-Size: 1&lt;/span&gt;
+&lt;span class="s"&gt;Maintainer: $USER&lt;/span&gt;
+&lt;span class="s"&gt;Description: Explanation of why name-of-package is so cool&lt;/span&gt;
+&lt;span class="s"&gt;EOF&lt;/span&gt;
+
+&lt;span class="c"&gt;# Build the package using the accepted naming scheme.&lt;/span&gt;
+&lt;span class="nv"&gt;NAME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;awk &lt;span class="s1"&gt;'/^Package:/ {print $2}'&lt;/span&gt; DEBIAN/control&lt;span class="k"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;VERSION&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;awk &lt;span class="s1"&gt;'/^Version:/ {print $2}'&lt;/span&gt; DEBIAN/control&lt;span class="k"&gt;)&lt;/span&gt;
+&lt;span class="nv"&gt;ARCH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;awk &lt;span class="s1"&gt;'/^Architecture:/ {print $2}'&lt;/span&gt; DEBIAN/control&lt;span class="k"&gt;)&lt;/span&gt;
+dpkg-deb --build . &lt;span class="nv"&gt;$NAME_&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;VERSION&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;_&lt;span class="nv"&gt;$ARCH&lt;/span&gt;.deb
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Assuming you're on a Debian/Ubuntu system, the above commands should be enough
+to build a simple package. Any files in the working directory (excluding the
+special &lt;tt class="docutils literal"&gt;DEBIAN&lt;/tt&gt; directory) will be included in the package as if the
+directory containing the &lt;tt class="docutils literal"&gt;DEBIAN&lt;/tt&gt; package is the root of the file system.&lt;/p&gt;
+&lt;p&gt;The resulting &lt;tt class="docutils literal"&gt;*.deb&lt;/tt&gt; file can be installed using &lt;tt class="docutils literal"&gt;dpkg &lt;span class="pre"&gt;-i&lt;/span&gt; $filename&lt;/tt&gt;,
+however this won't automatically install dependencies, instead &lt;tt class="docutils literal"&gt;dpkg&lt;/tt&gt; will
+error out when dependencies are missing... When this happens you can run
+&lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;apt-get&lt;/span&gt; install &lt;span class="pre"&gt;-f&lt;/span&gt;&lt;/tt&gt; to install the dependencies. After that you can rerun
+the &lt;tt class="docutils literal"&gt;dpkg&lt;/tt&gt; command; it should now succeed. Read on if you're interested in a
+more streamlined experience.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="creating-a-debian-package-repository"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id9"&gt;Creating a Debian package repository&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;As mentioned earlier &lt;tt class="docutils literal"&gt;dpkg&lt;/tt&gt; doesn't automatically pull in dependencies. If
+you use &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;apt-get&lt;/span&gt;&lt;/tt&gt; it will do what you expect however &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;apt-get&lt;/span&gt;&lt;/tt&gt; does not
+support installation of local &lt;tt class="docutils literal"&gt;*.deb&lt;/tt&gt; archives; it needs a repository. In
+other words, once you start using dependencies you will want to setup a Debian
+package repository for your packages! Here's how you get started:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# Create repository layout, copy packages.&lt;/span&gt;
+mkdir -p repo/binary
+cp *.deb repo/binary
+&lt;span class="nb"&gt;cd &lt;/span&gt;repo
+
+&lt;span class="c"&gt;# Create list of packages.&lt;/span&gt;
+rm -f Packages Packages.gz Release Release.gpg  &lt;span class="c"&gt;# cleanup after previous run&lt;/span&gt;
+dpkg-scanpackages -m . &lt;span class="p"&gt;|&lt;/span&gt; sed &lt;span class="s1"&gt;'s@: \./@: @'&lt;/span&gt; &amp;gt; Packages
+
+&lt;span class="c"&gt;# Create compressed copy of list.&lt;/span&gt;
+cat Packages &lt;span class="p"&gt;|&lt;/span&gt; gzip &amp;gt; Packages.gz
+
+&lt;span class="c"&gt;# Generate release file.&lt;/span&gt;
+rm -f Release Release.gpg  &lt;span class="c"&gt;# cleanup after previous run&lt;/span&gt;
+&lt;span class="nv"&gt;LANG&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; apt-ftparchive release . &amp;gt; Release.tmp
+mv Release.tmp Release
+
+&lt;span class="c"&gt;# Sign release file.&lt;/span&gt;
+rm -f Release.gpg  &lt;span class="c"&gt;# cleanup after previous run&lt;/span&gt;
+gpg -abs -o Release.gpg Release
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;There are several gotcha's in the above piece of shell script:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;We cleanup generated files from previous runs because their presence
+corrupts the generated files&lt;/li&gt;
+&lt;li&gt;We modify the output of &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;dpkg-scanpackages&lt;/span&gt;&lt;/tt&gt; to change for example
+&lt;tt class="docutils literal"&gt;./test_1.0_all.deb&lt;/tt&gt; to &lt;tt class="docutils literal"&gt;test_1.0_all.deb&lt;/tt&gt; (for some reason &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;apt-get&lt;/span&gt;&lt;/tt&gt;
+doesn't like &lt;tt class="docutils literal"&gt;Packages&lt;/tt&gt; files with leading &lt;tt class="docutils literal"&gt;./&lt;/tt&gt; fragments)&lt;/li&gt;
+&lt;li&gt;We clear the &lt;tt class="docutils literal"&gt;$LANG&lt;/tt&gt; environment variable so that we are sure the
+&lt;tt class="docutils literal"&gt;Release&lt;/tt&gt; file is properly formatted regardless of the value of &lt;tt class="docutils literal"&gt;$LANG&lt;/tt&gt;&lt;/li&gt;
+&lt;li&gt;You need to have a private GPG key to sign the &lt;tt class="docutils literal"&gt;Release&lt;/tt&gt; file; if you don't
+have one yet you'll need to create one using the command &lt;tt class="docutils literal"&gt;gpg &lt;span class="pre"&gt;--gen-key&lt;/span&gt;&lt;/tt&gt;
+(you may find this &lt;a class="reference external" href="http://www.madboa.com/geek/gpg-quickstart/"&gt;GPG quick start&lt;/a&gt; useful)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="section" id="hosting-the-package-repository"&gt;
+&lt;h4&gt;Hosting the package repository&lt;/h4&gt;
+&lt;p&gt;After running the above commands, the directory &lt;cite&gt;repo/&lt;/cite&gt; can be served using a
+regular web server (e.g. &lt;a class="reference external" href="http://httpd.apache.org/"&gt;Apache&lt;/a&gt; or &lt;a class="reference external" href="http://nginx.org/"&gt;Nginx&lt;/a&gt;). No specific configuration is
+required because the repository contains only static files.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="using-the-package-repository"&gt;
+&lt;h4&gt;Using the package repository&lt;/h4&gt;
+&lt;p&gt;The package repository can be registered in a Debian/Ubuntu system by creating
+the file &lt;tt class="docutils literal"&gt;/etc/apt/sources.list.d/example.sources.list&lt;/tt&gt; with the following
+contents:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+deb http://server-address ./
+&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div class="section" id="installing-the-gpg-key"&gt;
+&lt;h4&gt;Installing the GPG key&lt;/h4&gt;
+&lt;p&gt;Before the package repository can be used from remote machines, the GPG key
+used to sign the Release file has to be installed on the remote machines.
+Assuming you have SSH and sudo access to the server where you generated the GPG
+key &lt;cite&gt;and&lt;/cite&gt; the one where you want to install the GPG key, the following command
+will install the GPG key:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ssh build-server sudo -i gpg --armor --export &lt;span class="p"&gt;|&lt;/span&gt; ssh target-host sudo apt-key add -
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="wrapping-up"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id10"&gt;Wrapping up&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;That's it really, at least to get started. Now consider how easy it is to write
+some Python scripts that automatically build these packages for you based on
+the contents of one or more version control systems and suddenly you're looking
+at a viable deployment strategy!&lt;/p&gt;
+&lt;p&gt;There are even people who build Python &lt;a class="reference external" href="http://www.virtualenv.org/en/latest/"&gt;virtual environments&lt;/a&gt; and ship those
+in Debian packages. It may sound revolting at first, but give it a moment to
+sink in; it has its advantages :-)&lt;/p&gt;
+&lt;p&gt;In future articles we'll dive into more advanced topics like pre/post
+installation/removal scripts, dpkg triggers and generation of configuration
+files. Stay tuned!&lt;/p&gt;
+&lt;!-- External references: --&gt;
+&lt;/div&gt;
+</summary><category term="python"></category><category term="deployment"></category><category term="automation"></category><category term="debian"></category><category term="packaging"></category></entry><entry><title>pip-accel: Accelerator for pip, the Python package manager</title><link href="http://developer.paylogic.com/articles/pip-accel.html" rel="alternate"></link><updated>2013-05-14T00:28:00+02:00</updated><author><name>Peter Odding</name></author><id>tag:developer.paylogic.com,2013-05-14:articles/pip-accel.html</id><summary type="html">
+&lt;p&gt;Recently we published &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;pip-accel&lt;/a&gt; to &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;GitHub&lt;/a&gt; and &lt;a class="reference external" href="https://pypi.python.org/pypi/pip-accel"&gt;PyPI&lt;/a&gt;, in this article we'll
+tell you why and how we created this project.&lt;/p&gt;
+&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The pip-accel program is a wrapper for &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt;, the Python package manager. It
+accelerates the usage of pip to initialize Python &lt;a class="reference external" href="http://www.virtualenv.org/en/latest/"&gt;virtual environments&lt;/a&gt; given
+one or more &lt;a class="reference external" href="http://www.pip-installer.org/en/latest/cookbook.html#requirements-files"&gt;requirements&lt;/a&gt; files. It does so by combining the following two
+approaches:&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;Source distribution downloads are cached and used to generate a local index
+of source distribution archives. If all your dependencies are pinned to
+absolute versions whose source distribution downloads were previously
+cached, pip-accel won't need a network connection at all! This is one of the
+reasons why pip can be so slow: given absolute pinned dependencies available
+in the download cache it will still scan PyPI (the online Python package
+index) and distribution websites.&lt;/li&gt;
+&lt;li&gt;Binary distributions are used to speed up the process of installing
+dependencies with binary components (like M2Crypto and LXML). Instead of
+recompiling these dependencies again for every virtual environment we
+compile them once and cache the result as a binary &lt;tt class="docutils literal"&gt;*.tar.gz&lt;/tt&gt;
+distribution.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;In the rest of this article we will discuss why pip-accel was created and dive
+into the particulars of how it works. At the end we'll also look at some
+related projects.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="at-paylogic-we-deploy-our-code-bases-a-lot"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;At Paylogic we deploy our code bases a lot&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Currently we have the following environments where we deploy our code bases:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Work laptops of the engineers and devops&lt;/li&gt;
+&lt;li&gt;Continuous integration server with 10 slaves (we are using &lt;a class="reference external" href="http://jenkins-ci.org/"&gt;Jenkins&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Stable testing environment (continuously deployed)&lt;/li&gt;
+&lt;li&gt;Staging testing environment (managed w/ releases)&lt;/li&gt;
+&lt;li&gt;Production servers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In some of these environments (specifically in the continuous integration and
+stable environments) new code bases can be deployed every few minutes when
+engineers are publishing new changes or tested changes are being merged into
+the main repository.&lt;/p&gt;
+&lt;div class="section" id="python-deployment-strategies"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id3"&gt;Python deployment strategies&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;For Python deployments there are two main ways to deploy a project and its dependencies:&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;System-wide installation&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://www.virtualenv.org/en/latest/"&gt;Virtual environments&lt;/a&gt; (or an equivalent construction, isolated from the system)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;At Paylogic we use system-wide installations on production (like) hosts and
+virtual environments everywhere else. Why don't we use virtual environments on
+production systems? Virtual environments do have some drawbacks (see below) and
+we have the luxury of being able to isolate applications on the level of
+virtual machines instead of Python virtual environments. This additional layer
+of isolation is worth it for us.&lt;/p&gt;
+&lt;div class="section" id="drawbacks-of-virtual-environments"&gt;
+&lt;h4&gt;Drawbacks of virtual environments&lt;/h4&gt;
+&lt;p&gt;Python virtual environments are by their nature a bit fragile. Quoting from
+&lt;a class="reference external" href="http://virtualenv.org/en/latest/news.html"&gt;the virtualenv website&lt;/a&gt;:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;strong&gt;Warning:&lt;/strong&gt; &lt;em&gt;Python bugfix releases 2.6.8, 2.7.3, 3.1.5 and 3.2.3 include
+a change that will cause import random to fail with “cannot import name
+urandom” on any virtualenv created on a Unix host with an earlier release
+of Python 2.6/2.7/3.1/3.2, if the underlying system Python is upgraded.
+This is due to the fact that a virtualenv uses the system Python’s standard
+library but contains its own copy of the Python interpreter, so an upgrade
+to the system Python results in a mismatch between the version of the
+Python interpreter and the version of the standard library. It can be fixed
+by removing $ENV/bin/python and re-running virtualenv on the same
+target directory with the upgraded Python.&lt;/em&gt;&lt;/blockquote&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="big-projects-have-a-lot-of-dependencies"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id4"&gt;Big projects have a lot of dependencies&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;At Paylogic we create large virtual environments with &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt;: At the time of
+writing our main code base has 84 dependencies if we include testing,
+documentation and transitive dependencies (43 of those dependencies are required
+in production). Some of these dependencies require SWIG and a compiler and for
+large modules the compilation can take a while.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="pip-can-be-slow-and-unreliable"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id5"&gt;pip can be slow and unreliable&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;So we build a lot of virtual environments, which can be really slow. The actual
+creation of the environment only takes a couple of seconds, but installing all
+of the dependencies can take minutes! For example at the time of writing it
+takes about seven minutes to install all dependencies of Paylogic's main code
+base using &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;What's worse is that PyPI and distribution websites can be very unreliable.
+One day everything works fine, the next day the same packages you downloaded
+previously can no longer be downloaded. Usually these are transient errors, you
+just have to be very patient and/or retry until it works.&lt;/p&gt;
+&lt;p&gt;We love virtual environments and pip so we don't necessarily need to replace
+either of those, but it would be nice to solve these two problems.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="optimizing-pip"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id6"&gt;Optimizing pip&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;In this section we'll discuss ways in which we can speed up pip.&lt;/p&gt;
+&lt;div class="section" id="brute-force-caching"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id7"&gt;Brute force caching&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;If no requirements changed, we can re-use a previously built and cached virtual
+environment. &lt;a class="reference external" href="https://pypi.python.org/pypi/terrarium"&gt;Terrarium&lt;/a&gt; takes this approach. There is a drawback however: If a
+single dependency changes, we can't re-use the cache and have to rebuild
+everything. This is not exactly ideal for continuous integration/deployment
+environments (which is a big use case for us).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="so-what-about-a-more-granular-approach"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id8"&gt;So what about a more granular approach?&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;There are two obvious targets:&lt;/p&gt;
+&lt;ol class="arabic"&gt;
+&lt;li&gt;&lt;p class="first"&gt;Given absolute version numbers available in the download cache, &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt; still
+goes out and scans PyPI and distribution websites. This is documented
+behavior:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;pip offers a &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;--download-cache&lt;/span&gt;&lt;/tt&gt; option for installs to prevent redundant
+downloads of archives from PyPI. The point of this cache is not to
+circumvent the index crawling process, but to just prevent redundant
+downloads. Items are stored in this cache based on the url the archive
+was found at, not simply the archive name. If you want a fast/local
+install solution that circumvents crawling PyPI, see the &lt;a class="reference external" href="http://www.pip-installer.org/en/latest/cookbook.html#fast-local-installs"&gt;Fast &amp;amp; Local
+Installs&lt;/a&gt; Cookbook entry.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Binary packages are recompiled for every virtual environment. This is
+because historically &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt; did not support binary distributions (support for
+the &lt;a class="reference external" href="http://wheel.readthedocs.org/en/latest/"&gt;Wheel&lt;/a&gt; format is now coming) so the only option was to go for source
+packages, which require compilation. However there is of course no reason
+why previous results can not be reused.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class="section" id="keeping-pip-off-the-internet"&gt;
+&lt;h4&gt;Keeping pip off the internet&lt;/h4&gt;
+&lt;p&gt;Our first problem was that pip's index crawling process is very slow, so we
+want to avoid it when possible. So how can we keep &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt; from always scanning
+PyPI and distribution websites when all of the dependencies are already
+available in the local download cache? Here's how:&lt;/p&gt;
+&lt;ol class="arabic"&gt;
+&lt;li&gt;&lt;p class="first"&gt;We generate a local source package index based on the &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt; download cache.
+This local source package index is just a directory with source packages
+downloaded from PyPI and distribution websites.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;We then run &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt; as follows:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;pip install --no-index --find-links&lt;span class="o"&gt;=&lt;/span&gt;file://&lt;span class="nv"&gt;$LOCAL_INDEX&lt;/span&gt; --requirement&lt;span class="o"&gt;=&lt;/span&gt;example.txt
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If the command succeeds it means all of the requirements (including the
+transitive dependencies) can be satisfied from the local index. In this case
+we don't need a network connection!&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class="section" id="caching-compiled-packages"&gt;
+&lt;h4&gt;Caching compiled packages&lt;/h4&gt;
+&lt;p&gt;Our second problem was that &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt; always recompiles binary modules. This isn't
+very hard to fix. Here's how you create a dumb binary distribution (a tar
+archive with binary artifacts specific to your current system):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;python setup.py bdist_dumb --format&lt;span class="o"&gt;=&lt;/span&gt;gztar
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Unfortunately these distributions are really dumb:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;tar tf ipython-0.13.2.linux-x86_64.tar.gz &lt;span class="p"&gt;|&lt;/span&gt; tail -n1
+./home/peter/.virtualenvs/pip-accel/lib/python2.6/site-packages/IPython/lib/security.py
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Dumb binary distributions contain hard coded pathnames specific to the virtual
+environment we created them for! This is useless in any other context. Of
+course with a bit of work these pathnames can be normalized to the root of the
+(virtual) environment...&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="putting-it-all-together-pip-accel"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id9"&gt;Putting it all together: pip-accel&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;So now you know why and how &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;pip-accel&lt;/a&gt; was born! It's available on &lt;a class="reference external" href="https://pypi.python.org/pypi/pip-accel"&gt;PyPI&lt;/a&gt; and
+&lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;GitHub&lt;/a&gt; but if you just want to try it out you can use the following:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;pip install pip-accel
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The command &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pip-accel&lt;/span&gt;&lt;/tt&gt; will be installed in your environment. You should be
+able to use it just like &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt;, simply type &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pip-accel&lt;/span&gt;&lt;/tt&gt; where you would
+previously type &lt;tt class="docutils literal"&gt;pip&lt;/tt&gt; on the command line (you can even alias it if you
+like).&lt;/p&gt;
+&lt;div class="section" id="how-fast-is-it"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id10"&gt;How fast is it?&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;To give you an idea of how effective &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pip-accel&lt;/span&gt;&lt;/tt&gt; is, below are the results of
+a test to build a virtual environment for our main code base:&lt;/p&gt;
+&lt;table border="1" class="docutils"&gt;
+&lt;colgroup&gt;
+&lt;col width="13%"&gt;&lt;/col&gt;
+&lt;col width="48%"&gt;&lt;/col&gt;
+&lt;col width="16%"&gt;&lt;/col&gt;
+&lt;col width="22%"&gt;&lt;/col&gt;
+&lt;/colgroup&gt;
+&lt;thead valign="bottom"&gt;
+&lt;tr&gt;&lt;th class="head"&gt;Program&lt;/th&gt;
+&lt;th class="head"&gt;Description&lt;/th&gt;
+&lt;th class="head"&gt;Duration&lt;/th&gt;
+&lt;th class="head"&gt;Percentage&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr&gt;&lt;td&gt;pip&lt;/td&gt;
+&lt;td&gt;Default configuration&lt;/td&gt;
+&lt;td&gt;444 seconds&lt;/td&gt;
+&lt;td&gt;100% (baseline)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;pip&lt;/td&gt;
+&lt;td&gt;With download cache (first run)&lt;/td&gt;
+&lt;td&gt;416 seconds&lt;/td&gt;
+&lt;td&gt;94%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;pip&lt;/td&gt;
+&lt;td&gt;With download cache (second run)&lt;/td&gt;
+&lt;td&gt;318 seconds&lt;/td&gt;
+&lt;td&gt;72%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;pip-accel&lt;/td&gt;
+&lt;td&gt;First run&lt;/td&gt;
+&lt;td&gt;397 seconds&lt;/td&gt;
+&lt;td&gt;89%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;pip-accel&lt;/td&gt;
+&lt;td&gt;Second run&lt;/td&gt;
+&lt;td&gt;30 seconds&lt;/td&gt;
+&lt;td&gt;7%&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;We have some ideas on how to make this even faster :-)&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="more-information"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id11"&gt;More information&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;If you're interested in more details about &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pip-accel&lt;/span&gt;&lt;/tt&gt;, the readme on GitHub
+contains more information about the &lt;a class="reference external" href="https://github.com/paylogic/pip-accel#control-flow-of-pip-accel"&gt;internal control flow&lt;/a&gt;. You're also free
+to browse the &lt;a class="reference external" href="https://github.com/paylogic/pip-accel/blob/master/pip_accel/__init__.py"&gt;source code&lt;/a&gt;; it's only a few hundred lines of well documented
+Python code.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="related-projects"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id12"&gt;Related projects&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;There are a lot of projects that try to improve the Python deployment process
+and it is definitely worth looking around to evaluate your options:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://pypi.python.org/pypi/terrarium"&gt;Terrarium&lt;/a&gt; generates and caches complete virtual environments, accomplishing
+some of the same goals as &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pip-accel&lt;/span&gt;&lt;/tt&gt; but at a different granularity level&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://www.buildout.org/"&gt;Buildout&lt;/a&gt; is about reliable and repeatable deployments just like
+&lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pip-accel&lt;/span&gt;&lt;/tt&gt; but it tackles non-Python applications as well, in effect
+reproducing complete deployment environments&lt;/li&gt;
+&lt;li&gt;The &lt;a class="reference external" href="http://doc.devpi.net/"&gt;devpi project&lt;/a&gt; implements the server and client side of a Python
+cheese shop (package index) with lots of additional features to support
+Python package release, testing and installation activities&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- External references: --&gt;
+&lt;/div&gt;
+</summary><category term="python"></category><category term="deployment"></category><category term="virtual environments"></category><category term="automation"></category><category term="pip"></category><category term="open source"></category><category term="packaging"></category></entry></feed>

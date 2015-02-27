@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+            <title>How we use pytest and pytest-bdd in Paylogic. by Andrey Makhnach - Paylogic Developers</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+                <link href="http://developer.paylogic.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Full Atom Feed">
+
+
+
+
+                <link href="http://developer.paylogic.com/feeds/testing.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Categories Atom Feed">
+
+
+
+
+            <link rel="shortcut icon" href="http://developer.paylogic.com/images/favicon.ico">
+
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.addons.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/style.css">
+    </head>
+
+    <body>
+
+        <nav class="uk-navbar" data-uk-sticky>
+            <div class="uk-container uk-container-center">
+                <a href="/" class="uk-navbar-brand"><img alt="Paylogic" src="http://developer.paylogic.com/images/paylogic.png" /></a>
+                <div class="uk-navbar-content"><a href="/" class="pl-text-light">Developers</a></div>
+                <ul class="uk-navbar-nav uk-float-right uk-hidden-small">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent" data-uk-dropdown>
+                        <a href="#">Categories<i class="uk-icon-angle-down uk-margin-small-left"></i></a>
+                        <div class="uk-dropdown uk-dropdown-flip uk-dropdown-navbar">
+                            <ul class="uk-nav uk-nav-navbar">
+                                        <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                        <li class="uk-active"><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <a href="#offcanvas-nav" class="uk-navbar-toggle uk-visible-small uk-float-right" data-uk-offcanvas></a>
+            </div>
+        </nav>
+
+        <div id="offcanvas-nav" class="uk-offcanvas">
+            <div class="uk-offcanvas-bar">
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{multiple:true}">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent">
+                        <a href="#">Categories</a>
+                        <ul class="uk-nav-sub">
+                                    <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                    <li class="uk-active"><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <main class="pl-content">
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+            <div class="uk-width-medium-1-4 uk-hidden-small">
+                <div class="toc uk-text-small" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
+                <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#how-we-use-pytest-and-pytest-bdd-in-paylogic" id="id1">How we use pytest and pytest-bdd in Paylogic</a><ul>
+<li><a class="reference internal" href="#folder-structure" id="id2">Folder structure</a></li>
+<li><a class="reference internal" href="#fixture-imports" id="id3">Fixture imports</a></li>
+<li><a class="reference internal" href="#fixture-parametrization" id="id4">Fixture parametrization</a><ul>
+<li><a class="reference internal" href="#overriding-fixture-parameters" id="id5">Overriding fixture parameters</a></li>
+<li><a class="reference internal" href="#fixtures-for-mocking" id="id6">Fixtures for mocking</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#functional-testing" id="id7">Functional testing</a><ul>
+<li><a class="reference internal" href="#parametrizing-scenarios" id="id8">Parametrizing scenarios</a></li>
+<li><a class="reference internal" href="#steps-with-arguments" id="id9">Steps with arguments</a></li>
+<li><a class="reference internal" href="#scenario-outlines" id="id10">Scenario outlines</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conclusion" id="id11">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+</div>
+                </div>
+            </div>
+            <div class="uk-width-medium-3-4">
+                <article class="uk-article">
+                    <table class="uk-table uk-table-middle pl-table-article-meta">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="uk-thumbnail uk-margin-right">
+                                        <img src="http://www.gravatar.com/avatar/9dc6206d98789347fc0396e489267071" alt="Andrey Makhnach" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="uk-article-meta">
+                                        Written by
+                                            <a class="url fn" href="http://developer.paylogic.com/author/andrey-makhnach.html">Andrey Makhnach</a>
+                                        on Fri 31 October 2014<br />Posted in <a href="http://developer.paylogic.com/category/testing.html">Testing</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h1 class="uk-article-title">How we use pytest and pytest-bdd in Paylogic.</h1>
+                    <hr class="uk-article-divider">
+                    <div class="pl-article-content"><div class="section" id="how-we-use-pytest-and-pytest-bdd-in-paylogic">
+<h2><a class="toc-backref" href="#id1">How we use pytest and pytest-bdd in Paylogic</a></h2>
+
+<p>After some time of using <a class="reference external" href="http://pytest.org">pytest</a> and <a class="reference external" href="https://github.com/olegpidsadnyi/pytest-bdd">pytest-bdd</a>
+in Paylogic we developed some standards in the structure of folders with tests and fixtures, and the usage of pytest
+and pytest-bdd functionality. This article describes those standards and our usage patterns.</p>
+<div class="section" id="folder-structure">
+<h3><a class="toc-backref" href="#id2">Folder structure</a></h3>
+<p>All our tests are stored in the tests folder in the root of the project folder. Our tests are separated by category,
+such as unit, functional, blackbox, etc. The tests are stored in the folders of their category. The
+structure looks as follows:</p>
+<pre class="literal-block">
+tests/
+
+    fixtures/
+
+    blackbox/
+
+    functional/
+
+    unit/
+
+    conftest.py
+</pre>
+<p>In <em>tests/conftest.py</em> we register all global fixtures that represent objects, such as <em>event</em>, <em>order</em> and <em>merchant</em>.
+Here we also register fixtures that represent attributes of objects like event_title, product_title, etc. The fixtures
+which are related to pytest-bdd, for example <em>pytestbdd_window_size</em>, <em>pytestbdd_browser_load_timeout</em>, etc., are also
+registered in <em>tests/conftest.py</em> because they are common fixtures for both our functional as well as our blackbox tests.</p>
+<p>I use the term "common fixtures" because <em>conftest.py</em> gives us the possibility to separate fixtures and pytest's plugins
+hooks, and register them only for those tests that use them. In our case, we have fixtures/hooks which are
+common for all tests and at the same time we have fixtures/hooks which are related only to functional/blackbox tests,
+for example <em>pytestbdd_window_size</em>. You can imagine that this fixture is only used by pytest-bdd and not by our unit tests.</p>
+</div>
+<div class="section" id="fixture-imports">
+<h3><a class="toc-backref" href="#id3">Fixture imports</a></h3>
+<p>For registering fixtures we just import the fixtures from their packages. For example for registering the <em>order</em> fixture
+and fixtures that represent attributes of <em>order</em> object such as <em>order_title</em>, <em>order_point_of_sale</em>, etc. we just do:</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">tests.fixtures.order</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">order</span><span class="p">,</span>
+    <span class="n">order_title</span><span class="p">,</span>
+    <span class="n">order_point_of_sale</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+</pre></div>
+<p>A fixture that represents an object, e.g. an order, typically looks as follows:</p>
+<div class="highlight"><pre><span class="nd">@pytest.fixture</span>
+<span class="k">def</span> <span class="nf">order</span><span class="p">(</span>
+    <span class="o">...</span>
+    <span class="n">event</span><span class="p">,</span>
+    <span class="n">order_point_of_sale</span><span class="p">,</span>
+    <span class="n">order_products</span><span class="p">,</span>
+    <span class="o">...</span>
+    <span class="n">expiry_time</span>
+<span class="p">):</span>
+    <span class="sd">"""Fixture which represents an order object."""</span>
+    <span class="k">return</span> <span class="n">create_test_order</span><span class="p">(</span>
+        <span class="o">...</span>
+        <span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">,</span>
+        <span class="n">point_of_sale</span><span class="o">=</span><span class="n">order_point_of_sale</span><span class="p">,</span>
+        <span class="n">products</span><span class="o">=</span><span class="n">order_products</span><span class="p">,</span>
+        <span class="o">...</span>
+        <span class="n">expiry_time</span><span class="o">=</span><span class="n">expiry_time</span>
+    <span class="p">)</span>
+</pre></div>
+<p>As you can see our order fixture is a regular pytest fixture, nothing special. It returns an instance of the Order
+model which in turn is created by the <em>create_test_order</em> testhelper function.</p>
+<p>We are using testhelper functions for creating fixtures and for populating the database with initial data after
+re-creating it. We use testhelpers instead of loading JSON or YAML fixtures because attributes of models change
+frequently and we decided that it would be better and more flexible to use just a list of testhelpers that are called in
+the right order for creating initial data.</p>
+</div>
+<div class="section" id="fixture-parametrization">
+<h3><a class="toc-backref" href="#id4">Fixture parametrization</a></h3>
+<div class="section" id="overriding-fixture-parameters">
+<h4><a class="toc-backref" href="#id5">Overriding fixture parameters</a></h4>
+<p>The order fixture inherits from lots of other fixtures because we want to have the possibility to override attributes
+with which the order will be created. We override these using @pytest.mark.parametrize or with argumented steps in
+pytest-bdd.</p>
+<p>For example if we need to test an order with a different <em>expiry_time</em> we do it like this:</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span>
+    <span class="n">expiry_time</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+        <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">-</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_complete_order</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+    <span class="n">order</span><span class="o">.</span><span class="n">complete</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">order</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">OrderState</span><span class="o">.</span><span class="n">COMPLETED</span>
+</pre></div>
+<p>Now, test_complete_order test will be executed twice and every time we will have an order with a different <em>expiry_time</em>.</p>
+<p>We also use <em>pytest.fixture(params=[...])</em> to set parameters for fixtures:</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="s">'127.0.0.1'</span><span class="p">,</span> <span class="s">'192.168.0.1'</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">client_ip</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span>
+</pre></div>
+<p>From the example you can see that as soon as we run tests that use the <em>client_ip</em> fixture then pytest will run this
+test as many times as the number of parameters the <em>client_ip</em> fixture has defined (in this case of course two).</p>
+<p>Now the question is of course, what is the difference between those two parametrization methods? The difference is that
+<em>pytest.mark.parametrize</em> will influence only the test on which it is explicitly defined, while <em>pytest.fixture(params=[..])</em>
+influences every test that uses this fixture. If you would for example define three parameters for the above client_ip fixture,
+then each test using this fixture will now be executed three times, once for every param. You are basically creating
+three fixtures.</p>
+<p>Regarding how frequently you would use <em>pytest.mark.parametrize</em> compared of <em>pytest.fixture(params=[...])</em>, it strongly
+depends on your code base, test code base and type of test. I don't think I can say anything meaningful about that in a
+general sense based on just our experiences.</p>
+</div>
+<div class="section" id="fixtures-for-mocking">
+<h4><a class="toc-backref" href="#id6">Fixtures for mocking</a></h4>
+<p>We also use fixtures for mocking. For example in the <a class="reference external" href="https://github.com/paylogic/settei">settei</a>  project we needed
+to mock a required method of the <em>pkg_resources.EntryPoint</em> class, so we wrote the following fixture:</p>
+<div class="highlight"><pre><span class="c"># tests/test_get_entry_points.py</span>
+<span class="o">...</span>
+<span class="nd">@pytest.fixture</span>
+<span class="k">def</span> <span class="nf">monkeypatch_entrypoint</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">,</span> <span class="n">clean_config</span><span class="p">):</span>
+    <span class="sd">"""Monkeypatching EntryPoint."""</span>
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setattr</span><span class="p">(</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">EntryPoint</span><span class="p">,</span> <span class="s">'require'</span><span class="p">,</span> <span class="n">require</span><span class="p">)</span>
+    <span class="err">…</span>
+</pre></div>
+<p>Each time when your tests depends on this fixture, the <em>require</em> method of the
+<em>pkg_resources.EntryPoint</em> class would be mocked.</p>
+</div>
+</div>
+<div class="section" id="functional-testing">
+<h3><a class="toc-backref" href="#id7">Functional testing</a></h3>
+<div class="section" id="parametrizing-scenarios">
+<h4><a class="toc-backref" href="#id8">Parametrizing scenarios</a></h4>
+<p>We also use <em>pytest.mark.parametrize</em> for functional testing with pytest-bdd. If you for example need to test the functionality of
+creating a product, the scenario of successfully creating a product can look like this:</p>
+<pre class="literal-block">
+Scenario: Successfully creating a product
+Given I am a backoffice admin
+And I have an event
+
+When I go to the New product page
+And I fill in the name of the product
+And I fill in the quantity of the product equal to 5
+And I submit the form
+
+Then I should see a success message
+</pre>
+<p>As you can see, nothing special. But if you for example need to test that a form should show an error message if the
+quantity of the product cannot equal 0, then you will create another scenario. It can look like this:</p>
+<pre class="literal-block">
+Scenario: Unsuccessful creating of product
+Given I am a backoffice admin
+And I have an event
+
+When I go to the New product page
+And I fill in the name of the product
+And I fill in the quantity of the product equal to 0
+And I submit the form
+
+Then I should see an error message
+</pre>
+<p>As we can see there is a lot of double work here, which is something we should try to avoid. Luckily, there is a solution. Let's merge
+these two scenarios into one:</p>
+<pre class="literal-block">
+Scenario: Create product
+Given I am a backoffice admin
+And I have an event
+
+When I go to the New product page
+And I fill the name of product
+And I fill in the quantity of the product equal to &lt;product_quantity&gt;
+And I submit the form
+
+Then I should see a &lt;message_status&gt; message
+</pre>
+<p>Then in your tests file you can define the scenario like this:</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_bdd</span> <span class="kn">import</span> <span class="n">scenario</span>
+
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span>
+    <span class="p">[</span><span class="s">'product_quantity'</span><span class="p">,</span> <span class="s">'message_status'</span><span class="p">],</span>
+    <span class="p">[</span>
+        <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s">'success'</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">'error'</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="nd">@scenario</span><span class="p">(</span><span class="s">'Create product'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_create_product</span><span class="p">(</span><span class="n">product_quantity</span><span class="p">,</span> <span class="n">message_status</span><span class="p">)</span>
+    <span class="sd">"""Create product."""</span>
+</pre></div>
+<p>And now in your given, when and then steps you can ask for the <em>product_quantity</em> and <em>message_status</em> fixtures.</p>
+<div class="highlight"><pre><span class="nd">@when</span><span class="p">(</span><span class="s">'I fill in the quantity of the product equal to &lt;product_quantity&gt;'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">i_fill_the_quantity_of_product</span><span class="p">(</span><span class="n">product_quantity</span><span class="p">):</span>
+    <span class="err">…</span>
+
+<span class="nd">@then</span><span class="p">(</span><span class="s">'I should see a &lt;message_status&gt; message'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">assert_that_i_see_message</span><span class="p">(</span><span class="n">message_status</span><span class="p">):</span>
+    <span class="err">…</span>
+</pre></div>
+<p>There is one more thing which we also use in testing, which is the step with arguments (or argumented steps).</p>
+</div>
+<div class="section" id="steps-with-arguments">
+<h4><a class="toc-backref" href="#id9">Steps with arguments</a></h4>
+<p>Consider that, for some reason, you have a similar step in several scenarios, for example <em>"Given I have an event with
+2 products"</em> and <em>"Given I have an event with 5 products"</em>. In your test files you will then have two different steps
+defined that are actually almost the same. There is a solution which can help you use the same step for several
+scenarios with different behaviour.</p>
+<p>In your scenarios you just write <em>"Given I have an event with 2 products"</em> and <em>"Given I have an event with 5 products"</em>, as
+you did before, but in your given.py file you write the following:</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">pytest_bdd</span> <span class="kn">import</span> <span class="n">given</span>
+
+<span class="nd">@given</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">'I have an event with (?P&lt;product_quantity&gt;\d+) products'</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">i_have_an_event_with_products</span><span class="p">(</span><span class="n">product_quantity</span><span class="p">):</span>
+    <span class="sd">"""I have an event with products."""</span>
+</pre></div>
+<p>Now, if your event fixture uses the <em>product_quantity</em> fixture, then for each scenario you will get the event with a
+different quantity of products, depending on what you write in your feature file.</p>
+</div>
+<div class="section" id="scenario-outlines">
+<h4><a class="toc-backref" href="#id10">Scenario outlines</a></h4>
+<p>Scenarios can also be parametrized to cover multiple cases. In the <a class="reference external" href="http://docs.behat.org/en/v2.5/guides/1.gherkin.html">Gherkin language</a>
+the variable templates are written using corner braces, like so: &lt;somevalue&gt;. Scenario outlines are supported by pytest-bdd
+exactly as described in the <a class="reference external" href="http://docs.behat.org/en/v2.5/guides/1.gherkin.html#scenario-outlines">behave docs</a>.</p>
+<p>A full example of a scenario outline can be found below.</p>
+<pre class="literal-block">
+Scenario Outline: Outlined given, when, thens
+Given there are &lt;start&gt; cucumbers
+When I eat &lt;eat&gt; cucumbers
+Then I should have &lt;left&gt; cucumbers
+
+Examples:
+| start | eat | left |
+|  12   |  5  |  7   |
+</pre>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">pytest_bdd</span> <span class="kn">import</span> <span class="n">given</span><span class="p">,</span> <span class="n">when</span><span class="p">,</span> <span class="n">then</span><span class="p">,</span> <span class="n">scenario</span>
+
+<span class="nd">@scenario</span><span class="p">(</span>
+    <span class="s">'outline.feature'</span><span class="p">,</span>
+    <span class="s">'Outlined given, when, thens'</span><span class="p">,</span>
+    <span class="n">example_converters</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">eat</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_outlined</span><span class="p">():</span>
+<span class="k">pass</span>
+
+
+<span class="nd">@given</span><span class="p">(</span><span class="s">'there are &lt;start&gt; cucumbers'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">start_cucumbers</span><span class="p">(</span><span class="n">start</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">)</span>
+
+
+<span class="nd">@when</span><span class="p">(</span><span class="s">'I eat &lt;eat&gt; cucumbers'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">eat_cucumbers</span><span class="p">(</span><span class="n">start_cucumbers</span><span class="p">,</span> <span class="n">eat</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eat</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="n">start_cucumbers</span><span class="p">[</span><span class="s">'eat'</span><span class="p">]</span> <span class="o">=</span> <span class="n">eat</span>
+
+
+<span class="nd">@then</span><span class="p">(</span><span class="s">'I should have &lt;left&gt; cucumbers'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">should_have_left_cucumbers</span><span class="p">(</span><span class="n">start_cucumbers</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">eat</span><span class="p">,</span> <span class="n">left</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">start</span> <span class="o">-</span> <span class="n">eat</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">start_cucumbers</span><span class="p">[</span><span class="s">'start'</span><span class="p">]</span> <span class="o">==</span> <span class="n">start</span>
+    <span class="k">assert</span> <span class="n">start_cucumbers</span><span class="p">[</span><span class="s">'eat'</span><span class="p">]</span> <span class="o">==</span> <span class="n">eat</span>
+</pre></div>
+<p>This code also shows the possibility to use converters which may be useful if you need parameter
+types different than strings.</p>
+<p>There are two types of outlines, namely horizontal and vertical. These merely
+state how you write the possible values of the attributes. We saw an example of
+a horizontal outline above; the below is an example of a vertical outline. Note
+that you have to explicitly state "Vertical" to indicate that you are using the
+vertical outline type, otherwise pytest-bdd will default to horizontal.</p>
+<pre class="literal-block">
+Scenario Outline: Outlined given, when, thens
+Given there are &lt;start&gt; cucumbers
+When I eat &lt;eat&gt; cucumbers
+Then I should have &lt;left&gt; cucumbers
+
+Examples: Vertical
+| start | 12 | 2 |
+| eat   | 5  | 1 |
+| left  | 7  | 1 |
+</pre>
+<p>Finally, you should not forget to register the given steps from <em>functional/steps/given.py</em> in
+<em>functional/conftest.py</em> in the functional folder.</p>
+<div class="highlight"><pre><span class="c"># tests/functional/conftest.py</span>
+<span class="kn">from</span> <span class="nn">tests.functional.steps.given</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+<p>Now your folder structure should look like this:</p>
+<pre class="literal-block">
+tests/
+    fixtures/
+
+    blackbox/
+
+    functional/
+        steps
+            __init__.py
+            given.py
+        conftest.py
+    unit/
+    conftest.py
+</pre>
+<p>All things registered in <em>tests/functional/conftest.py</em> will now only be accessible in the scope of the functional tests.</p>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h3><a class="toc-backref" href="#id11">Conclusion</a></h3>
+<p>That is how our core of storing/creating our tests looks like. I hope that this article will
+be useful for you. There are always ways to improve it and you are welcome in comments with your thoughts. We are
+planning to improve a relation between code and tests, fixtures.</p>
+<p>Thank you for reading.</p>
+</div>
+</div>
+</div>
+                        <hr class="uk-article-divider">
+                        <div class="comments">
+                            <h2>Comments</h2>
+                            <div id="disqus_thread"></div>
+                            <script type="text/javascript">
+                                var disqus_identifier = "articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html";
+                                (function() {
+                                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                    dsq.src = 'http://paylogicdevportal.disqus.com/embed.js';
+                                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                })();
+                            </script>
+                        </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+        </main>
+
+        <footer class="pl-footer">
+            <div>
+                <div class="uk-container uk-container-center uk-text-center uk-text-small">
+                    <ul class="uk-subnav uk-subnav-line">
+                        <li><a href="http://developer.paylogic.com/pages/about.html">About</a></li>
+                        <li><a href="https://shopping-api-docs.sandbox.paylogic.com/" target="_blank">API</a></li>
+                        <li><a href="https://github.com/paylogic" target="_blank">GitHub</a></li>
+                        <li><a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a></li>
+                    </ul>
+                    Copyright (c) 2014 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
+                    built using the awesome <a href="http://getpelican.com" target="_blank">Pelican</a> static site generator.<br>
+                    This work is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+                </div>
+            </div>
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/uikit.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/sticky.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/cover.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/application.js"></script>
+
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-13304573-19', 'paylogic.com');
+            ga('send', 'pageview');
+        </script>
+
+    </body>
+</html>

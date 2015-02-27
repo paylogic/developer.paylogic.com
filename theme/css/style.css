@@ -1,0 +1,756 @@
+/* ========================================================================
+   Fonts
+========================================================================== */
+
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&subset=latin,latin-ext);
+
+/* ========================================================================
+   Extra classes
+========================================================================== */
+
+.pl-text-light {
+    font-weight: 300;
+}
+
+.pl-text-normal {
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.pl-footer {
+    border-top: 1px solid #eeeeee;
+}
+
+.pl-footer > div {
+    padding: 25px 0;
+    border-top: 3px solid #fafafa;
+}
+
+.pl-section {
+    padding: 25px 0 0;
+}
+
+.pl-section:last-child {
+    padding-bottom: 25px;
+}
+
+.pl-pagination {
+    margin-bottom: -25px !important;
+    margin-top: 25px;
+    padding: 10px 15px;
+    background: #fafafa;
+    border: 1px solid #eeeeee;
+    border-bottom: 0;
+}
+
+.pl-article-intro > *:last-child {
+    margin-bottom: 0;
+}
+
+.pl-article-content div + div {
+    margin-top: 15px;
+}
+
+.pl-table-article-meta {
+    width: auto;
+}
+
+.pl-table-article-meta td {
+    padding: 0;
+}
+
+.pl-icon-rounded {
+    background: #eeeeee;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+}
+
+.pl-slogan h1 {
+    color: #ffffff;
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+    font-size: 46px;
+    line-height: 52px;
+}
+
+.align-center {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+ul.simple, ul.simple li ul {
+    list-style: none;
+    padding-left: 15px;
+}
+
+ul.simple > li, ul.simple li ul li {
+    padding-left: 15px;
+    position: relative;
+}
+
+ul.simple > li:before, ul.simple li ul li:before {
+    content: "\f0da";
+    font-family: FontAwesome;
+    color: #9e9e9e;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+}
+
+.topic-title {
+    font-weight: 800;
+}
+
+.toc-backref {
+    color: #212121;
+}
+
+.toc-backref:hover {
+    color: #212121;
+}
+
+.toc-backref:after {
+    color: #9e9e9e;
+    display: none;
+    content: "#";
+    margin-left: 5px;
+}
+
+.toc-backref:hover:after {
+    display: inline;
+}
+
+table.docutils {
+    margin: 15px auto;
+}
+
+table.docutils,
+table.docutils th,
+table.docutils td {
+    border-color: #e0e0e0;
+}
+
+table.docutils th,
+table.docutils td {
+    padding: 4px 8px;
+    text-align: left;
+}
+
+table.docutils td {
+    vertical-align: top;
+}
+
+table.docutils thead th {
+    vertical-align: bottom;
+}
+
+tt {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.uk-table td.pl-heading {
+    background: #eeeeee;
+}
+
+.uk-table td.pl-content {
+    background: #fafafa;
+    padding: 16px;
+}
+
+/* ========================================================================
+   Component: Article
+========================================================================== */
+
+.uk-article-title {
+    font-size: 28px;
+    line-height: 34px;
+    font-weight: 800;
+}
+
+.uk-article-meta {
+    color: #9e9e9e;
+}
+
+/* ========================================================================
+   Component: Avatar
+========================================================================== */
+
+.uk-thumbnail {
+    background: #eeeeee;
+    padding: 2px;
+    border-color: #e0e0e0;
+    text-align: center;
+    color: #e0e0e0;
+}
+
+.uk-thumbnail > img {
+    width: 54px;
+}
+
+.uk-thumbnail > i {
+    margin: 3px 7px;
+}
+
+/* ========================================================================
+   Component: Base
+========================================================================== */
+
+html {
+    font-size: 15px;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: #212121;
+    line-height: 22px;
+}
+
+a, .uk-link {
+    color: #ff7f00;
+}
+
+h2 a:hover span.pl-text-normal,
+h2 a.pl-text-normal:hover {
+    color: #212121 !important;
+}
+
+a:hover, .uk-link:hover {
+    color: #e65100;
+    text-decoration: none;
+}
+
+a.uk-panel:hover {
+    color: #ff7f00;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Open Sans', sans-serif;
+    color: #212121;
+    font-weight: 300;
+}
+
+pre, code {
+    background: #fafafa;
+    color: #212121;
+    border: 1px solid #e0e0e0;
+}
+
+code {
+    padding: 2px 4px;
+}
+
+blockquote {
+    border-left: 4px solid #e0e0e0;
+    font-size: 1rem;
+}
+
+blockquote ul, blockquote ol {
+    padding-left: 20px;
+}
+
+em {
+    color: #212121;
+}
+
+ul li > *:last-child, ol li > *:last-child {
+    margin-bottom: 0;
+}
+
+*:focus {
+    outline: none;
+}
+
+/* ========================================================================
+   Component: Dropdown
+========================================================================== */
+
+.uk-dropdown-navbar {
+    background: #e0e0e0;
+    color: #212121;
+}
+
+/* ========================================================================
+   Component: List
+========================================================================== */
+
+.uk-list-space > li:nth-child(n+2) {
+    margin-top: 20px;
+}
+
+.uk-list-line > li:nth-child(n+2) {
+    border-top-color: #e0e0e0;
+}
+
+.uk-list-line.uk-list-space > li:nth-child(n+2) {
+    padding-top: 20px;
+}
+
+/* ========================================================================
+   Component: Nav
+========================================================================== */
+
+.uk-nav-navbar > li > a {
+    color: #212121;
+    font-weight: 300;
+}
+
+.uk-nav-navbar > li > a:hover,
+.uk-nav-navbar > li > a:focus {
+    background: #ff7f00;
+    color: #FFFFFF;
+}
+
+.uk-nav-navbar > li.uk-active > a {
+    background: #ff7f00;
+    color: #FFFFFF;
+}
+
+/* ========================================================================
+   Component: Navbar
+========================================================================== */
+
+.uk-navbar-content,
+.uk-navbar-brand,
+.uk-navbar-toggle {
+    height: 50px;
+}
+
+.uk-navbar {
+    color: #212121;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.uk-navbar-brand {
+    color: #212121;
+    padding-left: 0;
+}
+
+.uk-navbar-content {
+    font-size: 20px;
+    padding-left: 0;
+    line-height: 50px;
+}
+
+.uk-navbar-toggle {
+    color: #212121;
+    padding-right: 0;
+}
+
+.uk-navbar-toggle:hover,
+.uk-navbar-toggle:focus {
+    color: #ff7f00;
+}
+
+.uk-navbar-content > a,
+.uk-navbar-content > a:not([class]) {
+    color: #212121;
+}
+
+.uk-navbar-content > a:hover,
+.uk-navbar-content > a:hover:not([class]) {
+    color: #212121;
+}
+
+.uk-navbar-nav > li > a {
+    color: #212121;
+    height: 50px;
+    line-height: 50px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+}
+
+.uk-navbar-nav > li:hover > a,
+.uk-navbar-nav > li > a:focus,
+.uk-navbar-nav > li.uk-open > a,
+.uk-navbar-nav > li > a:active,
+.uk-navbar-nav > li.uk-active > a,
+.uk-navbar-nav > li.uk-open > a {
+    background: #e0e0e0;
+    color: #212121;
+}
+
+/* ========================================================================
+   Component: Off-canvas
+========================================================================== */
+
+.uk-offcanvas-bar {
+    background: #444444;
+}
+
+.uk-nav-offcanvas > li > a {
+    color: #9e9e9e;
+    background: #eeeeee;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.uk-nav-offcanvas > .uk-open > a,
+html:not(.uk-touch) .uk-nav-offcanvas > li > a:hover,
+html:not(.uk-touch) .uk-nav-offcanvas > li >a:focus {
+    background: #eeeeee;
+    color: #212121;
+}
+
+html .uk-nav.uk-nav-offcanvas > li.uk-active > a {
+    background: #eeeeee;
+    color: #212121;
+}
+
+/* ========================================================================
+   Component: Panel
+========================================================================== */
+
+.uk-panel > *:last-child > *:last-child {
+    margin-bottom: 0;
+}
+
+.uk-panel-title {
+    color: #212121;
+    font-size: 28px;
+    line-height: 34px;
+    font-weight: 800;
+}
+
+.uk-panel-box {
+    background: #eeeeee;
+}
+
+/* ========================================================================
+   Component: Subnav
+========================================================================== */
+
+.uk-subnav > li:nth-child(n+2) {
+    margin-left: 15px;
+}
+
+.uk-subnav-line > li:nth-child(n+2):before {
+    margin-right: 15px;
+    border-color: #e0e0e0;
+}
+
+.uk-subnav > li > a {
+    color: #ff7f00;
+}
+
+.uk-subnav > li > a:hover {
+    color: #e65100;
+}
+
+/* ========================================================================
+   Component: Text
+========================================================================== */
+
+.uk-text-small {
+    font-size: 12px;
+    line-height: 18px;
+}
+
+.uk-text-muted {
+    color: #9e9e9e !important;
+}
+
+/* ========================================================================
+   Component: Utility
+========================================================================== */
+
+.uk-container {
+    max-width: 980px;
+}
+
+.uk-article-divider {
+    border-color: #e0e0e0;
+}
+
+/* ========================================================================
+   Table of Contents
+========================================================================== */
+
+#table-of-contents {
+    overflow: auto;
+}
+
+#table-of-contents ul.simple > li:before,
+#table-of-contents ul.simple li ul li:before {
+    top: 0;
+    left: 4px;
+}
+
+#table-of-contents a {
+    color: #212121;
+    display: inline-block;
+}
+
+#table-of-contents a:hover {
+    color: #ff7f00;
+}
+
+#table-of-contents a.uk-active {
+    font-weight: 700;
+}
+
+#table-of-contents > ul {
+    margin: 0;
+    padding-left: 0;
+}
+
+#table-of-contents ul li:nth-child(n+2) {
+    margin-top: 5px;
+}
+
+#table-of-contents ul li ul {
+    margin-top: 5px;
+}
+
+/* ========================================================================
+   Component: Syntax highlighting
+========================================================================== */
+
+/*
+*  Syntax highlighting based on th Earendel color scheme
+*  https://github.com/xolox/lua-lxsh/blob/master/src/colors/earendel.lua
+*/
+
+.hll {
+    background-color: #ffffcc;
+}
+.c {
+    color: #8f5902;
+    font-style: italic;
+}
+/*.err {
+    border: 1px solid #ef2929;
+    color: #a40000;
+}*/
+.g {
+    color: #000000;
+}
+.k {
+    color: #204a87;
+    font-weight: bold;
+}
+.l {
+    color: #000000;
+}
+.n {
+    color: #000000;
+}
+.o {
+    color: #ce5c00;
+    font-weight: bold;
+}
+.x {
+    color: #000000;
+}
+.p {
+    color: #000000;
+    font-weight: bold;
+}
+.cm {
+    color: #8f5902;
+    font-style: italic;
+}
+.cp {
+    color: #8f5902;
+    font-style: italic;
+}
+.c1 {
+    color: #8f5902;
+    font-style: italic;
+}
+.cs {
+    color: #8f5902;
+    font-style: italic;
+}
+.gd {
+    color: #a40000;
+}
+.ge {
+    color: #000000;
+    font-style: italic;
+}
+.gr {
+    color: #ef2929;
+}
+.gh {
+    color: #000080;
+    font-weight: bold;
+}
+.gi {
+    color: #00a000;
+}
+.go {
+    color: #000000;
+    font-style: italic;
+}
+.gp {
+    color: #8f5902;
+}
+.gs {
+    color: #000000;
+    font-weight: bold;
+}
+.gu {
+    color: #800080;
+    font-weight: bold;
+}
+.gt {
+    color: #a40000;
+    font-weight: bold;
+}
+.kc {
+    color: #204a87;
+    font-weight: bold;
+}
+.kd {
+    color: #204a87;
+    font-weight: bold;
+}
+.kn {
+    color: #204a87;
+    font-weight: bold;
+}
+.kp {
+    color: #204a87;
+    font-weight: bold;
+}
+.kr {
+    color: #204a87;
+    font-weight: bold;
+}
+.kt {
+    color: #204a87;
+    font-weight: bold;
+}
+.ld {
+    color: #000000;
+}
+.m {
+    color: #0000cf;
+    font-weight: bold;
+}
+.s {
+    color: #4e9a06;
+}
+.na {
+    color: #c4a000;
+}
+.nb {
+    color: #204a87;
+}
+.nc {
+    color: #000000;
+}
+.no {
+    color: #000000;
+}
+.nd {
+    color: #5c35cc;
+    font-weight: bold;
+}
+.ni {
+    color: #ce5c00;
+}
+.ne {
+    color: #cc0000;
+    font-weight: bold;
+}
+.nf {
+    color: #000000;
+}
+.nl {
+    color: #f57900;
+}
+.nn {
+    color: #000000;
+}
+.nx {
+    color: #000000;
+}
+.py {
+    color: #000000;
+}
+.nt {
+    color: #204a87;
+    font-weight: bold;
+}
+.nv {
+    color: #000000;
+}
+.ow {
+    color: #204a87;
+    font-weight: bold;
+}
+.w {
+    color: #f8f8f8;
+    text-decoration: underline;
+}
+.mf {
+    color: #0000cf;
+    font-weight: bold;
+}
+.mh {
+    color: #0000cf;
+    font-weight: bold;
+}
+.mi {
+    color: #0000cf;
+    font-weight: bold;
+}
+.mo {
+    color: #0000cf;
+    font-weight: bold;
+}
+.sb {
+    color: #4e9a06;
+}
+.sc {
+    color: #4e9a06;
+}
+.sd {
+    color: #8f5902;
+    font-style: italic;
+}
+.s2 {
+    color: #4e9a06;
+}
+.se {
+    color: #4e9a06;
+}
+.sh {
+    color: #4e9a06;
+}
+.si {
+    color: #4e9a06;
+}
+.sx {
+    color: #4e9a06;
+}
+.sr {
+    color: #4e9a06;
+}
+.s1 {
+    color: #4e9a06;
+}
+.ss {
+    color: #4e9a06;
+}
+.bp {
+    color: #3465a4;
+}
+.vc {
+    color: #000000;
+}
+.vg {
+    color: #000000;
+}
+.vi {
+    color: #000000;
+}
+.il {
+    color: #0000cf;
+    font-weight: bold;
+}

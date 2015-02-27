@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+            <title>Test parallelization by Anatoly Bubenkov, Dmitrijs Milajevs - Paylogic Developers</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+                <link href="http://developer.paylogic.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Full Atom Feed">
+
+
+
+
+                <link href="http://developer.paylogic.com/feeds/testing.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Categories Atom Feed">
+
+
+
+
+            <link rel="shortcut icon" href="http://developer.paylogic.com/images/favicon.ico">
+
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.addons.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/style.css">
+    </head>
+
+    <body>
+
+        <nav class="uk-navbar" data-uk-sticky>
+            <div class="uk-container uk-container-center">
+                <a href="/" class="uk-navbar-brand"><img alt="Paylogic" src="http://developer.paylogic.com/images/paylogic.png" /></a>
+                <div class="uk-navbar-content"><a href="/" class="pl-text-light">Developers</a></div>
+                <ul class="uk-navbar-nav uk-float-right uk-hidden-small">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent" data-uk-dropdown>
+                        <a href="#">Categories<i class="uk-icon-angle-down uk-margin-small-left"></i></a>
+                        <div class="uk-dropdown uk-dropdown-flip uk-dropdown-navbar">
+                            <ul class="uk-nav uk-nav-navbar">
+                                        <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                        <li class="uk-active"><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <a href="#offcanvas-nav" class="uk-navbar-toggle uk-visible-small uk-float-right" data-uk-offcanvas></a>
+            </div>
+        </nav>
+
+        <div id="offcanvas-nav" class="uk-offcanvas">
+            <div class="uk-offcanvas-bar">
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{multiple:true}">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent">
+                        <a href="#">Categories</a>
+                        <ul class="uk-nav-sub">
+                                    <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                    <li class="uk-active"><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <main class="pl-content">
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+            <div class="uk-width-medium-1-4 uk-hidden-small">
+                <div class="toc uk-text-small" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
+                <div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id1">Introduction</a></li>
+<li><a class="reference internal" href="#a-closer-look-to-the-test-suite" id="id2">A closer look to the test suite</a></li>
+<li><a class="reference internal" href="#test-parallelization-in-theory-and-practice" id="id3">Test parallelization in theory and practice</a></li>
+<li><a class="reference internal" href="#the-art-of-mocking" id="id4">The art of mocking</a><ul>
+<li><a class="reference internal" href="#web-applications" id="id5">Web applications</a></li>
+<li><a class="reference internal" href="#other-isolated-resources" id="id6">Other isolated resources</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#requirements" id="id7">Requirements</a></li>
+<li><a class="reference internal" href="#results" id="id8">Results</a></li>
+<li><a class="reference internal" href="#open-source" id="id9">Open source</a></li>
+<li><a class="reference internal" href="#conclusion" id="id10">Conclusion</a></li>
+</ul>
+</div>
+                </div>
+            </div>
+            <div class="uk-width-medium-3-4">
+                <article class="uk-article">
+                    <table class="uk-table uk-table-middle pl-table-article-meta">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="uk-thumbnail uk-margin-right">
+                                        <img src="http://www.gravatar.com/avatar/4e2517ef01ac77a6a0b251336a6ce224" alt="Anatoly Bubenkov" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="uk-article-meta">
+                                        Written by
+                                            <a class="url fn" href="http://developer.paylogic.com/author/anatoly-bubenkov.html">Anatoly Bubenkov</a>
+                                            ,
+                                            <a class="url fn" href="http://developer.paylogic.com/author/dmitrijs-milajevs.html">Dmitrijs Milajevs</a>
+                                        on Fri 31 January 2014<br />Posted in <a href="http://developer.paylogic.com/category/testing.html">Testing</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h1 class="uk-article-title">Test parallelization</h1>
+                    <hr class="uk-article-divider">
+                    <div class="pl-article-content">
+<div class="section" id="introduction">
+<h2><a class="toc-backref" href="#id1">Introduction</a></h2>
+<p>Automated tests are awesome. A good test suite makes refactoring easier and allows
+developers to catch bugs before the code is deployed on live or is spotted
+by a tester.</p>
+<p>Once the advantages of automated testing are discovered, the number of tests increases
+exponentially. At Paylogic, there were about 200 tests in the early testing stage.
+The tests took about 5 minutes to run. At the moment, we have about 2500 tests and using
+a single test process it takes 1 hour and 40 minutes to execute.</p>
+<p>For developers, it's simply not an option to wait for 2 hours until the whole test suite finishes,
+as they want results as soon as possible. They might then take the risk
+to push the code untested. However, as we have continuous integration in place, if there are any failing
+tests, the developers will get their work back to fix them anyway. This is something that
+costs extra time.</p>
+<p>It became clear that something had to be changed. We could completely rewrite the tests, make
+them very focused and try mock most of the things (such as the database). However,
+this means that the team would have to exclusively dedicate a few months to improve the tests and
+stop developing new features.</p>
+<p>Another solution would involve test distribution over several executors that
+might run on one or several machines. The same tests run in parallel on
+many nodes reduces <a class="reference external" href="http://en.wikipedia.org/wiki/Wall-clock_time">wall time</a>.
+Everybody is happy: developers do not need to wait hours to get their test
+results and get an excuse to go for a coffee.  Product managers do not need to
+change the long term planning. Customers are happy.  Profit.</p>
+</div>
+<div class="section" id="a-closer-look-to-the-test-suite">
+<h2><a class="toc-backref" href="#id2">A closer look to the test suite</a></h2>
+<p>The testing tool we use is <a class="reference external" href="http://pytest.org/">py.test</a>. We keep our tests in
+a separate folder called tests, which is organized like this:</p>
+<pre class="literal-block">
+tests
+├── conftest.py
+├── deployment
+├── fixtures
+├── functional
+├── __init__.py
+└── unit
+</pre>
+<p>In <tt class="docutils literal">conftest.py</tt> we store the <tt class="docutils literal">py.test</tt> configuration and import fixtures which are
+defined in the <cite>fixtures</cite> folder. The folder <cite>functional</cite> contains functional tests, <cite>unit</cite>
+contains unit tests and so on.</p>
+<p>The tests require the database to be available, as well as memcache. Functional tests
+also expect the <tt class="docutils literal">web servers</tt> required for the tests to listen on specific ports. By <tt class="docutils literal">web servers</tt> I
+mean those servers that serve applications whose code we cover with our tests. Among them can be
+the <a class="reference external" href="https://www.djangoproject.com/">Django</a> development server, the
+<a class="reference external" href="http://flask.pocoo.org/">Flask</a> development server, <a class="reference external" href="http://pythonpaste.org/modules/httpserver.html">paste</a>
+http server and so on.</p>
+<p>A typical development session looks like this:</p>
+<div class="highlight"><pre>virtualenv env  <span class="c"># Create a virtualenv.</span>
+<span class="nb">source </span>env/bin/activate  <span class="c"># Activate it.</span>
+pip install -r requirements-testing.txt  <span class="c"># Install all the needed packages.</span>
+&lt;generate settings <span class="nb">command</span>&gt;  <span class="c"># Generate settings (set up the database connection string etc).</span>
+&lt;database schema generation <span class="nb">command</span>&gt; <span class="c"># Generate the database schema and insert initial data into it.</span>
+
+<span class="c"># Implement changes for given feature.</span>
+
+<span class="c"># Start web application(s)</span>
+
+py.test tests  <span class="c"># Run the tests.</span>
+</pre></div>
+<p>Dependency satisfaction, configuration, database instantiation and population
+together with the startup of the required web application(s) is done outside of the test run.
+This makes sense, because none of them has to be done before every test run.
+Clearly, a developer has to install a package when a new dependency is
+introduced and regenerate settings if a new configuration parameter is added.</p>
+</div>
+<div class="section" id="test-parallelization-in-theory-and-practice">
+<h2><a class="toc-backref" href="#id3">Test parallelization in theory and practice</a></h2>
+<p>If we run tests in parallel, for example in two sessions, each session will share the same
+settings (most importantly the database connection string) and the same web
+applications. This has several limitations. If we have two tests that access
+the same application simultaneously, their requests will be processed by only one
+application worker, which of course leads to a performance decrease.</p>
+<p>Another more serious limitation comes from the way our tests are written. There
+are for example tests for ticket generation that check PDF generation. On a high level the tests
+look like this:</p>
+<ol class="arabic simple">
+<li>Create an order.</li>
+<li>Execute the ticket generation function.</li>
+<li>Check that 1 ticket was generated.</li>
+</ol>
+<p>The trick is in the second step. The ticket generation function is triggered by
+a periodical job. It selects from the database all the orders for which tickets have
+to be generated and generates them. In a sequential test run this is not a big
+deal because there will never be a situation that one call to the ticket
+generation function generates more than one ticket. The performed actions are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%"></col>
+<col width="84%"></col>
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head"><strong>Time</strong></th>
+<th class="head"><strong>Action</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td colspan="2">Test 1</td>
+</tr>
+<tr><td>1</td>
+<td>Create an order.</td>
+</tr>
+<tr><td>2</td>
+<td>Execute the ticket generation function.</td>
+</tr>
+<tr><td>3</td>
+<td>Check that 1 ticket was generated.</td>
+</tr>
+<tr><td colspan="2">Test 2</td>
+</tr>
+<tr><td>4</td>
+<td>Create another order.</td>
+</tr>
+<tr><td>5</td>
+<td>Execute the ticket generation function.</td>
+</tr>
+<tr><td>6</td>
+<td>Check that 1 ticket was generated.</td>
+</tr>
+</tbody>
+</table>
+<p>In a parallel run however, two orders may be generated simultaneously. Then, the
+generation function will get both orders, and consequently generate tickets for both.
+Imagine situations like this:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="5%"></col>
+<col width="47%"></col>
+<col width="47%"></col>
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head"><strong>Time</strong></th>
+<th class="head"><strong>Action</strong></th>
+<th class="head"><strong>Action</strong></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td colspan="2">Test 1</td>
+<td>Test 2</td>
+</tr>
+<tr><td>1</td>
+<td>Create an order.</td>
+<td rowspan="2">Create another order.</td>
+</tr>
+<tr><td>2</td>
+<td>Execute the ticket generation function. (Generates 2 tickets.)</td>
+</tr>
+<tr><td>3</td>
+<td>Check that 1 ticket was generated. (Fails! 2 tickets were generated.)</td>
+<td>Execute the ticket generation. (Does nothing!)</td>
+</tr>
+<tr><td>4</td>
+<td> </td>
+<td>Check that 1 ticket was generated. (Fails! 0 tickets were generated.)</td>
+</tr>
+</tbody>
+</table>
+<p>Because tests are not always meant to be run in parallel when they are written,
+situations like this can happen quite often.</p>
+</div>
+<div class="section" id="the-art-of-mocking">
+<h2><a class="toc-backref" href="#id4">The art of mocking</a></h2>
+<p>The simplest way to avoid situations where tests influence each other is to get
+rid of the shared resources. In our case, this means that each test session would have its own
+unique database connection string, which leads to a non-shared database.</p>
+<p>The problem is that we, using a common-use approach, store settings in python modules and instantiate them from
+templates before the test run! An example of configuration using python modules can be found in
+<a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/settings">Django settings</a>,
+<a class="reference external" href="http://flask.pocoo.org/docs/api/#flask.Config.from_object">Flask configuration</a>, etc.</p>
+<p>We could checkout the sources of Paylogic to two folders and change the settings
+to the ones we want. This would entail some crazy text file editing scripts to
+alter settings. In addition, it is not the way <a class="reference external" href="https://pypi.python.org/pypi/pytest-xdist">pytest-xdist</a> works.</p>
+<p>Another way is to mock the connection string using a fixture:</p>
+<div class="highlight"><pre><span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s">'session'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">database_settings</span><span class="p">(</span><span class="n">database_connection</span><span class="p">):</span>
+    <span class="sd">"""Mock the database settings.</span>
+
+<span class="sd">    :param str database_connection: the database connection string.</span>
+
+<span class="sd">    """</span>
+    <span class="c"># Reset the connection string.</span>
+    <span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">database</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">database_connection</span> <span class="o">=</span> <span class="n">database_connection</span>
+</pre></div>
+<p>To make the mock successful, our code should behave accordingly. Instead of:</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">config.database</span> <span class="kn">import</span> <span class="n">database_connection</span>
+
+
+<span class="k">def</span> <span class="nf">connect_to_db</span><span class="p">():</span>
+    <span class="sd">"""Connect to the database,</span>
+
+<span class="sd">    A completely made up function to illustrate *incorrect* settings import.</span>
+
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">Connection</span><span class="p">(</span><span class="n">database_connection</span><span class="p">)</span>
+</pre></div>
+<p>we write:</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">database</span>
+
+
+<span class="k">def</span> <span class="nf">connect_to_db</span><span class="p">():</span>
+    <span class="sd">"""Connect to the database,</span>
+
+<span class="sd">    A completely made up function to illustrate a *better* settings import.</span>
+
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">Connection</span><span class="p">(</span><span class="n">database</span><span class="o">.</span><span class="n">database_connection</span><span class="p">)</span>
+</pre></div>
+<div class="section" id="web-applications">
+<h3><a class="toc-backref" href="#id5">Web applications</a></h3>
+<p>For the unit tests, mocking the database connection is sufficient. If we want to
+start two instances of a web application, we need to change:</p>
+<blockquote>
+<ol class="arabic simple">
+<li>The database connection string.</li>
+<li>The port the application is listening on.</li>
+</ol>
+</blockquote>
+<p>An application could be a fixture that starts a subprocess and passes the custom
+port, if we use <a class="reference external" href="https://circus.readthedocs.org/en/latest/">Circus</a>:</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">circus.watcher</span> <span class="kn">import</span> <span class="n">Watcher</span>
+
+
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s">'session'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">app_script</span><span class="p">):</span>
+    <span class="sd">"""Start application in a separate process.</span>
+
+<span class="sd">    :param port: a random port the application should listen to.</span>
+<span class="sd">    :param app_script: the path to application runner script.</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">watcher</span> <span class="o">=</span> <span class="n">Watcher</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s">'application'</span><span class="p">,</span>
+        <span class="n">cmd</span><span class="o">=</span><span class="n">app_script</span><span class="p">,</span>
+        <span class="n">args</span><span class="o">=</span><span class="s">'runserver {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">watcher</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">addfinalizer</span><span class="p">(</span><span class="n">watcher</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">watcher</span>
+</pre></div>
+<p>This is a rather limited solution, because we did not set up the database
+connection string. Furthermore, we couldn't pass it as an environment variable, nor
+pass the path to the custom settings. It is however possible to pass parameters to
+the script (app_script) in the example. This would help us to override the needed settings on the
+<strong>remote</strong> side. But then we should somehow marshal the complex data structures via the command line.
+This would require more custom code to write.</p>
+<p>The first solution that came to mind was to use
+<a class="reference external" href="http://docs.python.org/2/library/multiprocessing.html#the-process-class">multiprocessing</a>. This way we can use
+a python function instead of a file script to be a worker for our application. Code would look as follows:</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">multiprocessing</span>
+
+<span class="k">def</span> <span class="nf">app_worker</span><span class="p">(</span><span class="n">database_connection</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+    <span class="sd">"""Start web application.</span>
+
+<span class="sd">    :param str database_connection: the database connection string.</span>
+<span class="sd">    :param port: the port number that will be used by runserver.</span>
+
+<span class="sd">    """</span>
+    <span class="c"># Remove modules that happen to be imported by the parent process.</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">builtin_module_names</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">module</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">'multiprocessing'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">module</span> <span class="o">!=</span> <span class="n">__name__</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">module</span><span class="p">]</span>
+
+    <span class="c"># monkey patch the database connection</span>
+    <span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">database</span>
+    <span class="n">database</span><span class="o">.</span><span class="n">database_connection</span> <span class="o">=</span> <span class="n">database_connection</span>
+
+    <span class="kn">import</span> <span class="nn">tornado.httpserver</span>
+    <span class="kn">import</span> <span class="nn">tornado.ioloop</span>
+    <span class="kn">import</span> <span class="nn">tornado.web</span>
+    <span class="kn">import</span> <span class="nn">tornado.wsgi</span>
+
+    <span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIContainer</span><span class="p">(</span>
+        <span class="n">app_wsgi_handler</span><span class="p">)</span>
+    <span class="n">tornado_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
+        <span class="p">(</span><span class="s">r"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s">'.*'</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">FallbackHandler</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="n">wsgi_app</span><span class="p">)),</span>
+    <span class="p">])</span>
+
+    <span class="n">server</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">httpserver</span><span class="o">.</span><span class="n">HTTPServer</span><span class="p">(</span><span class="n">tornado_app</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+    <span class="n">channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s">'started app on port: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
+    <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s">'session'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">database_connection</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="sd">"""Start application in a separate process.</span>
+
+<span class="sd">    :param port: a random port the application should listen to.</span>
+
+<span class="sd">    """</span>
+    <span class="n">process</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span>
+        <span class="n">targer</span><span class="o">=</span><span class="n">app_worker</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+        <span class="n">database_connection</span><span class="o">=</span><span class="n">database_connection</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">addfinalizer</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">)</span>
+    <span class="n">process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">process</span>
+</pre></div>
+<p>This has one big downside: memory. Multiprocessing uses <a class="reference external" href="http://docs.python.org/2/library/os.html#os.fork">fork</a> to
+do its work. This means that a lot of memory you've earned in the parent process will be copied into the child process.
+Of course it's declared to be copy-on-write but in reality python is not that efficient here.</p>
+<p>So we decided to combine these 2 approaches: use a subprocess to run python but don't bother with marshalling
+the parameters manually via command line. The nice <a class="reference external" href="http://codespeak.net/execnet">execnet</a> library allows us to
+transparently run some python function inside of a remote python process. Here is the comprehensive example:</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">execnet</span>
+
+<span class="k">def</span> <span class="nf">app_worker</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">database_connection</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+    <span class="sd">"""Start web application.</span>
+
+<span class="sd">    :param channel: execnet channel to talk to the master process.</span>
+<span class="sd">    :param str database_connection: the database connection string.</span>
+<span class="sd">    :param port: the port number that will be used by runserver.</span>
+
+<span class="sd">    """</span>
+    <span class="c"># monkey patch the database connection</span>
+    <span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">database</span>
+    <span class="n">database</span><span class="o">.</span><span class="n">database_connection</span> <span class="o">=</span> <span class="n">database_connection</span>
+
+    <span class="kn">import</span> <span class="nn">tornado.httpserver</span>
+    <span class="kn">import</span> <span class="nn">tornado.ioloop</span>
+    <span class="kn">import</span> <span class="nn">tornado.web</span>
+    <span class="kn">import</span> <span class="nn">tornado.wsgi</span>
+
+    <span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIContainer</span><span class="p">(</span>
+        <span class="n">app_wsgi_handler</span><span class="p">)</span>
+    <span class="n">tornado_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
+        <span class="p">(</span><span class="s">r"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s">'.*'</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">FallbackHandler</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="n">wsgi_app</span><span class="p">)),</span>
+    <span class="p">])</span>
+
+    <span class="n">server</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">httpserver</span><span class="o">.</span><span class="n">HTTPServer</span><span class="p">(</span><span class="n">tornado_app</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+    <span class="n">channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s">'started app on port: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
+    <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s">'session'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">database_connection</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="sd">"""Start application in a separate process.</span>
+
+<span class="sd">    :param port: a random port the application should listen to.</span>
+
+<span class="sd">    """</span>
+    <span class="c"># create execnet gateway</span>
+    <span class="n">gw</span> <span class="o">=</span> <span class="n">execnet</span><span class="o">.</span><span class="n">makegateway</span><span class="p">()</span>
+
+    <span class="c"># set the same python system path on remote python as on current one</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="n">gw</span><span class="o">.</span><span class="n">remote_exec</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s">"import sys"</span><span class="p">,</span>
+            <span class="s">"sys.path = {0}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">))</span><span class="o">.</span><span class="n">waitclose</span><span class="p">()</span>
+
+    <span class="c"># create channel running worker function</span>
+    <span class="n">channel</span> <span class="o">=</span> <span class="n">gw</span><span class="o">.</span><span class="n">remote_exec</span><span class="p">(</span>
+        <span class="n">app_worker</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+        <span class="n">database_connection</span><span class="o">=</span><span class="n">database_connection</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">addfinalizer</span><span class="p">(</span><span class="n">gw</span><span class="o">.</span><span class="n">exit</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gw</span>
+</pre></div>
+<p>In this way we can attach any customizations before starting the application.</p>
+</div>
+<div class="section" id="other-isolated-resources">
+<h3><a class="toc-backref" href="#id6">Other isolated resources</a></h3>
+<p>Apart from the database connection string, there are other shared resources. One
+of them can be some folder where file artifacts need to be stored. They have to be isolated as
+well, because the filenames can clash in concurrent test processes (a.k.a. sessions).
+However, mocking can be done here in the same way as in the case of the connection string.</p>
+<p>It is also possible to use only one server but with isolated databases. We then start as many MySQL
+instances as we have concurrent test sessions.</p>
+</div>
+</div>
+<div class="section" id="requirements">
+<h2><a class="toc-backref" href="#id7">Requirements</a></h2>
+<p>Another nontrivial part is to distribute requirements to each node. We do this
+together with the code distribution as a virtualenv. Each node then activates
+it before running the tests:</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">pytest_addoption</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+    <span class="sd">"""Add options custom pytest options."""</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getgroup</span><span class="p">(</span><span class="s">"xdist"</span><span class="p">,</span> <span class="s">"distributed and subprocess32 testing"</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">_addoption</span><span class="p">(</span>
+        <span class="s">'--activate-script'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s">"store"</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">"activate_script"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s">'env/bin/activate_this.py'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s">"Activate virtual environment script (relative path). "</span>
+        <span class="s">"This is to make remote python aware about all the dependencies project needs."</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">pytest_configure_node</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="sd">"""Configure node information before it gets instantiated.</span>
+
+<span class="sd">    Activate the virtual env, so the node is able to import Paylogic</span>
+<span class="sd">    dependencies.</span>
+
+<span class="sd">    """</span>
+
+    <span class="n">here</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)))</span>
+    <span class="n">activate_script</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">activate_script</span><span class="p">))</span>
+
+    <span class="c"># remove pyc files and activate the virtual environment on the remote side.</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">remote_exec</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s">"import os.path"</span><span class="p">,</span>
+            <span class="s">"import subprocess"</span><span class="p">,</span>
+            <span class="sd">"""subprocess.check_call(['find', '-name', '"*.pyc"', '-delete'])"""</span><span class="p">,</span>
+            <span class="s">"activate_this = '{0}'"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">activate_script</span><span class="p">),</span>
+            <span class="s">"if os.path.exists(activate_this):"</span><span class="p">,</span>
+            <span class="s">"    execfile(activate_this, {'__file__': activate_this})"</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">))</span><span class="o">.</span><span class="n">waitclose</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="section" id="results">
+<h2><a class="toc-backref" href="#id8">Results</a></h2>
+<p>Test parallelization dramatically reduced the time needed to run unit and
+functional tests. It takes about 5 minutes to run unit and functional tests on a
+cluster of 6 old dual core machines, each of them running 2 sessions.</p>
+<p>An experiment in the early stages gave these results:</p>
+<img alt="parallelization performance comparison graph" class="align-center" src="http://developer.paylogic.com/images/p14n.png" style="width: 75%;"/>
+<p>The blue line is the test distribution over cluster machines, one worker on each
+of them. The pink line represents the "ideal situation", where doubling the
+number of works decreases the tests execution time by a factor of 2. Finally, the
+yellow line is the run executed on a <a class="reference external" href="http://www.asus.com/Notebooks_Ultrabooks/ASUS_ZENBOOK_UX32VD/#specifications">developer's machine</a>.</p>
+<p>py.test-xdist behaves very well when it comes to parallel execution and the
+overhead is relatively small.</p>
+</div>
+<div class="section" id="open-source">
+<h2><a class="toc-backref" href="#id9">Open source</a></h2>
+<p>We announce the open source pytest plugins which simplify the process of running services (memcached, mysql, etc)
+on demand for every concurrent test session.  We also will open source a helper
+for scheduling test jobs among test slave nodes.</p>
+</div>
+<div class="section" id="conclusion">
+<h2><a class="toc-backref" href="#id10">Conclusion</a></h2>
+<p>Automated testing facilitates development of complex software. However, if a
+lot of time is required to get a test result, automated testing will be rejected
+by the majority of the team. Test parallelization and execution over several nodes
+solves this problem, with as trade-off the extra effort needed to make the tests ready for
+parallelization.</p>
+</div>
+</div>
+                        <hr class="uk-article-divider">
+                        <div class="comments">
+                            <h2>Comments</h2>
+                            <div id="disqus_thread"></div>
+                            <script type="text/javascript">
+                                var disqus_identifier = "articles/test-p14n.html";
+                                (function() {
+                                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                    dsq.src = 'http://paylogicdevportal.disqus.com/embed.js';
+                                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                })();
+                            </script>
+                        </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+        </main>
+
+        <footer class="pl-footer">
+            <div>
+                <div class="uk-container uk-container-center uk-text-center uk-text-small">
+                    <ul class="uk-subnav uk-subnav-line">
+                        <li><a href="http://developer.paylogic.com/pages/about.html">About</a></li>
+                        <li><a href="https://shopping-api-docs.sandbox.paylogic.com/" target="_blank">API</a></li>
+                        <li><a href="https://github.com/paylogic" target="_blank">GitHub</a></li>
+                        <li><a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a></li>
+                    </ul>
+                    Copyright (c) 2014 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
+                    built using the awesome <a href="http://getpelican.com" target="_blank">Pelican</a> static site generator.<br>
+                    This work is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+                </div>
+            </div>
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/uikit.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/sticky.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/cover.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/application.js"></script>
+
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-13304573-19', 'paylogic.com');
+            ga('send', 'pageview');
+        </script>
+
+    </body>
+</html>

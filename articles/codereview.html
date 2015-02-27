@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+            <title>Paylogic Code review tool by Anatoly Bubenkov - Paylogic Developers</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+                <link href="http://developer.paylogic.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Full Atom Feed">
+
+
+
+
+                <link href="http://developer.paylogic.com/feeds/open-source.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Categories Atom Feed">
+
+
+
+
+            <link rel="shortcut icon" href="http://developer.paylogic.com/images/favicon.ico">
+
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.addons.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/style.css">
+    </head>
+
+    <body>
+
+        <nav class="uk-navbar" data-uk-sticky>
+            <div class="uk-container uk-container-center">
+                <a href="/" class="uk-navbar-brand"><img alt="Paylogic" src="http://developer.paylogic.com/images/paylogic.png" /></a>
+                <div class="uk-navbar-content"><a href="/" class="pl-text-light">Developers</a></div>
+                <ul class="uk-navbar-nav uk-float-right uk-hidden-small">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent" data-uk-dropdown>
+                        <a href="#">Categories<i class="uk-icon-angle-down uk-margin-small-left"></i></a>
+                        <div class="uk-dropdown uk-dropdown-flip uk-dropdown-navbar">
+                            <ul class="uk-nav uk-nav-navbar">
+                                        <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                        <li class="uk-active"><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <a href="#offcanvas-nav" class="uk-navbar-toggle uk-visible-small uk-float-right" data-uk-offcanvas></a>
+            </div>
+        </nav>
+
+        <div id="offcanvas-nav" class="uk-offcanvas">
+            <div class="uk-offcanvas-bar">
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{multiple:true}">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent">
+                        <a href="#">Categories</a>
+                        <ul class="uk-nav-sub">
+                                    <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                    <li class="uk-active"><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <main class="pl-content">
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+            <div class="uk-width-medium-1-4 uk-hidden-small">
+                <div class="toc uk-text-small" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
+                <div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id1">Introduction</a></li>
+<li><a class="reference internal" href="#the-choice" id="id2">The Choice</a></li>
+<li><a class="reference internal" href="#customizations" id="id3">Customizations</a><ul>
+<li><a class="reference internal" href="#use-corporate-single-sign-on-to-authorize-users-in-the-code-review-tool" id="id4">Use corporate single sign-on to authorize users in the code review tool</a></li>
+<li><a class="reference internal" href="#create-code-review-issues-patchsets-taking-any-required-information-from-the-corresponding-fogbugz-case" id="id5">Create code review issues (patchsets), taking any required information from the corresponding Fogbugz case</a></li>
+<li><a class="reference internal" href="#apply-custom-validations-for-any-patchsets-created" id="id6">Apply custom validations for any patchsets created</a></li>
+<li><a class="reference internal" href="#implement-gatekeepering-process-support" id="id7">Implement Gatekeepering process support</a></li>
+<li><a class="reference internal" href="#allow-gatekeepers-to-set-and-select-from-the-dropdown-the-target-branch-for-a-given-ci-project" id="id8">Allow gatekeepers to set (and select from the dropdown) the target branch for a given CI project</a></li>
+<li><a class="reference internal" href="#support-creation-of-an-issue-patchset-using-bzr-git-and-mercurial-repositories" id="id9">Support creation of an issue (patchset), using bzr, git and mercurial repositories</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#problems-using-rietveld" id="id10">Problems using rietveld</a></li>
+<li><a class="reference internal" href="#want-to-use-it-or-to-try-it" id="id11">Want to use it or to try it?</a></li>
+<li><a class="reference internal" href="#future-considerations" id="id12">Future considerations</a></li>
+<li><a class="reference internal" href="#thanks-questions" id="id13">"Thanks! Questions?"</a></li>
+</ul>
+</div>
+                </div>
+            </div>
+            <div class="uk-width-medium-3-4">
+                <article class="uk-article">
+                    <table class="uk-table uk-table-middle pl-table-article-meta">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="uk-thumbnail uk-margin-right">
+                                        <img src="http://www.gravatar.com/avatar/4e2517ef01ac77a6a0b251336a6ce224" alt="Anatoly Bubenkov" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="uk-article-meta">
+                                        Written by
+                                            <a class="url fn" href="http://developer.paylogic.com/author/anatoly-bubenkov.html">Anatoly Bubenkov</a>
+                                        on Thu 17 July 2014<br />Posted in <a href="http://developer.paylogic.com/category/open-source.html">Open source</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h1 class="uk-article-title">Paylogic Code review tool</h1>
+                    <hr class="uk-article-divider">
+                    <div class="pl-article-content">
+<div class="section" id="introduction">
+<h2><a class="toc-backref" href="#id1">Introduction</a></h2>
+<p>As open sourcing software is a strategic decision of Paylogic we decided not to make an exception for our
+development tools, in the hope that they are of use to the community. The code review tool is probably our most
+important development tool, so we decided to start with that. The Github repository can be found
+<a class="reference external" href="https://github.com/paylogic/codereview">here</a>.</p>
+<p><a class="reference external" href="http://en.wikipedia.org/wiki/Code_review">Code review</a> is one of the main pillars of the Paylogic development
+process. We have multiple projects ongoing, and none of the code changes can go into the stable repository
+without at least 2 code reviews. The last code review is done by a special company role - <tt class="docutils literal">Gatekeeper</tt>.</p>
+<p>We will reveal more about the gatekeeper process in later articles, but you can already see that code reviewing
+is a very important process for us, so the tool we use for it is important as well.</p>
+<p>This article covers and explains the choice of the tool, its customizations, and the use case.</p>
+</div>
+<div class="section" id="the-choice">
+<h2><a class="toc-backref" href="#id2">The Choice</a></h2>
+<p>In 2011 we had to choose a code review tool, and after a thorough research
+<a class="reference external" href="https://code.google.com/p/rietveld/">rietveld</a> seemed one of the best solutions for our specific needs:</p>
+<ul class="simple">
+<li>Web based.</li>
+<li>Minimalistic, code centric interface.</li>
+<li>Has keyboard shortcuts for easy code review navigation.</li>
+<li>Written in python, so it's easy to change and maintain.</li>
+<li>Has a community which improves it constantly.</li>
+<li>Simple installation on a private server.</li>
+</ul>
+</div>
+<div class="section" id="customizations">
+<h2><a class="toc-backref" href="#id3">Customizations</a></h2>
+<p>So we decided to use rietveld. But we had to customize it significantly as our development process uses
+<a class="reference external" href="https://www.fogcreek.com/fogbugz/">Fogbugz</a> as a case management tool. This means that every change to the
+Paylogic codebase has a reference to a Fogbugz case, and the development itself is case-based.</p>
+<p>The whole picture of our continuous integration will be described in later article(s), however there was a
+<a class="reference external" href="http://www.slideshare.net/zittersteyn/advanced-continuous-integration-pygrunn-2014-dirk-zittersteyn">great talk</a>
+at our <a class="reference external" href="http://pygrunn.org/">PyGrunn</a> conference
+on this topic from <a class="reference external" href="http://nl.linkedin.com/in/dzittersteyn">Dirk Zittersteyn</a>.  However, since it is important
+to understand the role the code review tool plays in our ecosystem, the below image shows a part of the process.</p>
+<img alt="gatekeepering and code review process" class="align-center" src="http://developer.paylogic.com/images/codereview/gatekeepering-and-code-review-process.png"/>
+<p>As you can see from the diagram (and the Legend), the code review tool is a critical part of our process.</p>
+<p>Before we continue, we'll give you a quick glossary for the rest of this article:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal">original repository</tt> (<tt class="docutils literal">target repository</tt>)</dt>
+<dd>Version control repository which is considered as a target in which to merge some proposed set of changes.</dd>
+<dt><tt class="docutils literal">original branch</tt> (<tt class="docutils literal">target branch</tt>)</dt>
+<dd>Version control branch in the <tt class="docutils literal">original repository</tt> in which to merge some proposed set of changes.</dd>
+<dt><tt class="docutils literal">feature repository</tt> (<tt class="docutils literal">source repository</tt>)</dt>
+<dd>Version control repository which is considered as a source of the proposed set of changes. This can be the same as
+<tt class="docutils literal">original repository</tt>.</dd>
+<dt><tt class="docutils literal">feature branch</tt> (<tt class="docutils literal">source branch</tt>)</dt>
+<dd>Version control branch in the <tt class="docutils literal">source repository</tt> which is considered as a source of the proposed
+set of changes.</dd>
+</dl>
+<p>With the customizations we've made to <tt class="docutils literal">rietveld</tt>, we can now:</p>
+<div class="section" id="use-corporate-single-sign-on-to-authorize-users-in-the-code-review-tool">
+<h3><a class="toc-backref" href="#id4">Use corporate single sign-on to authorize users in the code review tool</a></h3>
+<p>It's important to remove unnecessary additional user management responsibilities from our Operational IT team. And of
+course, from the user's perspective it's much less effort, as they can use a single corporate account to log in
+(we use <a class="reference external" href="http://www.google.com/enterprise/apps/business/">Google Apps for Business</a>)</p>
+</div>
+<div class="section" id="create-code-review-issues-patchsets-taking-any-required-information-from-the-corresponding-fogbugz-case">
+<h3><a class="toc-backref" href="#id5">Create code review issues (patchsets), taking any required information from the corresponding Fogbugz case</a></h3>
+<p>This feature is implemented by creating a special endpoint on the code review tool which gets the case number as
+a parameter, and retrieves the following fields from that case through the
+<a class="reference external" href="http://help.fogcreek.com/8202/xml-api">Fogbugz API</a>:</p>
+<ul class="simple">
+<li>Original (target) branch (for example <tt class="docutils literal">master</tt> or <tt class="docutils literal">default</tt>) - implemented using a custom field in Fogbugz.</li>
+<li>Feature (source) branch (for example <tt class="docutils literal"><span class="pre">nice-feature</span></tt>) - implemented using a custom field in Fogbugz.</li>
+</ul>
+<p>For custom fields, we use the <a class="reference external" href="http://www.fogcreek.com/fogbugz/plugins/plugin.aspx?ixPlugin=1">Custom Fields</a> plugin.
+From the Fogbugz side, it looks like this:</p>
+<img alt="create patchset from Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/create-patchset.png"/>
+</div>
+<div class="section" id="apply-custom-validations-for-any-patchsets-created">
+<h3><a class="toc-backref" href="#id6">Apply custom validations for any patchsets created</a></h3>
+<p>We implement some critical checks, where we for example don't allow the changing of certain non-editable files.
+If any of the validations didn't pass, creation of the issue (i.e. an additional patchset) fails and shows an error
+to the user.</p>
+</div>
+<div class="section" id="implement-gatekeepering-process-support">
+<h3><a class="toc-backref" href="#id7">Implement Gatekeepering process support</a></h3>
+<p>Users with a special role can now <tt class="docutils literal">approve</tt> a certain revision of the feature branch.</p>
+<p>This is, again, implemented using a special custom field in Fogbugz called
+<tt class="docutils literal">approved revision</tt>, together with the Fogbugz API to set it from the code review tool.</p>
+<p>In the code review tool:</p>
+<img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="http://developer.paylogic.com/images/codereview/approve-revision-click.png"/>
+<p>And in Fogbugz:</p>
+<img alt="approved revision and ci project fields set in the Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/approved-revision-field.png"/>
+</div>
+<div class="section" id="allow-gatekeepers-to-set-and-select-from-the-dropdown-the-target-branch-for-a-given-ci-project">
+<h3><a class="toc-backref" href="#id8">Allow gatekeepers to set (and select from the dropdown) the target branch for a given CI project</a></h3>
+<p>Both <tt class="docutils literal">target branch</tt> and <tt class="docutils literal">CI project</tt> are custom fields of a Fogbugz case.</p>
+<p>In the code review tool:</p>
+<img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="http://developer.paylogic.com/images/codereview/approve-revision-target-branch.png"/>
+<p>And in Fogbugz:</p>
+<img alt="target branch field in the Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/target-branch-field.png"/>
+</div>
+<div class="section" id="support-creation-of-an-issue-patchset-using-bzr-git-and-mercurial-repositories">
+<h3><a class="toc-backref" href="#id9">Support creation of an issue (patchset), using bzr, git and mercurial repositories</a></h3>
+<p>All combinations are accepted for <tt class="docutils literal">original</tt> and <tt class="docutils literal">feature</tt> branch fields in Fogbugz.
+As additional protection from <tt class="docutils literal">phishing</tt> on the <tt class="docutils literal">original</tt> branch, the latest revision from
+the <tt class="docutils literal">source repository</tt>'s <tt class="docutils literal">original branch</tt> will be used to calculate a diff between
+the <tt class="docutils literal">source repository</tt>'s <tt class="docutils literal">feature branch</tt> and the <tt class="docutils literal">original repository</tt>'s <tt class="docutils literal">original branch</tt>.</p>
+</div>
+</div>
+<div class="section" id="problems-using-rietveld">
+<h2><a class="toc-backref" href="#id10">Problems using rietveld</a></h2>
+<p>rietveld was developed specially for <a class="reference external" href="https://developers.google.com/appengine/?csw=1">Google App Engine</a>.
+It has lots of benefits for developers who don't want to bother with any OpIT related tasks.
+As we however have a strict requirement to host the code (and thus the code review tool) on our private servers, we used
+<a class="reference external" href="http://django-gae2django.googlecode.com/svn/trunk/examples/rietveld/README">gae2django</a> to deploy rietveld locally.
+What gae2django does is convert models that are supposed to be used with the
+Google App Engine datastore to Django ORM models. This allows us to deploy the
+application using relational databases such as (in our case) MySQL.</p>
+<p>This was <tt class="docutils literal">good enough</tt> for us, as up till now rietveld was using GAE DB (ext.db). But this is no longer the case.
+Now rietveld uses <a class="reference external" href="https://developers.google.com/appengine/docs/python/ndb/">NDB</a> for its models. And it's simply
+<tt class="docutils literal">not possible</tt> to implement automatic mapping from NDB-based models to django ORM models
+because the difference is huge.</p>
+<p>So currently, we are in the situation that we cannot receive any updates from the rietveld repository any more,
+so instead we have to support our <tt class="docutils literal">fork</tt> ourselves. For now this is <tt class="docutils literal">acceptable</tt>,
+but we are considering moving to a different code review tool.</p>
+</div>
+<div class="section" id="want-to-use-it-or-to-try-it">
+<h2><a class="toc-backref" href="#id11">Want to use it or to try it?</a></h2>
+<p>The <a class="reference external" href="https://github.com/paylogic/codereview/blob/master/README.rst">readme</a> on Github contains all the information
+required to set up the code review tool on your server. Don't hesitate to try it out.
+If you have any problems with installation, please create an <a class="reference external" href="https://github.com/paylogic/codereview/issues/">issue</a>
+on Github.</p>
+</div>
+<div class="section" id="future-considerations">
+<h2><a class="toc-backref" href="#id12">Future considerations</a></h2>
+<p>As was mentioned earlier, <tt class="docutils literal">Review Board</tt> will probably be the replacement for
+our current solution. However, if we'll switch to git completely (which we haven't done yet) there are
+some other alternatives to consider as well, such as:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://www.gitlab.com/">GitLab</a></li>
+<li><a class="reference external" href="https://code.google.com/p/gerrit/">Gerrit</a></li>
+</ul>
+<p>Any new tool we might choose will have to be customized in order to be an integral part of our development process.
+This new customization will be open sourced as well.</p>
+</div>
+<div class="section" id="thanks-questions">
+<h2><a class="toc-backref" href="#id13">"Thanks! Questions?"</a></h2>
+<p>So regarding the code review, we've put all our cards on the table: from decision making to implementation,
+support, and use cases. We hope that it will be useful for the community.
+Feedback is, as usual, more than appreciated. Happy code reviewing, we wish you 0 comments on your reviews!</p>
+</div>
+</div>
+                        <hr class="uk-article-divider">
+                        <div class="comments">
+                            <h2>Comments</h2>
+                            <div id="disqus_thread"></div>
+                            <script type="text/javascript">
+                                var disqus_identifier = "articles/codereview.html";
+                                (function() {
+                                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                    dsq.src = 'http://paylogicdevportal.disqus.com/embed.js';
+                                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                })();
+                            </script>
+                        </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+        </main>
+
+        <footer class="pl-footer">
+            <div>
+                <div class="uk-container uk-container-center uk-text-center uk-text-small">
+                    <ul class="uk-subnav uk-subnav-line">
+                        <li><a href="http://developer.paylogic.com/pages/about.html">About</a></li>
+                        <li><a href="https://shopping-api-docs.sandbox.paylogic.com/" target="_blank">API</a></li>
+                        <li><a href="https://github.com/paylogic" target="_blank">GitHub</a></li>
+                        <li><a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a></li>
+                    </ul>
+                    Copyright (c) 2014 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
+                    built using the awesome <a href="http://getpelican.com" target="_blank">Pelican</a> static site generator.<br>
+                    This work is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+                </div>
+            </div>
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/uikit.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/sticky.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/cover.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/application.js"></script>
+
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-13304573-19', 'paylogic.com');
+            ga('send', 'pageview');
+        </script>
+
+    </body>
+</html>

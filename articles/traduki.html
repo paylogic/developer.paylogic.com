@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+            <title>Traduki by Spyros Ioakeimidis - Paylogic Developers</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+                <link href="http://developer.paylogic.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Full Atom Feed">
+
+
+
+
+                <link href="http://developer.paylogic.com/feeds/open-source.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Categories Atom Feed">
+
+
+
+
+            <link rel="shortcut icon" href="http://developer.paylogic.com/images/favicon.ico">
+
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.addons.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/style.css">
+    </head>
+
+    <body>
+
+        <nav class="uk-navbar" data-uk-sticky>
+            <div class="uk-container uk-container-center">
+                <a href="/" class="uk-navbar-brand"><img alt="Paylogic" src="http://developer.paylogic.com/images/paylogic.png" /></a>
+                <div class="uk-navbar-content"><a href="/" class="pl-text-light">Developers</a></div>
+                <ul class="uk-navbar-nav uk-float-right uk-hidden-small">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent" data-uk-dropdown>
+                        <a href="#">Categories<i class="uk-icon-angle-down uk-margin-small-left"></i></a>
+                        <div class="uk-dropdown uk-dropdown-flip uk-dropdown-navbar">
+                            <ul class="uk-nav uk-nav-navbar">
+                                        <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                        <li class="uk-active"><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <a href="#offcanvas-nav" class="uk-navbar-toggle uk-visible-small uk-float-right" data-uk-offcanvas></a>
+            </div>
+        </nav>
+
+        <div id="offcanvas-nav" class="uk-offcanvas">
+            <div class="uk-offcanvas-bar">
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{multiple:true}">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent">
+                        <a href="#">Categories</a>
+                        <ul class="uk-nav-sub">
+                                    <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                    <li class="uk-active"><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <main class="pl-content">
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+            <div class="uk-width-medium-1-4 uk-hidden-small">
+                <div class="toc uk-text-small" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
+                <div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#introduction" id="id1">Introduction</a></li>
+<li><a class="reference internal" href="#why-we-were-in-a-need-of-something-different" id="id2">Why we were in a need of something different</a></li>
+<li><a class="reference internal" href="#advantages-of-the-new-design" id="id3">Advantages of the new design</a></li>
+<li><a class="reference internal" href="#how-it-works" id="id4">How it works</a><ul>
+<li><a class="reference internal" href="#example" id="id5">Example</a></li>
+<li><a class="reference internal" href="#querying" id="id6">Querying</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#the-difference-from-sqlalchemy-i18n" id="id7">The difference from SQLAlchemy-i18n</a></li>
+<li><a class="reference internal" href="#conclusion" id="id8">Conclusion</a></li>
+</ul>
+</div>
+                </div>
+            </div>
+            <div class="uk-width-medium-3-4">
+                <article class="uk-article">
+                    <table class="uk-table uk-table-middle pl-table-article-meta">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="uk-thumbnail uk-margin-right">
+                                        <img src="http://www.gravatar.com/avatar/d920ffcd66a79e2849fd76a83cd9c280" alt="Spyros Ioakeimidis" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="uk-article-meta">
+                                        Written by
+                                            <a class="url fn" href="http://developer.paylogic.com/author/spyros-ioakeimidis.html">Spyros Ioakeimidis</a>
+                                        on Mon 27 October 2014<br />Posted in <a href="http://developer.paylogic.com/category/open-source.html">Open Source</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h1 class="uk-article-title">Traduki</h1>
+                    <hr class="uk-article-divider">
+                    <div class="pl-article-content">
+<div class="section" id="introduction">
+<h2><a class="toc-backref" href="#id1">Introduction</a></h2>
+<p><tt class="docutils literal">traduki</tt> is an <a class="reference external" href="https://github.com/paylogic/traduki">open source</a>
+package, which consists of internationalization helper classes targeted for
+SQLAlchemy-based python projects. The advantage of using <tt class="docutils literal">traduki</tt> is that
+it removes the burden of defining translation tables, and provides
+a consistent, intuitive and easy way to introduce internationalization into
+your application. Minimalistic design allowed us to use only
+<a class="reference external" href="http://www.sqlalchemy.org/">SQLAlchemy</a> as a python dependency.</p>
+</div>
+<div class="section" id="why-we-were-in-a-need-of-something-different">
+<h2><a class="toc-backref" href="#id2">Why we were in a need of something different</a></h2>
+<p>As Paylogic operates in several countries, internationalization is a strong
+requirement. However, we used to do internationalization differently from how
+we do it these days. Our former approach was to join translation tables in order
+to obtain the translations. This allowed us to search on the internationalized
+fields, but it required a lot of joins, even in cases where searching was not a requirement.
+We could either <a class="reference external" href="http://docs.sqlalchemy.org/en/rel_0_9/orm/tutorial.html#eager-loading">eager load</a>,
+load relationships at the same time the parent is loaded, or
+<a class="reference external" href="http://docs.sqlalchemy.org/en/rel_0_9/glossary.html#term-lazy-loading">lazy load</a>,
+load relationships the first time they are accessed. When we lazy load,
+and access an internationalized property, we cause two queries per property.</p>
+<p>One of these queries is to the translations table, and the other one
+to a table with only the ids. The translations table had one translation per
+row, which made it inefficient and difficult to get all the translations for
+all the properties in one row. For example,</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%"></col>
+<col width="34%"></col>
+<col width="20%"></col>
+<col width="36%"></col>
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head" colspan="4">Translation</th>
+</tr>
+<tr><th class="head">id</th>
+<th class="head">language_code</th>
+<th class="head">text_id</th>
+<th class="head">localized_text</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>1</td>
+<td>en</td>
+<td>10</td>
+<td>English title 1</td>
+</tr>
+<tr><td>2</td>
+<td>nl</td>
+<td>10</td>
+<td>Dutch title 1</td>
+</tr>
+<tr><td>3</td>
+<td>en</td>
+<td>11</td>
+<td>English subtitle</td>
+</tr>
+<tr><td>4</td>
+<td>nl</td>
+<td>11</td>
+<td>Dutch subtitle</td>
+</tr>
+<tr><td>5</td>
+<td>en</td>
+<td>12</td>
+<td>English title 2</td>
+</tr>
+<tr><td>6</td>
+<td>nl</td>
+<td>12</td>
+<td>Dutch title 2</td>
+</tr>
+</tbody>
+</table>
+<p>where the <code>text_id</code> references the <code>title_id</code> and
+<code>subtitle_id</code> fields from a hypothetical <code>Event</code> table.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%"></col>
+<col width="37%"></col>
+<col width="48%"></col>
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head" colspan="3">Event</th>
+</tr>
+<tr><th class="head">id</th>
+<th class="head">title_id</th>
+<th class="head">subtitle_id</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>1</td>
+<td>10</td>
+<td>11</td>
+</tr>
+<tr><td>2</td>
+<td>12</td>
+<td>13</td>
+</tr>
+</tbody>
+</table>
+<p>This approach was inefficient because for <tt class="docutils literal">n</tt> properties and <tt class="docutils literal">m</tt>
+languages, we would need to do <tt class="docutils literal">n*m</tt> joins. The difficult part comes from
+the fact that it was cumbersome to write those queries. In the case of
+the previous example,</p>
+<div class="highlight"><pre><span class="n">a_alias</span> <span class="o">=</span> <span class="n">aliased</span><span class="p">(</span><span class="n">Translation</span><span class="p">)</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Event</span><span class="p">)</span><span class="o">.</span>\
+    <span class="n">join</span><span class="p">(</span><span class="n">Translation</span><span class="p">)</span><span class="o">.</span>\
+    <span class="nb">filter</span><span class="p">(</span><span class="n">Translation</span><span class="o">.</span><span class="n">text_id</span><span class="o">==</span><span class="n">Event</span><span class="o">.</span><span class="n">title_id</span><span class="p">)</span><span class="o">.</span>\
+    <span class="nb">filter</span><span class="p">(</span><span class="n">a_alias</span><span class="o">.</span><span class="n">text_id</span><span class="o">==</span><span class="n">Event</span><span class="o">.</span><span class="n">subtitle_id</span><span class="p">)</span><span class="o">.</span>\
+    <span class="nb">filter</span><span class="p">(</span><span class="n">Event</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">event_ids</span><span class="p">))</span><span class="o">.</span>\
+    <span class="nb">all</span><span class="p">()</span>
+</pre></div>
+<p>The end-result was that we did not do this, and we were doing more one-row queries.
+We should mention that normally we don't need objects to have dynamic list
+of available languages. Maybe it is a strict requirement in other use cases,
+but in our use case it is enough to just use a static set of available languages,
+which change infrequently.</p>
+<p>Another issue with this approach was that the number of results returned from
+queries was not deterministic, and required left joins which is even worse
+performance-wise. Most of the time you want to eager load relationships.
+However, in this case you can never apply a limit or offset because you cannot
+trust the number of rows returned.</p>
+<p>The aforementioned approach had performance issues. We wanted to be able to
+search on the internationalized fields and search fast, which was not possible.
+Another requirement was that we wanted language chains. What this means is that
+if your language is Dutch, but only the English version of the text is
+available, we should display by default the English version of it.</p>
+</div>
+<div class="section" id="advantages-of-the-new-design">
+<h2><a class="toc-backref" href="#id3">Advantages of the new design</a></h2>
+<p>In the end, taking into consideration our motivation and requirements, we came up
+with our solution on how to solve the problem of i18n. The following
+example illustrates our current approach using <tt class="docutils literal">traduki</tt>. Let's assume that we
+have a table <code>Event</code>, and we want the <tt class="docutils literal">title</tt> and <tt class="docutils literal">subtitle</tt> to be
+translated into English and Dutch. The <code>Event</code> table contains the ids of
+the fields that we wish to have available in those two languages. Let's also
+assume that for the event with <code>id = 8</code>, the Dutch translation is not
+available.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%"></col>
+<col width="37%"></col>
+<col width="48%"></col>
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head" colspan="3">Event</th>
+</tr>
+<tr><th class="head">id</th>
+<th class="head">title_id</th>
+<th class="head">subtitle_id</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>5</td>
+<td>10</td>
+<td>11</td>
+</tr>
+<tr><td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr><td>8</td>
+<td>25</td>
+<td>26</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>Translation</code> table would then contain a reference to those fields
+that we wish to have translated. The <code>id = 10</code> for the <tt class="docutils literal">title</tt> and
+<code>id = 11</code> for the <tt class="docutils literal">subtitle</tt> of the first event, and <code>id = 25</code>
+and <code>id = 26</code> for the <tt class="docutils literal">title</tt> and <tt class="docutils literal">subtitle</tt> for the second event
+respectively. It also contains the translated texts in English and Dutch
+(only for the first event). With this approach, we can easily get the
+translated texts by joining the <code>Event</code> and <code>Translation</code> tables.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%"></col>
+<col width="45%"></col>
+<col width="45%"></col>
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head" colspan="3">Translation</th>
+</tr>
+<tr><th class="head">id</th>
+<th class="head">en</th>
+<th class="head">nl</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>10</td>
+<td>English title 1</td>
+<td>Dutch title 1</td>
+</tr>
+<tr><td>11</td>
+<td>English subtitle 1</td>
+<td>Dutch subtitle 1</td>
+</tr>
+<tr><td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr><td>25</td>
+<td>English title 2</td>
+<td> </td>
+</tr>
+<tr><td>26</td>
+<td>English subtitle 2</td>
+<td> </td>
+</tr>
+</tbody>
+</table>
+<p>The advantage of this approach is that with a simple join between these tables
+on the id of the text (for example the <tt class="docutils literal">title_id</tt>), we get one row with all
+the translations.</p>
+<pre class="code python literal-block">
+<span class="n">q</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Translation</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Event</span><span class="p">,</span> <span class="n">Event</span><span class="o">.</span><span class="n">title_id</span><span class="o">==</span><span class="n">Translation</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</pre>
+<p>As can be seen from the query, for <tt class="docutils literal">n</tt> properties and <tt class="docutils literal">m</tt> languages,
+the number of joins is reduced from <tt class="docutils literal">n*m</tt> to <tt class="docutils literal">n</tt>, making them also more
+intuitive since all translated items are foreign keys to the <code>Translation</code>
+table, joining once per foreign key. Additionally, <tt class="docutils literal">traduki</tt> returns a user-friendly
+format of this result as a dictionary of language codes and translations. For example:</p>
+<div class="highlight"><pre><span class="p">{</span><span class="s">'en'</span><span class="p">:</span> <span class="s">'English title 1'</span><span class="p">,</span> <span class="s">'nl'</span><span class="p">:</span> <span class="s">'Dutch title 1'</span><span class="p">}</span>
+</pre></div>
+<p>In case of the second event, where the Dutch translation is not available,
+<tt class="docutils literal">traduki</tt> falls back to the language that we have defined, in this
+case English. So it will return:</p>
+<div class="highlight"><pre><span class="p">{</span><span class="s">'en'</span><span class="p">:</span> <span class="s">'English title 2'</span><span class="p">,</span> <span class="s">'nl'</span><span class="p">:</span> <span class="s">'English title 2'</span><span class="p">}</span>
+</pre></div>
+<p>This approach has one drawback. When a new language is introduced then we need
+to alter the translations table to include it. Although this operation can be expensive,
+we found out that the gains in performance are higher, because we search and sort much
+more often than we add new languages. Also, for us it is more important to have a static
+set of available languages than actually adding new languages.</p>
+</div>
+<div class="section" id="how-it-works">
+<h2><a class="toc-backref" href="#id4">How it works</a></h2>
+<p><tt class="docutils literal">traduki</tt> is very simple to use. The following example is a concise and
+stand-alone application that illustrates the use of <tt class="docutils literal">traduki</tt>. It is
+split in parts, to better explain how each part works.</p>
+<div class="section" id="example">
+<h3><a class="toc-backref" href="#id5">Example</a></h3>
+<p>The first part is straightforward. We do standard sqlalchemy imports,
+create the engine (in this case the database will be in memory), and define the
+declarative base for our models.</p>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">traduki</span>
+
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>
+
+<span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s">'sqlite://'</span><span class="p">)</span>
+
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+</pre></div>
+<p>The next part is where <tt class="docutils literal">traduki</tt> is used. We define two callbacks, one
+for getting the current language and one for getting the language chain. Here
+we just return hard coded data for simplicity. We could read this data from a
+current <tt class="docutils literal">request</tt> object, for example using <a class="reference external" href="http://flask.pocoo.org/">Flask</a>
+request, something like <code>flask.request.locale</code> to get the current language.
+We use these callbacks when we deal with the initialization of the <code>i18n_attributes</code>.
+<tt class="docutils literal">traduki</tt> at the moment of initialization declares the model for the translations
+dynamically and sets up all the appropriate relationships.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">get_current_language</span><span class="p">():</span>
+    <span class="sd">"""Current language callback for our project."""</span>
+    <span class="k">return</span> <span class="s">'en'</span>
+
+
+<span class="k">def</span> <span class="nf">get_language_chain</span><span class="p">():</span>
+    <span class="sd">"""Language chain (fall-back rule) callback for our project."""</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s">'*'</span><span class="p">:</span> <span class="s">'en'</span><span class="p">}</span>
+
+<span class="n">i18n_attributes</span> <span class="o">=</span> <span class="n">traduki</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span>
+    <span class="n">Base</span><span class="p">,</span> <span class="p">[</span><span class="s">'en'</span><span class="p">,</span> <span class="s">'nl'</span><span class="p">],</span> <span class="n">get_current_language</span><span class="p">,</span> <span class="n">get_language_chain</span><span class="p">)</span>
+</pre></div>
+<p>The language list that we pass to <code>traduki.initialize</code> function is used
+to declare language columns in translations model. So if we use <code>['en', 'nl']</code>
+the resulting translations model would be something similar to the following declaration.</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">Translation</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">'traduki_translation'</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">en</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">UnicodeText</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">nl</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">UnicodeText</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+<p>Back to our example, we define our model and use the column and relation provided by
+<tt class="docutils literal">traduki</tt>. The rest is just to have a complete and running example.</p>
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">'model'</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">title_id</span> <span class="o">=</span> <span class="n">i18n_attributes</span><span class="o">.</span><span class="n">i18n_column</span><span class="p">(</span><span class="n">nullable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">i18n_attributes</span><span class="o">.</span><span class="n">i18n_relation</span><span class="p">(</span><span class="n">title_id</span><span class="p">)</span>
+    <span class="sd">"""Title."""</span>
+
+<span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+
+<span class="n">Session</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="s">'en'</span><span class="p">:</span> <span class="s">'English title'</span><span class="p">,</span> <span class="s">'nl'</span><span class="p">:</span> <span class="s">'Dutch title'</span><span class="p">}</span>
+<span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+<span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">get_dict</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s">'en'</span><span class="p">:</span> <span class="s">'English title'</span><span class="p">,</span> <span class="s">'nl'</span><span class="p">:</span> <span class="s">'Dutch title'</span><span class="p">}</span>
+<span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">en</span> <span class="o">==</span> <span class="s">'English title'</span>
+</pre></div>
+<p>To run this example, copy and paste these parts in an <tt class="docutils literal">example.py</tt> file, and
+use the following commands to install the required packages and run the
+example:</p>
+<div class="highlight"><pre>virtualenv env
+
+<span class="nb">source </span>env/bin/activate
+
+pip install sqlalchemy traduki
+
+python example.py
+</pre></div>
+</div>
+<div class="section" id="querying">
+<h3><a class="toc-backref" href="#id6">Querying</a></h3>
+<p>Querying translations can also be done using usual SQLAlchemy techniques.
+From the previous example, lets assume that we want to get all <code>Model</code>
+instances that have English translation for their <code>title</code>.</p>
+<div class="highlight"><pre><span class="n">english_title_objects</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Model</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">i18n_attributes</span><span class="o">.</span><span class="n">Translation</span><span class="p">,</span>
+        <span class="n">Model</span><span class="o">.</span><span class="n">title_id</span> <span class="o">==</span> <span class="n">i18n_attributes</span><span class="o">.</span><span class="n">Translation</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">i18n_attributes</span><span class="o">.</span><span class="n">Translation</span><span class="o">.</span><span class="n">en</span><span class="o">.</span><span class="n">isnot</span><span class="p">(</span><span class="bp">None</span><span class="p">))</span>
+    <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+<p><code>i18n_attributes.Translation</code> is the translations model declared during initialization
+of <tt class="docutils literal">traduki</tt>. It provides helper methods to get the text of a specified language
+and get the available languages as a dictionary. It also contains language fields as attributes,
+which is nice as it enables directly attribute access to get a language for a specific field
+<code>model.title.en</code>.</p>
+</div>
+</div>
+<div class="section" id="the-difference-from-sqlalchemy-i18n">
+<h2><a class="toc-backref" href="#id7">The difference from SQLAlchemy-i18n</a></h2>
+<p>We conducted research on how to make an efficient design. We tried lots of
+ways to minimize the timing of the queries for large datasets. Also we've looked
+around for existing solutions and we found <a class="reference external" href="https://github.com/kvesteri/sqlalchemy-i18n">SQLAlchemy-i18n</a>.</p>
+<p>The approach of this project is to create a separate translations table and each row in the table
+is a translation in a specific language for a specific field. This is similar to our
+previous approach and has the same limitations in performance. You need to explicitly
+query for languages and fields and do lots of joins. What <tt class="docutils literal">traduki</tt> does, is load all the languages
+and translations for a field. This might sound like a lot of overhead at first, but in modern
+applications you usually have 10-12 languages and you want them to be available all at once in
+the client.</p>
+</div>
+<div class="section" id="conclusion">
+<h2><a class="toc-backref" href="#id8">Conclusion</a></h2>
+<p>In general, not much has been done on i18n in open source. We hope that <tt class="docutils literal">traduki</tt> will prove
+useful for projects that require an efficient and easy to use internationalization system.
+We are waiting for your feedback and recommendations. Check <a class="reference external" href="https://github.com/paylogic/traduki">traduki</a>
+in our github profile.</p>
+</div>
+</div>
+                        <hr class="uk-article-divider">
+                        <div class="comments">
+                            <h2>Comments</h2>
+                            <div id="disqus_thread"></div>
+                            <script type="text/javascript">
+                                var disqus_identifier = "articles/traduki.html";
+                                (function() {
+                                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                    dsq.src = 'http://paylogicdevportal.disqus.com/embed.js';
+                                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                })();
+                            </script>
+                        </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+        </main>
+
+        <footer class="pl-footer">
+            <div>
+                <div class="uk-container uk-container-center uk-text-center uk-text-small">
+                    <ul class="uk-subnav uk-subnav-line">
+                        <li><a href="http://developer.paylogic.com/pages/about.html">About</a></li>
+                        <li><a href="https://shopping-api-docs.sandbox.paylogic.com/" target="_blank">API</a></li>
+                        <li><a href="https://github.com/paylogic" target="_blank">GitHub</a></li>
+                        <li><a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a></li>
+                    </ul>
+                    Copyright (c) 2014 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
+                    built using the awesome <a href="http://getpelican.com" target="_blank">Pelican</a> static site generator.<br>
+                    This work is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+                </div>
+            </div>
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/uikit.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/sticky.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/cover.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/application.js"></script>
+
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-13304573-19', 'paylogic.com');
+            ga('send', 'pageview');
+        </script>
+
+    </body>
+</html>

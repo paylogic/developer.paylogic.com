@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/agile.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2014-10-09T10:28:00+02:00</updated><entry><title>Lessons learned using SCRUM</title><link href="http://developer.paylogic.com/articles/lessons-scrum.html" rel="alternate"></link><updated>2014-10-09T10:28:00+02:00</updated><author><name>Lars de Ridder</name></author><id>tag:developer.paylogic.com,2014-10-09:articles/lessons-scrum.html</id><summary type="html">
+&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Paylogic has been using &lt;a class="reference external" href="https://www.scrum.org/"&gt;SCRUM&lt;/a&gt; for its engineering process for years now.
+We've made quite a bunch of changes throughout this time and learned a lot.
+Right now we have a highly repeatable and predictable development process, which
+makes it very easy for new engineers to start and almost guarantees that a
+commitment will be met. I would like to share some of the most important things
+we've learned along the way.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="when-doing-scrum-do-scrum"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;When doing SCRUM, do SCRUM&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;There are way too many companies out there doing something and calling it SCRUM
+(or agile), and not actually doing it. You have the opportunity to stand on the
+shoulders of giants. Use those giants, especially when just getting started.
+Understand why things are done, and only then modify if needed. Avoid &lt;a class="reference external" href="https://www.scrum.org/scrumbut"&gt;ScrumButs&lt;/a&gt;
+as much as possible.&lt;/p&gt;
+&lt;p&gt;And if it turns out you don't like SCRUM, use something else, but don't play
+pretend.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="there-really-isn-t-much-process"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;There really isn't much process&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;There's some, more than with ad hoc programming, and a bit more than with
+&lt;a class="reference external" href="http://en.wikipedia.org/wiki/Kanban_%28development%29"&gt;Kanban&lt;/a&gt;, but definitely not a lot.&lt;/p&gt;
+&lt;p&gt;At Paylogic, in an average two week sprint with three teams of in total 14
+engineers, we spend two hours on sprint planning, half an hour per team on
+backlog grooming, about 20 minutes on the sprint demo and about 40 minutes on
+the sprint retrospective. Then we of course have standups, which take about 10
+minutes per day and are done on all days except for the sprint planning day.&lt;/p&gt;
+&lt;p&gt;This totals to five hours of process per person per two weeks, or two and a half
+hours per week. Based on a 40 hour work week, that's about 6%.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="the-process-that-exists-is-good"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;The process that exists is good!&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Now 6% is all well and good, but every bit of process is too much if it has no
+outcome. However, the structure of SCRUM merely asks you to do what you should
+be doing already. Basically, you should:&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;Work in iterations;&lt;/li&gt;
+&lt;li&gt;Make a plan for each iteration so that the business knows what's coming;&lt;/li&gt;
+&lt;li&gt;Keep each other updated on your progress and your issues;&lt;/li&gt;
+&lt;li&gt;Show off what you created; and&lt;/li&gt;
+&lt;li&gt;Evaluate your iteration and take action to improve.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I find it hard to find fault in any of those steps, and they are basically the
+only steps you have to do to implement SCRUM.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="timebox-your-meetings"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;Timebox your meetings&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Meetings have a tendency to drag on (see also &lt;a class="reference external" href="http://en.wikipedia.org/wiki/Parkinson%27s_law"&gt;Parkinson's Law&lt;/a&gt;). It's fairly
+simple to prevent this however.&lt;/p&gt;
+&lt;p&gt;In all SCRUM meetings (and most productive meetings actually), you are dealing
+with a number of consecutive items, and when all are handled you're done. In the
+case of the sprint planning each item is every story that fits in the sprint,
+and in the case of a standup it's each member of the team. Simply set a deadline
+for each item and track and enforce this deadline. People will focus on the most
+important points to most optimally use their time, and after a few times, almost
+no-one will get even near to the deadline.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="team-members-should-be-in-charge-of-their-individual-velocity"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id6"&gt;Team members should be in charge of their individual velocity&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Engineers take pride in doing their work well. Creation is in our blood. It
+should be natural to leave it up to the engineer to determine the speed in which
+they feel they work, or want to work. Velocity should not automatically be
+computed by a script or mandated by a team leader, and should not be averaged
+out over a team. It is important to recognize the individuals in a team, and
+they should have the opportunity to set their own velocity based on past results
+and future ambitions.&lt;/p&gt;
+&lt;p&gt;Next to that, it also makes planning a lot easier. If you have 80 story points
+available in a sprint, it usually doesn't mean that you can plan a single story
+estimated on 80 story points in that sprint. Work is often not that
+parallelizable. If two persons can work on this story, and each person has 20
+story points as their own velocity, then it's suddenly simple to see that you
+can do 40 story points of that story.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="use-proper-tooling"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id7"&gt;Use proper tooling&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;I wrote an article on &lt;a class="reference external" href="trello.html"&gt;how we use Trello&lt;/a&gt;, but any tool or method that allows
+you to visualize the work being done and shows your progress towards the end of
+the sprint is fine. Don't skip this; not having it basically means flying blind,
+and you won't ever get controlled sprints.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="plan-everything"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id8"&gt;Plan everything&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Don't only plan for the user stories scheduled for a sprint. Recognize that
+other work also has to be done. In our case, we had a period where we had to
+reduce the commitment every sprint, because one of the engineers had to perform
+maintenance on the new Continuous Integration server regularly. Keep monitoring
+which work is actually done, and make sure to create space for this work to be
+planned as well.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="backlog-grooming-is-essential"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id9"&gt;Backlog grooming is essential&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;We started &lt;a class="reference external" href="http://scrummethodology.com/scrum-backlog-grooming/"&gt;backlog grooming&lt;/a&gt; relatively late, as we didn't think we needed it.
+Turns out we did. It's really nobody's fault but the team's if it finds out
+during sprint planning that a user story isn't ready for the sprint. And then
+there's no time to correct it, with frustrations on all sides.&lt;/p&gt;
+&lt;p&gt;Don't try to actually do estimations or even think of tasks during the grooming
+sessions. The team should simply review each user story to see if they can work
+on it in its current state.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="a-team-also-needs-freedom-when-determining-what-to-do"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id10"&gt;A team also needs freedom when determining what to do&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The product owner is of course responsible for the backlog, but to get good
+software, the team needs to be able to influence what they work on as well.  The
+team needs some room to, for example, improve its tooling and development
+environment and to iterate over earlier designs. It is essential for a product
+owner to take this into account.&lt;/p&gt;
+&lt;p&gt;If this turns out to be difficult to negotiate, balance can be restored by
+allowing the team to schedule a portion of its time (say 10%) by itself,
+regardless of the backlog.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="commitment-vs-forecast"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id11"&gt;Commitment vs forecast&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;In the official SCRUM description, there actually exists no such thing as a
+commitment. Instead, there is a &lt;a class="reference external" href="https://www.scrum.org/About/All-Articles/articleType/ArticleView/articleId/95/Commitment-vs-Forecast-A-subtle-but-important-change-to-Scrum"&gt;forecast&lt;/a&gt;. The idea of this forecast instead
+of commitment is great, the thing is however that often it doesn't matter.
+Whether you use the term forecast or commitment, business people will still
+expect you to deliver what you said you would deliver. Because that's how they
+work.&lt;/p&gt;
+&lt;p&gt;There's no real cure for this. Communication is very important here, but in the
+end it's just something you should be aware of. Don't expect you can just win
+this by changing the term. You'll have to change a mindset, and sometimes even a
+culture, and that's much harder.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="multiple-teams-can-scrum-together"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id12"&gt;Multiple teams can SCRUM together&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Having a separate SCRUM team doesn't mean they have to have their own standups
+and retrospectives. In fact, that's often a bad idea. If the teams are
+completely independent, kind of like different companies, then it's of course
+fine. But usually, when you are part of the same company, you work together on
+different parts of the same whole, and communication between teams is just as
+important as communication within teams.&lt;/p&gt;
+&lt;p&gt;In our case, the three teams consist of a total of about 14 members. This is
+small enough so that we can still have communal standups and retrospectives.
+Sprint planning and backlog grooming are done separately however.&lt;/p&gt;
+&lt;p&gt;When teams get larger, a &lt;a class="reference external" href="http://guide.agilealliance.org/guide/scrumofscrums.html"&gt;SCRUM of SCRUMS&lt;/a&gt; can be used to keep communication
+going.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="closing-thoughts"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id13"&gt;Closing thoughts&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;At Paylogic we've seen our process grow from being used in a single, small team,
+to a single large team, to scaling to three teams. We've seen people come and
+go, but the process is still going strong. I am very happy with it and with the
+performance of the teams as well.&lt;/p&gt;
+&lt;p&gt;Regardless, there are other alternatives that can work just as well, or perhaps
+even better. When it comes to raw productivity, I actually think a Kanban
+process is just a little bit better. A sprint ending and beginning is still
+disruptive and does reduce productivity, more than just the hours spent on the
+meetings. Kanban, being a continuous process, doesn't have this.&lt;/p&gt;
+&lt;p&gt;It does require more discipline to pull off correctly however, and I believe it
+is harder for a newcomer to get started with. I would like to try such a process
+in Paylogic however, so perhaps I'll write another article about that by that
+time.&lt;/p&gt;
+&lt;!-- External references: --&gt;
+&lt;/div&gt;
+</summary><category term="scrum"></category><category term="agile"></category><category term="project management"></category><category term="scrum master"></category><category term="product owner"></category></entry><entry><title>How we use Trello and custom tooling to streamline our development process</title><link href="http://developer.paylogic.com/articles/trello.html" rel="alternate"></link><updated>2014-10-07T12:05:00+02:00</updated><author><name>Lars de Ridder</name></author><id>tag:developer.paylogic.com,2014-10-07:articles/trello.html</id><summary type="html">
+&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;One of the challenges in the abstract world of code (and at the same time one of
+the most rewarding things you can do) is to visualize the work that is being
+done and that is left to do. Code is not like buildings that you can see rising
+from the ground, and not even like a book that you can count the pages. This
+makes it incredibly hard to gauge progress and view the status.&lt;/p&gt;
+&lt;p&gt;Luckily we live in a magical world where not only there is such a thing like
+code and computers to interpret it, but there are also people building awesome
+things with them to solve problems. One of these things is of course Paylogic,
+but another (and the thing that we will actually talk about here) is &lt;a class="reference external" href="http://trello.com/"&gt;Trello&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In this article you will see how we at Paylogic use Trello, combined with custom
+tooling through the power of API's, to improve our development process.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="in-the-beginning"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;In the beginning&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The world was flat, and Paylogic only used &lt;a class="reference external" href="http://www.fogbugz.com/"&gt;FogBugz&lt;/a&gt;. If you're not familiar
+with FogBugz, it's a bug tracking tool created by &lt;a class="reference external" href="http://www.fogcreek.com/"&gt;Fog Creek&lt;/a&gt; that is fairly
+easily extensible with &lt;a class="reference external" href="http://www.fogcreek.com/fogbugz/plugins/"&gt;plugins&lt;/a&gt;. Back then, everyone got assigned a case at
+the start of the sprint, and you worked on your case until it was finished. When
+it was finished, you could ask for another case. Cases came from a single
+prioritized list, and were assigned by the team leader based on FTE's available
+and his estimations of hours of work.&lt;/p&gt;
+&lt;p&gt;So what exactly was wrong with this approach? Many things, but what I want to
+focus on now is that there was no way for anyone to get an insight in the
+progress of any individual case, let alone the sprint itself.&lt;/p&gt;
+&lt;p&gt;Sure, you could go to an individual case in FogBugz and see how many hours were
+registered on it, but that only helps you if you live in a fairy tale world
+where an hour registered directly correlates with an hour less work to be done.
+You could also of course talk with the engineer working on the case, but as he
+didn't make the estimate and because there was no structure for creating tasks,
+he often didn't really know what was left to do. As you can imagine, this led to
+many issues towards the end of a sprint, with cases not being finished and
+no-one knowing what was going on.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="evolution"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;Evolution&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;This approach evolved quite a bit before arriving to our current solution. One
+of the improvements was the introduction of the &lt;a class="reference external" href="http://www.fogcreek.com/fogbugz/plugins/plugin.aspx?ixPlugin=15"&gt;Kanban plugin&lt;/a&gt; in FogBugz,
+which allowed people to see in which sprint which case would be done. Definitely
+an improvement, but not yet enough.&lt;/p&gt;
+&lt;p&gt;Another was to simply use wall stickies. While this was nice and tangible, it
+also had its downsides. A burndown had to be drawn by hand (what are we,
+peasants?), and there was a bit of a barrier (however tiny) to get up, walk over
+to the board and create a card if you need one. This caused many fires (and
+other work) to be undocumented and as such invisible, which made controlling the
+sprint even harder.&lt;/p&gt;
+&lt;p&gt;And of course, by using stickies there was no log of past sprints, a huge
+downside as well. And it didn't scale. And stickies started falling off the
+wall. You get my point.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="enter-trello"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;Enter Trello&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;To quote from their site: "Trello makes it easy to organize anything with
+anyone". Luckily for us, it does indeed. We now use it for our sprint boards so
+that teams can register their planned work and progress, as well as for our
+backlog boards. I'll now go into some more detail on these boards.&lt;/p&gt;
+&lt;div class="section" id="sprint-board"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id6"&gt;Sprint board&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;A typical sprint board of one of our teams looks something like this:&lt;/p&gt;
+&lt;img alt="Sprint board" class="align-center" src="http://developer.paylogic.com/images/trello/sprint-board.png"/&gt;
+&lt;p&gt;Let's go through the columns (or lists in Trello's terminology).&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;strong&gt;User stories&lt;/strong&gt;: The user stories committed for this sprint. Each of these
+has a case number, written before its name, and an estimate, written behind it
+between brackets. You can read "knots" basically as &lt;a class="reference external" href="https://www.scrumalliance.org/community/articles/2014/january/a-practical-guide-story-points-based-estimation.aspx"&gt;story points&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;User stories - Done in sprint&lt;/strong&gt;: The user stories that fulfill the
+Definition of Done, at least for within the sprint. In our case, user stories
+often aren't deployed during a sprint, so there's a separate Definition of
+Done for that.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;To Do&lt;/strong&gt;: This column contains the &lt;em&gt;tasks&lt;/em&gt; of the user stories that still
+have to be done. The tasks are not really linked to user stories (Trello does
+not provide such functionality between cards), but by using the same case
+number and the same color, we can visually distinguish them quite easily.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Doing&lt;/strong&gt;: These are tasks that are currently in progress.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Done&lt;/strong&gt;: All tasks that are completed will end up here.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Fires&lt;/strong&gt;: All fires encountered in this sprint. We often use a placeholder to
+keep a buffer for unexpected work.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Fires Done&lt;/strong&gt;: A fire that was completed will end up here.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;During the sprint planning, each team creates cards for the user stories and the
+tasks on the sprint board of that sprint. Everything on the sprint board is part
+of the commitment, so this is automatically generated.&lt;/p&gt;
+&lt;p&gt;Important to note is that the team itself is in full charge of this board. Not
+the team leader, not the SCRUM master, but the team. More complicated or
+cumbersome tools are often by necessity managed by a single person, which is
+actually a bad thing as the responsibility of owning and administrating the work
+(and commitment) is then not correctly distributed. Thanks to Trello being so
+accessible and easy to use, it is no problem to have the team be the owner of
+this as well.&lt;/p&gt;
+&lt;p&gt;After sprint planning, it's simply a matter of starting a task and moving it to
+Doing, actually doing the task, and when it's done, moving it to Done and
+picking up the next one. When all tasks of a story are done, the user story can
+be moved to Done in sprint (after creating a codereview for the Gatekeepers in
+FogBugz), and you can start work on another task. Easy as that!&lt;/p&gt;
+&lt;p&gt;There are a few other things worth pointing out about the sprint boards:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;People assign themselves to cards as soon as they start work on a story. If a
+story isn't started yet, it probably won't have anyone assigned to it (unless
+there's a specific specialization involved). This makes it easy to see what is
+started and what not.&lt;/li&gt;
+&lt;li&gt;Some cards are not related to user stories. These are GTD cases. GTD stands
+for Getting Things Done, and are cards needed to get a user story which was
+completed in a previous sprint to production. As we have a gatekeeper and
+staging workflow that usually happens in the sprint(s) after the feature was
+built, it is essential to track this as well.&lt;/li&gt;
+&lt;li&gt;Note the small FogBugz logo (the kiwi) on many cards? That's a link to
+FogBugz, which is automatically generated by Trello. There's no such thing for
+other bug trackers, but it is fairly trivial to make one yourself using
+something like &lt;a class="reference external" href="http://www.greasespot.net/"&gt;Greasemonkey&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;It's also an option to create tasks as checklist items on user story cards,
+and work on tasks from there. However, we felt like this obscures important
+details, which for us goes against the idea of using a tool like Trello. It
+might work for you however, so I did want to mention the option.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="backlogs"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id7"&gt;Backlogs&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;We have three engineering teams, so we need three backlogs as well. One such
+backlog board can be seen below.&lt;/p&gt;
+&lt;img alt="Backlog board" class="align-center" src="http://developer.paylogic.com/images/trello/backlog-board.png"/&gt;
+&lt;p&gt;As you can see, it is quite straightforward. There's a Backlog list, containing
+the user stories that are up next, and there is a list for each sprint, to be
+able to keep an easy overview of what was done in which sprint.&lt;/p&gt;
+&lt;p&gt;For epics, we use checklists in Trello to group related stories together. In
+that way, the epic can stay on top of the backlog while its individual stories
+are selected from the checklist and moved into the sprint. This works well in
+the case that you work on a single epic but also want to work on smaller,
+unrelated stories and features next to it, as you can then prioritize the entire
+functionality (which the epic encompasses) instead of just fragments of it.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="custom-tooling"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id8"&gt;Custom tooling&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The biggest advantage and simultaneous disadvantage of Trello is that it does
+just one thing and does it well. This means that if you ever want to do
+something else, such as generating a burndown chart, you will have to do it
+yourself. So, we did.&lt;/p&gt;
+&lt;div class="section" id="burndown"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id9"&gt;Burndown&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Fortunately, Trello has an excellent &lt;a class="reference external" href="https://trello.com/docs/"&gt;REST API&lt;/a&gt;, which makes it quite easy to
+get the data needed for a simple burndown. We started off with a &lt;a class="reference external" href="http://echobehind.wordpress.com/2012/06/28/create-your-own-burndown-chart-using-trello-api-and-google-apps-script/"&gt;burndown chart
+in Google Docs&lt;/a&gt;, which is a nice and lightweight way to start using Trello for
+your sprints. It turned out we needed a bit more flexibility however, so we
+developed our own burndown application, which can be seen below.&lt;/p&gt;
+&lt;img alt="Custom burndown chart" class="align-center" src="http://developer.paylogic.com/images/trello/burndown.png"/&gt;
+&lt;p&gt;To be able to generate a burndown using Trello however, you need a way to set
+the size of a task, which we do by convention. Notice how in the sprint board
+shown above every task has a number of "k" between brackets, so like (2k)?
+That's our convention for setting the size of the task, which is of course
+trivially parsed.&lt;/p&gt;
+&lt;p&gt;Thanks to the fact that we track everything based on tasks, and because our
+tasks are as a rule no larger than 4 knots, our burndown is enormously detailed
+and fine-grained, and as such gives you a very realistic view of what the
+progress of each team is on every given moment.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="fogbugz"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id10"&gt;FogBugz&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Another thing that Trello doesn't have is time tracking. There is a Chrome
+extension to allow time tracking in Trello using &lt;a class="reference external" href="https://www.getharvest.com/trello/"&gt;Harvest&lt;/a&gt;, but the thing is we
+don't use Harvest; we use Fogbugz. So we developed and open sourced a &lt;a class="reference external" href="https://github.com/paylogic/trello_workon/tree/oop-refactor"&gt;simple
+synchronization tool&lt;/a&gt; for that.&lt;/p&gt;
+&lt;p&gt;What it does is it periodically looks at the task a member has in the "Doing"
+column, finds the case corresponding to that task in FogBugz, and starts
+registering hours for that user on that case (using &lt;a class="reference external" href="http://help.fogcreek.com/8202/xml-api"&gt;FogBugz's less than awesome
+API&lt;/a&gt;). It's not ideal, but it works for us, and saves our engineers the hassle
+of having to do double administration.&lt;/p&gt;
+&lt;p&gt;Of course, being resourceful engineers, we integrated this information then
+again with our burndown chart, so that we could display what every engineer is
+working on right now next to the burndown chart, together with the progress of
+the case. Magic!&lt;/p&gt;
+&lt;img alt="Displaying of who works on what case" class="align-center" src="http://developer.paylogic.com/images/trello/workon.png"/&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="closing-thoughts"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id11"&gt;Closing thoughts&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;So that's in a nutshell how we use Trello for our sprints. We've been using it
+for our sprint boards for nearly two years now, and it definitely has stood the
+test of time. We've been using it for other things as well, such as for project
+management (for which the &lt;a class="reference external" href="http://help.trello.com/customer/portal/articles/1262881-viewing-cards-in-a-calendar-view"&gt;calendar view&lt;/a&gt; is quite useful), as Kanban board for
+our Operational IT team, and for storing code snippets. The fact that there is
+Google Apps integration is quite a bonus for us as well (although that is only
+part of their paid &lt;a class="reference external" href="https://trello.com/business-class"&gt;business class&lt;/a&gt; subscription).&lt;/p&gt;
+&lt;p&gt;Now it has to be mentioned that there are many other tools out there that
+attempt to solve all of our problems in a single tool. This would of course be
+better, so that we wouldn't have to develop and maintain our custom tooling.
+However, I personally haven't found one that I liked as much, and that allowed
+the same flexibility, as what we have right now. For example, many tools that I
+found don't allow you to generate a burndown based on your tasks, only of your
+user stories, which in my opinion is a serious limitation. If you do have a tool
+that you can recommend,  please shoot me an email or leave a comment.&lt;/p&gt;
+&lt;p&gt;Oh and there is of course a Chrome plugin called &lt;a class="reference external" href="https://chrome.google.com/webstore/detail/scrum-for-trello/jdbcdblgjdpmfninkoogcfpnkjmndgje?hl=en"&gt;Scrum for Trello&lt;/a&gt;. When we
+looked at it, it sadly wasn't very mature yet and it didn't fit our needs, but
+it does look pretty good now. Someone also pointed out &lt;a class="reference external" href="https://chrome.google.com/webstore/detail/plus-for-trello/gjjpophepkbhejnglcmkdnncmaanojkf/related?hl=en"&gt;Plus for Trello&lt;/a&gt; to me
+which I didn't know about before, but it looks promising as well. Give it a go!&lt;/p&gt;
+&lt;p&gt;And don't forget to check out the &lt;a class="reference external" href="https://trello.com/taco-game"&gt;taco game&lt;/a&gt;.&lt;/p&gt;
+&lt;!-- External references: --&gt;
+&lt;/div&gt;
+</summary><category term="trello"></category><category term="fogbugz"></category><category term="burndown"></category><category term="scrum"></category><category term="agile"></category></entry><entry><title>Continuous Delivery</title><link href="http://developer.paylogic.com/articles/continuous-delivery.html" rel="alternate"></link><updated>2013-05-30T01:08:00+02:00</updated><author><name>Òscar Vilaplana</name></author><id>tag:developer.paylogic.com,2013-05-30:articles/continuous-delivery.html</id><summary type="html">
+&lt;p&gt;&lt;em&gt;When you do Continuous Delivery you can deploy whenever you want: you
+made it as easy as possible and you have become very good at it.
+Everyone in the Engineering and Operations teams knows how to deploy
+your application to any environment. Product can always see the latest
+bells and whistles as they are built because you have Stable servers
+running the latest versions of the application. You implement big
+changes gradually and show them to the Product Team while keeping the
+customer’s experience stable. When you decide to release, you have made
+sure all things will work and you know how to react if nevertheless they
+break, without fires or panic.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Continuous Deployment also forces you to do many right things:
+repeatable builds; the exact same deployment process in all
+environments, including the developer’s machines and a development
+environment that is as close as possible to Production;
+backwards-compatible database changes; easy rollbacks; code that is
+split into components; good tests…&lt;/em&gt;&lt;/p&gt;
+&lt;div class="section" id="taming-the-software-lion"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Taming the Software Lion&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="section" id="s"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id4"&gt;1800s&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;It’s the 1800s. The lion is beaten into submission through fear, brute
+force and confusion. That famous tamer wielding a chair—the lion is not
+scared of the chair, it’s confused of it: why is this chair floating
+here? And why is this guy holding it?&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="modern-times"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id5"&gt;Modern times&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Nowadays tamers understand the lion’s psychology. They condition the
+lion to behave as they want, they tie behaviors to signals and reward
+the right behaviors. They build up trust.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="taming-the-software-lionrecap"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id6"&gt;Taming the Software Lion—recap&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="section" id="id1"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id7"&gt;1800s&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;It’s the 1800s. Code is beaten into submission through iterations of
+half-working attempts at hand-made deployments; with fear, because it
+works and we barely understand it, so don’t touch it because &lt;em&gt;it works&lt;/em&gt;;
+with weapons, because when it breaks it’s hacked some more until it
+works (install a missing dependency, copy the forgotten templates…); and
+with confusion: it’s difficult to see what’s actually installed, how,
+what part of it is needed and what extra changes are needed to make it
+work.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id2"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id8"&gt;Modern times&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Nowadays software engineers understand that deploying software is hard,
+and so they must get very good at it and automate it with clean
+procedures so that it’s repeatable and debugable. They use continuous
+integration, which rewards them with a green light when the build
+passes. They take care of the health of the build. They deploy it
+frequently to a staging server that the stakeholders can see. When
+software breaks, they know how to act.&lt;/p&gt;
+&lt;p&gt;Engineers build up trust: they can trust that the software works and
+that it does what it’s supposed to do; and the stakeholders trust them
+in that the product is built to their expectations.&lt;/p&gt;
+&lt;div class="section" id="what-you-need-to-implement-continuous-delivery"&gt;
+&lt;h4&gt;What You Need to implement Continuous Delivery&lt;/h4&gt;
+&lt;p&gt;To implement Continuous Delivery, you need the following:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;A team&lt;/li&gt;
+&lt;li&gt;Working software&lt;/li&gt;
+&lt;li&gt;A repeatable build&lt;/li&gt;
+&lt;li&gt;An automated deployment&lt;/li&gt;
+&lt;li&gt;A way to rollback&lt;/li&gt;
+&lt;li&gt;An automated release&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="team"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id9"&gt;Team&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Every single member of the Team must be committed to quality—process
+can’t compensate for lack of commitment. This commitment includes the
+constant learning of best practices and ways to improve.&lt;/p&gt;
+&lt;p&gt;Everyone in the Team must know how to deploy and release software (also
+in Live) and how to maintain the deployment and release scripts.
+Everyone is responsible for these scripts: there cannot be a deployment
+guru. For this, the deployment scripts must be clear, concise and
+simple.&lt;/p&gt;
+&lt;p&gt;All environments must be as similar as possible; this includes the
+development machines. The Team must deploy the software in their
+development machines using the exact same deployment and release scripts
+that are used in Production and Staging.&lt;/p&gt;
+&lt;p&gt;In addition to this, everyone in the Team is responsible for:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Having working Stable and Production environments.&lt;/li&gt;
+&lt;li&gt;Having a green CI.&lt;/li&gt;
+&lt;li&gt;Never committing broken code.&lt;/li&gt;
+&lt;li&gt;Adding sufficient tests.&lt;/li&gt;
+&lt;li&gt;Having good quality code.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="working-software"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id10"&gt;Working Software&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Software, even software that &lt;em&gt;works&lt;/em&gt;, is not working software unless it
+has automated tests:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Unit Tests&lt;/li&gt;
+&lt;li&gt;Functional Tests&lt;/li&gt;
+&lt;li&gt;Acceptance Tests (testing from the user’s viewpoint, not from a lower
+layer)&lt;/li&gt;
+&lt;li&gt;Infrastructure and Configuration Tests (for example, testing that the
+server must be able to send e-mail).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Tests are not second-class citizens: the standards of their cleanness,
+readability and maintainability must be as high as those of the rest of
+the software. This quality must be maintained: tests must not be let rot
+when changes accumulate.&lt;/p&gt;
+&lt;p&gt;All these tests must be run locally before committing changes and also
+automatically using Continuous Integration. Because tests are executed
+often they should be kept fast.&lt;/p&gt;
+&lt;p&gt;Simple mistakes, such as the ones that pylint catches, should be checked
+even before running any tests.&lt;/p&gt;
+&lt;p&gt;The build must be kept green at all times. Engineers should check in
+their changes often, and be ready to rollback if the change (which
+passed the local tests) breaks the build. Many small changes are
+preferable to a single big change: they are easier to debug and to
+rollback.&lt;/p&gt;
+&lt;p&gt;Both Engineering and QA are responsible for the quality of the software
+(this includes the tests).&lt;/p&gt;
+&lt;p&gt;When a test breaks, it must be fixed. There are two possible moments for
+fixing it:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Right now. If the failure is legit, you must drop what you are doing
+and fix the it.&lt;/li&gt;
+&lt;li&gt;As soon as possible. If the failure is due to a false positive and
+it’s not possible to fix it right now, the test must be fixed as soon
+as possible. This should not be later than the end of the day.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If a test breaks because of changes that are being made, either the test
+must be fixed right now or the changes must be reverted.&lt;/p&gt;
+&lt;p&gt;Tests cannot be disabled to be fixed later. Later won’t come any time
+soon.&lt;/p&gt;
+&lt;p&gt;Any code must be peer-reviewed before being merged into the Stable
+branch.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="repeatable-build"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id11"&gt;Repeatable Build&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The build must be automated, and used by all members of the Team in all
+environments. The build process must contain no manual steps or changes.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="deployment-script"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id12"&gt;Deployment Script&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;As for the build, the deployment script must be automated and used by
+all members of the Team in all environments. Deploying the software
+should be accomplished by a single command:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;em&gt;./deploy.sh&lt;/em&gt; &amp;lt;environment&amp;gt; &amp;lt;version&amp;gt;&lt;/blockquote&gt;
+&lt;p&gt;The only way to deploy is to follow the pipeline: tests, peer-review,
+merge, test, automated build, automated deploy. This includes
+emergencies: many problems come from skipping the pipeline and hacking a
+solution out of urgency.&lt;/p&gt;
+&lt;p&gt;If the pipeline is skipped and software is deployed by hand, the system
+is left on an unknown state. If the hack fails it will be very difficult
+to duplicate it and investigate what went wrong. Most of the time of
+fixing a problem is usually spent in searching its cause.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="rollback"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id13"&gt;Rollback&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;When a deployment fails it must be easy to rollback. There are many
+strategies to accomplish this, for example Blue-Green Deployments and
+Canary Deployments.&lt;/p&gt;
+&lt;div class="section" id="blue-green-deployments"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id14"&gt;Blue-Green Deployments&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Have two separate environments: green is where the customers go when
+they go to Production; blue is not.&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;Deploy the new version on blue.&lt;/li&gt;
+&lt;li&gt;Test blue and do manual acceptance.&lt;/li&gt;
+&lt;li&gt;Switch blue to green and green to blue: now Blue is serving
+Production&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;If the deployment goes wrong, rolling back is a matter of switching
+green and blue. It’s easy to investigate what went wrong because blue is
+still running the new code.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="canary-deployment"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id15"&gt;Canary Deployment&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Deploy the new version on a fraction of the servers and have it run
+alongside the old version. Once it’s confirmed that it works as
+expected, extend the deployment to the rest of the servers.&lt;/p&gt;
+&lt;p&gt;This strategy can also be used to do A/B testing or assessing the
+performance impact of new features.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="rollback-the-database"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id16"&gt;Rollback the Database&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;For rollbacks to be possible, the database changes must be kept
+backwards compatible. There is no way around this. When this is not
+possible, make a plan on how to rollback.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="automated-release"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id17"&gt;Automated Release&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;When all the previous steps are in place, an automated release is just
+the last step on the chain. While an automated release to Production may
+not be desirable in all cases, an automated release to a Staging or
+Integration environment will allow the stakeholders to use the latest
+version of the software while it’s being developed and before it goes to
+Production.&lt;/p&gt;
+&lt;p&gt;Frequent, smaller changes are preferred to a big release: small releases
+have shorter Time to Recover: if it goes wrong it will be easier to find
+what went wrong if the amount of changes is small.&lt;/p&gt;
+&lt;p&gt;Releasing is hard. If it hurts, do it more often.&lt;/p&gt;
+&lt;div class="section" id="hidden-features"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id18"&gt;Hidden Features&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;In some cases it is useful to release features but keep them
+inaccessible or only accessible to a few users. There are several tools
+to make this easy;
+&lt;a class="reference external" href="https://github.com/disqus/gargoyle"&gt;gargoyle&lt;/a&gt;
+is a popular one for Django.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="tips"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id19"&gt;Tips&lt;/a&gt;&lt;/h2&gt;
+&lt;div class="section" id="split-in-components"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id20"&gt;Split In Components&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Split your software in components that can be deployed independently.&lt;/p&gt;
+&lt;p&gt;A component:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Is reusable&lt;/li&gt;
+&lt;li&gt;Is replaceable with something else that implements the same API.&lt;/li&gt;
+&lt;li&gt;Is independently deployable.&lt;/li&gt;
+&lt;li&gt;Encapsulates a coherent set of behaviors and responsibilities of the
+system.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Splitting your software in components encourages a clear delineation of
+responsibilities and makes understanding and changing the code easier.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="rehearse-releases"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id21"&gt;Rehearse Releases&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Releasing is hard. Rehearse it and get very good at it.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="manage-your-infrastructure"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id22"&gt;Manage your Infrastructure&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Write tests that verify that your infrastructure behaves as you expect
+and provides the necessary functionality.&lt;/p&gt;
+&lt;p&gt;Automate all infrastructure changes that can be automated, and document
+the rest.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="equal-environments"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id23"&gt;Equal Environments&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;All environments must be as similar as possible. Use
+&lt;a class="reference external" href="http://www.vagrantup.com/"&gt;vagrant&lt;/a&gt;
+to develop.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="automate-everything"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id24"&gt;Automate Everything&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;A process that is automated is repeatable and easier to debug. Automate
+everything that can be automated.&lt;/p&gt;
+&lt;hr class="docutils"/&gt;
+&lt;p&gt;I gave a talk about this at DjangoCon Europe 2013. Here are the
+&lt;a class="reference external" href="https://bitbucket.org/grimborg/continuousdeployment/src/tip/continuous-deployment.pdf"&gt;slides&lt;/a&gt;;
+the video will be available soon.&lt;/p&gt;
+&lt;p&gt;If this interests you, you may want to check these books:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://www.amazon.com/Continuous-Delivery-Deployment-Automation-Addison-Wesley/dp/0321601912/ref=sr_1_1?ie=UTF8&amp;amp;qid=1369904950&amp;amp;sr=8-1"&gt;Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://www.amazon.com/Continuous-Integration-Improving-Software-Reducing/dp/0321336380/ref=sr_1_1?ie=UTF8&amp;amp;qid=1369905064&amp;amp;sr=8-1"&gt;Continuous Integration: Improving Software Quality and Reducing Risk&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://www.amazon.com/Agile-Testing-Practical-Guide-Testers/dp/0321534468/ref=sr_1_1?ie=UTF8&amp;amp;qid=1369905098&amp;amp;sr=8-1"&gt;Agile Testing: A Practical Guide for Testers and Agile Team&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://www.amazon.com/Test-Driven-Development-Kent-Beck/dp/0321146530/ref=sr_1_1?s=books&amp;amp;ie=UTF8&amp;amp;qid=1369905116&amp;amp;sr=1-1"&gt;Test Driven Development: By Example&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</summary><category term="agile"></category><category term="continuous delivery"></category><category term="deployment"></category><category term="release"></category><category term="testing"></category><category term="qa"></category></entry></feed>

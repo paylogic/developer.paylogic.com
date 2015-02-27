@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+            <title>Continuous Delivery by Òscar Vilaplana - Paylogic Developers</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+                <link href="http://developer.paylogic.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Full Atom Feed">
+
+
+
+
+                <link href="http://developer.paylogic.com/feeds/agile.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Categories Atom Feed">
+
+
+
+
+            <link rel="shortcut icon" href="http://developer.paylogic.com/images/favicon.ico">
+
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.addons.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/style.css">
+    </head>
+
+    <body>
+
+        <nav class="uk-navbar" data-uk-sticky>
+            <div class="uk-container uk-container-center">
+                <a href="/" class="uk-navbar-brand"><img alt="Paylogic" src="http://developer.paylogic.com/images/paylogic.png" /></a>
+                <div class="uk-navbar-content"><a href="/" class="pl-text-light">Developers</a></div>
+                <ul class="uk-navbar-nav uk-float-right uk-hidden-small">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent" data-uk-dropdown>
+                        <a href="#">Categories<i class="uk-icon-angle-down uk-margin-small-left"></i></a>
+                        <div class="uk-dropdown uk-dropdown-flip uk-dropdown-navbar">
+                            <ul class="uk-nav uk-nav-navbar">
+                                        <li class="uk-active"><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <a href="#offcanvas-nav" class="uk-navbar-toggle uk-visible-small uk-float-right" data-uk-offcanvas></a>
+            </div>
+        </nav>
+
+        <div id="offcanvas-nav" class="uk-offcanvas">
+            <div class="uk-offcanvas-bar">
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{multiple:true}">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent">
+                        <a href="#">Categories</a>
+                        <ul class="uk-nav-sub">
+                                    <li class="uk-active"><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <main class="pl-content">
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+            <div class="uk-width-medium-1-4 uk-hidden-small">
+                <div class="toc uk-text-small" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
+                <div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#taming-the-software-lion" id="id3">Taming the Software Lion</a><ul>
+<li><a class="reference internal" href="#s" id="id4">1800s</a></li>
+<li><a class="reference internal" href="#modern-times" id="id5">Modern times</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#taming-the-software-lionrecap" id="id6">Taming the Software Lion—recap</a><ul>
+<li><a class="reference internal" href="#id1" id="id7">1800s</a></li>
+<li><a class="reference internal" href="#id2" id="id8">Modern times</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#team" id="id9">Team</a></li>
+<li><a class="reference internal" href="#working-software" id="id10">Working Software</a></li>
+<li><a class="reference internal" href="#repeatable-build" id="id11">Repeatable Build</a></li>
+<li><a class="reference internal" href="#deployment-script" id="id12">Deployment Script</a></li>
+<li><a class="reference internal" href="#rollback" id="id13">Rollback</a><ul>
+<li><a class="reference internal" href="#blue-green-deployments" id="id14">Blue-Green Deployments</a></li>
+<li><a class="reference internal" href="#canary-deployment" id="id15">Canary Deployment</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rollback-the-database" id="id16">Rollback the Database</a></li>
+<li><a class="reference internal" href="#automated-release" id="id17">Automated Release</a><ul>
+<li><a class="reference internal" href="#hidden-features" id="id18">Hidden Features</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tips" id="id19">Tips</a><ul>
+<li><a class="reference internal" href="#split-in-components" id="id20">Split In Components</a></li>
+<li><a class="reference internal" href="#rehearse-releases" id="id21">Rehearse Releases</a></li>
+<li><a class="reference internal" href="#manage-your-infrastructure" id="id22">Manage your Infrastructure</a></li>
+<li><a class="reference internal" href="#equal-environments" id="id23">Equal Environments</a></li>
+<li><a class="reference internal" href="#automate-everything" id="id24">Automate Everything</a></li>
+</ul>
+</li>
+</ul>
+</div>
+                </div>
+            </div>
+            <div class="uk-width-medium-3-4">
+                <article class="uk-article">
+                    <table class="uk-table uk-table-middle pl-table-article-meta">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="uk-thumbnail uk-margin-right">
+                                        <img src="http://www.gravatar.com/avatar/6f7c105694e69993fb91e53dc2679f3b" alt="Òscar Vilaplana" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="uk-article-meta">
+                                        Written by
+                                            <a class="url fn" href="http://developer.paylogic.com/author/oscar-vilaplana.html">Òscar Vilaplana</a>
+                                        on Thu 30 May 2013<br />Posted in <a href="http://developer.paylogic.com/category/agile.html">Agile</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h1 class="uk-article-title">Continuous Delivery</h1>
+                    <hr class="uk-article-divider">
+                    <div class="pl-article-content">
+<p><em>When you do Continuous Delivery you can deploy whenever you want: you
+made it as easy as possible and you have become very good at it.
+Everyone in the Engineering and Operations teams knows how to deploy
+your application to any environment. Product can always see the latest
+bells and whistles as they are built because you have Stable servers
+running the latest versions of the application. You implement big
+changes gradually and show them to the Product Team while keeping the
+customer’s experience stable. When you decide to release, you have made
+sure all things will work and you know how to react if nevertheless they
+break, without fires or panic.</em></p>
+<p><em>Continuous Deployment also forces you to do many right things:
+repeatable builds; the exact same deployment process in all
+environments, including the developer’s machines and a development
+environment that is as close as possible to Production;
+backwards-compatible database changes; easy rollbacks; code that is
+split into components; good tests…</em></p>
+<div class="section" id="taming-the-software-lion">
+<h2><a class="toc-backref" href="#id3">Taming the Software Lion</a></h2>
+<div class="section" id="s">
+<h3><a class="toc-backref" href="#id4">1800s</a></h3>
+<p>It’s the 1800s. The lion is beaten into submission through fear, brute
+force and confusion. That famous tamer wielding a chair—the lion is not
+scared of the chair, it’s confused of it: why is this chair floating
+here? And why is this guy holding it?</p>
+</div>
+<div class="section" id="modern-times">
+<h3><a class="toc-backref" href="#id5">Modern times</a></h3>
+<p>Nowadays tamers understand the lion’s psychology. They condition the
+lion to behave as they want, they tie behaviors to signals and reward
+the right behaviors. They build up trust.</p>
+</div>
+</div>
+<div class="section" id="taming-the-software-lionrecap">
+<h2><a class="toc-backref" href="#id6">Taming the Software Lion—recap</a></h2>
+<div class="section" id="id1">
+<h3><a class="toc-backref" href="#id7">1800s</a></h3>
+<p>It’s the 1800s. Code is beaten into submission through iterations of
+half-working attempts at hand-made deployments; with fear, because it
+works and we barely understand it, so don’t touch it because <em>it works</em>;
+with weapons, because when it breaks it’s hacked some more until it
+works (install a missing dependency, copy the forgotten templates…); and
+with confusion: it’s difficult to see what’s actually installed, how,
+what part of it is needed and what extra changes are needed to make it
+work.</p>
+</div>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id8">Modern times</a></h3>
+<p>Nowadays software engineers understand that deploying software is hard,
+and so they must get very good at it and automate it with clean
+procedures so that it’s repeatable and debugable. They use continuous
+integration, which rewards them with a green light when the build
+passes. They take care of the health of the build. They deploy it
+frequently to a staging server that the stakeholders can see. When
+software breaks, they know how to act.</p>
+<p>Engineers build up trust: they can trust that the software works and
+that it does what it’s supposed to do; and the stakeholders trust them
+in that the product is built to their expectations.</p>
+<div class="section" id="what-you-need-to-implement-continuous-delivery">
+<h4>What You Need to implement Continuous Delivery</h4>
+<p>To implement Continuous Delivery, you need the following:</p>
+<ul class="simple">
+<li>A team</li>
+<li>Working software</li>
+<li>A repeatable build</li>
+<li>An automated deployment</li>
+<li>A way to rollback</li>
+<li>An automated release</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="team">
+<h2><a class="toc-backref" href="#id9">Team</a></h2>
+<p>Every single member of the Team must be committed to quality—process
+can’t compensate for lack of commitment. This commitment includes the
+constant learning of best practices and ways to improve.</p>
+<p>Everyone in the Team must know how to deploy and release software (also
+in Live) and how to maintain the deployment and release scripts.
+Everyone is responsible for these scripts: there cannot be a deployment
+guru. For this, the deployment scripts must be clear, concise and
+simple.</p>
+<p>All environments must be as similar as possible; this includes the
+development machines. The Team must deploy the software in their
+development machines using the exact same deployment and release scripts
+that are used in Production and Staging.</p>
+<p>In addition to this, everyone in the Team is responsible for:</p>
+<ul class="simple">
+<li>Having working Stable and Production environments.</li>
+<li>Having a green CI.</li>
+<li>Never committing broken code.</li>
+<li>Adding sufficient tests.</li>
+<li>Having good quality code.</li>
+</ul>
+</div>
+<div class="section" id="working-software">
+<h2><a class="toc-backref" href="#id10">Working Software</a></h2>
+<p>Software, even software that <em>works</em>, is not working software unless it
+has automated tests:</p>
+<ul class="simple">
+<li>Unit Tests</li>
+<li>Functional Tests</li>
+<li>Acceptance Tests (testing from the user’s viewpoint, not from a lower
+layer)</li>
+<li>Infrastructure and Configuration Tests (for example, testing that the
+server must be able to send e-mail).</li>
+</ul>
+<p>Tests are not second-class citizens: the standards of their cleanness,
+readability and maintainability must be as high as those of the rest of
+the software. This quality must be maintained: tests must not be let rot
+when changes accumulate.</p>
+<p>All these tests must be run locally before committing changes and also
+automatically using Continuous Integration. Because tests are executed
+often they should be kept fast.</p>
+<p>Simple mistakes, such as the ones that pylint catches, should be checked
+even before running any tests.</p>
+<p>The build must be kept green at all times. Engineers should check in
+their changes often, and be ready to rollback if the change (which
+passed the local tests) breaks the build. Many small changes are
+preferable to a single big change: they are easier to debug and to
+rollback.</p>
+<p>Both Engineering and QA are responsible for the quality of the software
+(this includes the tests).</p>
+<p>When a test breaks, it must be fixed. There are two possible moments for
+fixing it:</p>
+<ul class="simple">
+<li>Right now. If the failure is legit, you must drop what you are doing
+and fix the it.</li>
+<li>As soon as possible. If the failure is due to a false positive and
+it’s not possible to fix it right now, the test must be fixed as soon
+as possible. This should not be later than the end of the day.</li>
+</ul>
+<p>If a test breaks because of changes that are being made, either the test
+must be fixed right now or the changes must be reverted.</p>
+<p>Tests cannot be disabled to be fixed later. Later won’t come any time
+soon.</p>
+<p>Any code must be peer-reviewed before being merged into the Stable
+branch.</p>
+</div>
+<div class="section" id="repeatable-build">
+<h2><a class="toc-backref" href="#id11">Repeatable Build</a></h2>
+<p>The build must be automated, and used by all members of the Team in all
+environments. The build process must contain no manual steps or changes.</p>
+</div>
+<div class="section" id="deployment-script">
+<h2><a class="toc-backref" href="#id12">Deployment Script</a></h2>
+<p>As for the build, the deployment script must be automated and used by
+all members of the Team in all environments. Deploying the software
+should be accomplished by a single command:</p>
+<blockquote>
+<em>./deploy.sh</em> &lt;environment&gt; &lt;version&gt;</blockquote>
+<p>The only way to deploy is to follow the pipeline: tests, peer-review,
+merge, test, automated build, automated deploy. This includes
+emergencies: many problems come from skipping the pipeline and hacking a
+solution out of urgency.</p>
+<p>If the pipeline is skipped and software is deployed by hand, the system
+is left on an unknown state. If the hack fails it will be very difficult
+to duplicate it and investigate what went wrong. Most of the time of
+fixing a problem is usually spent in searching its cause.</p>
+</div>
+<div class="section" id="rollback">
+<h2><a class="toc-backref" href="#id13">Rollback</a></h2>
+<p>When a deployment fails it must be easy to rollback. There are many
+strategies to accomplish this, for example Blue-Green Deployments and
+Canary Deployments.</p>
+<div class="section" id="blue-green-deployments">
+<h3><a class="toc-backref" href="#id14">Blue-Green Deployments</a></h3>
+<p>Have two separate environments: green is where the customers go when
+they go to Production; blue is not.</p>
+<ol class="arabic simple">
+<li>Deploy the new version on blue.</li>
+<li>Test blue and do manual acceptance.</li>
+<li>Switch blue to green and green to blue: now Blue is serving
+Production</li>
+</ol>
+<p>If the deployment goes wrong, rolling back is a matter of switching
+green and blue. It’s easy to investigate what went wrong because blue is
+still running the new code.</p>
+</div>
+<div class="section" id="canary-deployment">
+<h3><a class="toc-backref" href="#id15">Canary Deployment</a></h3>
+<p>Deploy the new version on a fraction of the servers and have it run
+alongside the old version. Once it’s confirmed that it works as
+expected, extend the deployment to the rest of the servers.</p>
+<p>This strategy can also be used to do A/B testing or assessing the
+performance impact of new features.</p>
+</div>
+</div>
+<div class="section" id="rollback-the-database">
+<h2><a class="toc-backref" href="#id16">Rollback the Database</a></h2>
+<p>For rollbacks to be possible, the database changes must be kept
+backwards compatible. There is no way around this. When this is not
+possible, make a plan on how to rollback.</p>
+</div>
+<div class="section" id="automated-release">
+<h2><a class="toc-backref" href="#id17">Automated Release</a></h2>
+<p>When all the previous steps are in place, an automated release is just
+the last step on the chain. While an automated release to Production may
+not be desirable in all cases, an automated release to a Staging or
+Integration environment will allow the stakeholders to use the latest
+version of the software while it’s being developed and before it goes to
+Production.</p>
+<p>Frequent, smaller changes are preferred to a big release: small releases
+have shorter Time to Recover: if it goes wrong it will be easier to find
+what went wrong if the amount of changes is small.</p>
+<p>Releasing is hard. If it hurts, do it more often.</p>
+<div class="section" id="hidden-features">
+<h3><a class="toc-backref" href="#id18">Hidden Features</a></h3>
+<p>In some cases it is useful to release features but keep them
+inaccessible or only accessible to a few users. There are several tools
+to make this easy;
+<a class="reference external" href="https://github.com/disqus/gargoyle">gargoyle</a>
+is a popular one for Django.</p>
+</div>
+</div>
+<div class="section" id="tips">
+<h2><a class="toc-backref" href="#id19">Tips</a></h2>
+<div class="section" id="split-in-components">
+<h3><a class="toc-backref" href="#id20">Split In Components</a></h3>
+<p>Split your software in components that can be deployed independently.</p>
+<p>A component:</p>
+<ul class="simple">
+<li>Is reusable</li>
+<li>Is replaceable with something else that implements the same API.</li>
+<li>Is independently deployable.</li>
+<li>Encapsulates a coherent set of behaviors and responsibilities of the
+system.</li>
+</ul>
+<p>Splitting your software in components encourages a clear delineation of
+responsibilities and makes understanding and changing the code easier.</p>
+</div>
+<div class="section" id="rehearse-releases">
+<h3><a class="toc-backref" href="#id21">Rehearse Releases</a></h3>
+<p>Releasing is hard. Rehearse it and get very good at it.</p>
+</div>
+<div class="section" id="manage-your-infrastructure">
+<h3><a class="toc-backref" href="#id22">Manage your Infrastructure</a></h3>
+<p>Write tests that verify that your infrastructure behaves as you expect
+and provides the necessary functionality.</p>
+<p>Automate all infrastructure changes that can be automated, and document
+the rest.</p>
+</div>
+<div class="section" id="equal-environments">
+<h3><a class="toc-backref" href="#id23">Equal Environments</a></h3>
+<p>All environments must be as similar as possible. Use
+<a class="reference external" href="http://www.vagrantup.com/">vagrant</a>
+to develop.</p>
+</div>
+<div class="section" id="automate-everything">
+<h3><a class="toc-backref" href="#id24">Automate Everything</a></h3>
+<p>A process that is automated is repeatable and easier to debug. Automate
+everything that can be automated.</p>
+<hr class="docutils"/>
+<p>I gave a talk about this at DjangoCon Europe 2013. Here are the
+<a class="reference external" href="https://bitbucket.org/grimborg/continuousdeployment/src/tip/continuous-deployment.pdf">slides</a>;
+the video will be available soon.</p>
+<p>If this interests you, you may want to check these books:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.amazon.com/Continuous-Delivery-Deployment-Automation-Addison-Wesley/dp/0321601912/ref=sr_1_1?ie=UTF8&amp;qid=1369904950&amp;sr=8-1">Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation</a></li>
+<li><a class="reference external" href="http://www.amazon.com/Continuous-Integration-Improving-Software-Reducing/dp/0321336380/ref=sr_1_1?ie=UTF8&amp;qid=1369905064&amp;sr=8-1">Continuous Integration: Improving Software Quality and Reducing Risk</a></li>
+<li><a class="reference external" href="http://www.amazon.com/Agile-Testing-Practical-Guide-Testers/dp/0321534468/ref=sr_1_1?ie=UTF8&amp;qid=1369905098&amp;sr=8-1">Agile Testing: A Practical Guide for Testers and Agile Team</a></li>
+<li><a class="reference external" href="http://www.amazon.com/Test-Driven-Development-Kent-Beck/dp/0321146530/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1369905116&amp;sr=1-1">Test Driven Development: By Example</a></li>
+</ul>
+</div>
+</div>
+</div>
+                        <hr class="uk-article-divider">
+                        <div class="comments">
+                            <h2>Comments</h2>
+                            <div id="disqus_thread"></div>
+                            <script type="text/javascript">
+                                var disqus_identifier = "articles/continuous-delivery.html";
+                                (function() {
+                                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                    dsq.src = 'http://paylogicdevportal.disqus.com/embed.js';
+                                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                })();
+                            </script>
+                        </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+        </main>
+
+        <footer class="pl-footer">
+            <div>
+                <div class="uk-container uk-container-center uk-text-center uk-text-small">
+                    <ul class="uk-subnav uk-subnav-line">
+                        <li><a href="http://developer.paylogic.com/pages/about.html">About</a></li>
+                        <li><a href="https://shopping-api-docs.sandbox.paylogic.com/" target="_blank">API</a></li>
+                        <li><a href="https://github.com/paylogic" target="_blank">GitHub</a></li>
+                        <li><a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a></li>
+                    </ul>
+                    Copyright (c) 2014 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
+                    built using the awesome <a href="http://getpelican.com" target="_blank">Pelican</a> static site generator.<br>
+                    This work is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+                </div>
+            </div>
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/uikit.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/sticky.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/cover.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/application.js"></script>
+
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-13304573-19', 'paylogic.com');
+            ga('send', 'pageview');
+        </script>
+
+    </body>
+</html>

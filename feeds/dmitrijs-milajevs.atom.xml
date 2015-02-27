@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/dmitrijs-milajevs.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2014-01-31T10:37:00+01:00</updated><entry><title>Test parallelization</title><link href="http://developer.paylogic.com/articles/test-p14n.html" rel="alternate"></link><updated>2014-01-31T10:37:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-01-31:articles/test-p14n.html</id><summary type="html">
+&lt;div class="section" id="introduction"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Automated tests are awesome. A good test suite makes refactoring easier and allows
+developers to catch bugs before the code is deployed on live or is spotted
+by a tester.&lt;/p&gt;
+&lt;p&gt;Once the advantages of automated testing are discovered, the number of tests increases
+exponentially. At Paylogic, there were about 200 tests in the early testing stage.
+The tests took about 5 minutes to run. At the moment, we have about 2500 tests and using
+a single test process it takes 1 hour and 40 minutes to execute.&lt;/p&gt;
+&lt;p&gt;For developers, it's simply not an option to wait for 2 hours until the whole test suite finishes,
+as they want results as soon as possible. They might then take the risk
+to push the code untested. However, as we have continuous integration in place, if there are any failing
+tests, the developers will get their work back to fix them anyway. This is something that
+costs extra time.&lt;/p&gt;
+&lt;p&gt;It became clear that something had to be changed. We could completely rewrite the tests, make
+them very focused and try mock most of the things (such as the database). However,
+this means that the team would have to exclusively dedicate a few months to improve the tests and
+stop developing new features.&lt;/p&gt;
+&lt;p&gt;Another solution would involve test distribution over several executors that
+might run on one or several machines. The same tests run in parallel on
+many nodes reduces &lt;a class="reference external" href="http://en.wikipedia.org/wiki/Wall-clock_time"&gt;wall time&lt;/a&gt;.
+Everybody is happy: developers do not need to wait hours to get their test
+results and get an excuse to go for a coffee.  Product managers do not need to
+change the long term planning. Customers are happy.  Profit.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="a-closer-look-to-the-test-suite"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;A closer look to the test suite&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The testing tool we use is &lt;a class="reference external" href="http://pytest.org/"&gt;py.test&lt;/a&gt;. We keep our tests in
+a separate folder called tests, which is organized like this:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+tests
+├── conftest.py
+├── deployment
+├── fixtures
+├── functional
+├── __init__.py
+└── unit
+&lt;/pre&gt;
+&lt;p&gt;In &lt;tt class="docutils literal"&gt;conftest.py&lt;/tt&gt; we store the &lt;tt class="docutils literal"&gt;py.test&lt;/tt&gt; configuration and import fixtures which are
+defined in the &lt;cite&gt;fixtures&lt;/cite&gt; folder. The folder &lt;cite&gt;functional&lt;/cite&gt; contains functional tests, &lt;cite&gt;unit&lt;/cite&gt;
+contains unit tests and so on.&lt;/p&gt;
+&lt;p&gt;The tests require the database to be available, as well as memcache. Functional tests
+also expect the &lt;tt class="docutils literal"&gt;web servers&lt;/tt&gt; required for the tests to listen on specific ports. By &lt;tt class="docutils literal"&gt;web servers&lt;/tt&gt; I
+mean those servers that serve applications whose code we cover with our tests. Among them can be
+the &lt;a class="reference external" href="https://www.djangoproject.com/"&gt;Django&lt;/a&gt; development server, the
+&lt;a class="reference external" href="http://flask.pocoo.org/"&gt;Flask&lt;/a&gt; development server, &lt;a class="reference external" href="http://pythonpaste.org/modules/httpserver.html"&gt;paste&lt;/a&gt;
+http server and so on.&lt;/p&gt;
+&lt;p&gt;A typical development session looks like this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;virtualenv env  &lt;span class="c"&gt;# Create a virtualenv.&lt;/span&gt;
+&lt;span class="nb"&gt;source &lt;/span&gt;env/bin/activate  &lt;span class="c"&gt;# Activate it.&lt;/span&gt;
+pip install -r requirements-testing.txt  &lt;span class="c"&gt;# Install all the needed packages.&lt;/span&gt;
+&amp;lt;generate settings &lt;span class="nb"&gt;command&lt;/span&gt;&amp;gt;  &lt;span class="c"&gt;# Generate settings (set up the database connection string etc).&lt;/span&gt;
+&amp;lt;database schema generation &lt;span class="nb"&gt;command&lt;/span&gt;&amp;gt; &lt;span class="c"&gt;# Generate the database schema and insert initial data into it.&lt;/span&gt;
+
+&lt;span class="c"&gt;# Implement changes for given feature.&lt;/span&gt;
+
+&lt;span class="c"&gt;# Start web application(s)&lt;/span&gt;
+
+py.test tests  &lt;span class="c"&gt;# Run the tests.&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Dependency satisfaction, configuration, database instantiation and population
+together with the startup of the required web application(s) is done outside of the test run.
+This makes sense, because none of them has to be done before every test run.
+Clearly, a developer has to install a package when a new dependency is
+introduced and regenerate settings if a new configuration parameter is added.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="test-parallelization-in-theory-and-practice"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Test parallelization in theory and practice&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;If we run tests in parallel, for example in two sessions, each session will share the same
+settings (most importantly the database connection string) and the same web
+applications. This has several limitations. If we have two tests that access
+the same application simultaneously, their requests will be processed by only one
+application worker, which of course leads to a performance decrease.&lt;/p&gt;
+&lt;p&gt;Another more serious limitation comes from the way our tests are written. There
+are for example tests for ticket generation that check PDF generation. On a high level the tests
+look like this:&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;Create an order.&lt;/li&gt;
+&lt;li&gt;Execute the ticket generation function.&lt;/li&gt;
+&lt;li&gt;Check that 1 ticket was generated.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The trick is in the second step. The ticket generation function is triggered by
+a periodical job. It selects from the database all the orders for which tickets have
+to be generated and generates them. In a sequential test run this is not a big
+deal because there will never be a situation that one call to the ticket
+generation function generates more than one ticket. The performed actions are:&lt;/p&gt;
+&lt;table border="1" class="docutils"&gt;
+&lt;colgroup&gt;
+&lt;col width="16%"&gt;&lt;/col&gt;
+&lt;col width="84%"&gt;&lt;/col&gt;
+&lt;/colgroup&gt;
+&lt;thead valign="bottom"&gt;
+&lt;tr&gt;&lt;th class="head"&gt;&lt;strong&gt;Time&lt;/strong&gt;&lt;/th&gt;
+&lt;th class="head"&gt;&lt;strong&gt;Action&lt;/strong&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr&gt;&lt;td colspan="2"&gt;Test 1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Create an order.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;Execute the ticket generation function.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;Check that 1 ticket was generated.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2"&gt;Test 2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt;Create another order.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;5&lt;/td&gt;
+&lt;td&gt;Execute the ticket generation function.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;6&lt;/td&gt;
+&lt;td&gt;Check that 1 ticket was generated.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;In a parallel run however, two orders may be generated simultaneously. Then, the
+generation function will get both orders, and consequently generate tickets for both.
+Imagine situations like this:&lt;/p&gt;
+&lt;table border="1" class="docutils"&gt;
+&lt;colgroup&gt;
+&lt;col width="5%"&gt;&lt;/col&gt;
+&lt;col width="47%"&gt;&lt;/col&gt;
+&lt;col width="47%"&gt;&lt;/col&gt;
+&lt;/colgroup&gt;
+&lt;thead valign="bottom"&gt;
+&lt;tr&gt;&lt;th class="head"&gt;&lt;strong&gt;Time&lt;/strong&gt;&lt;/th&gt;
+&lt;th class="head"&gt;&lt;strong&gt;Action&lt;/strong&gt;&lt;/th&gt;
+&lt;th class="head"&gt;&lt;strong&gt;Action&lt;/strong&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr&gt;&lt;td colspan="2"&gt;Test 1&lt;/td&gt;
+&lt;td&gt;Test 2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;1&lt;/td&gt;
+&lt;td&gt;Create an order.&lt;/td&gt;
+&lt;td rowspan="2"&gt;Create another order.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;2&lt;/td&gt;
+&lt;td&gt;Execute the ticket generation function. (Generates 2 tickets.)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;3&lt;/td&gt;
+&lt;td&gt;Check that 1 ticket was generated. (Fails! 2 tickets were generated.)&lt;/td&gt;
+&lt;td&gt;Execute the ticket generation. (Does nothing!)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;4&lt;/td&gt;
+&lt;td&gt; &lt;/td&gt;
+&lt;td&gt;Check that 1 ticket was generated. (Fails! 0 tickets were generated.)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Because tests are not always meant to be run in parallel when they are written,
+situations like this can happen quite often.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="the-art-of-mocking"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;The art of mocking&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The simplest way to avoid situations where tests influence each other is to get
+rid of the shared resources. In our case, this means that each test session would have its own
+unique database connection string, which leads to a non-shared database.&lt;/p&gt;
+&lt;p&gt;The problem is that we, using a common-use approach, store settings in python modules and instantiate them from
+templates before the test run! An example of configuration using python modules can be found in
+&lt;a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/settings"&gt;Django settings&lt;/a&gt;,
+&lt;a class="reference external" href="http://flask.pocoo.org/docs/api/#flask.Config.from_object"&gt;Flask configuration&lt;/a&gt;, etc.&lt;/p&gt;
+&lt;p&gt;We could checkout the sources of Paylogic to two folders and change the settings
+to the ones we want. This would entail some crazy text file editing scripts to
+alter settings. In addition, it is not the way &lt;a class="reference external" href="https://pypi.python.org/pypi/pytest-xdist"&gt;pytest-xdist&lt;/a&gt; works.&lt;/p&gt;
+&lt;p&gt;Another way is to mock the connection string using a fixture:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scope&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'session'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;database_settings&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Mock the database settings.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param str database_connection: the database connection string.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# Reset the connection string.&lt;/span&gt;
+    &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database&lt;/span&gt;
+    &lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;To make the mock successful, our code should behave accordingly. Instead of:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config.database&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;connect_to_db&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Connect to the database,&lt;/span&gt;
+
+&lt;span class="sd"&gt;    A completely made up function to illustrate *incorrect* settings import.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;we write:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;connect_to_db&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Connect to the database,&lt;/span&gt;
+
+&lt;span class="sd"&gt;    A completely made up function to illustrate a *better* settings import.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;Connection&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;database&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="section" id="web-applications"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id5"&gt;Web applications&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;For the unit tests, mocking the database connection is sufficient. If we want to
+start two instances of a web application, we need to change:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;The database connection string.&lt;/li&gt;
+&lt;li&gt;The port the application is listening on.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;An application could be a fixture that starts a subprocess and passes the custom
+port, if we use &lt;a class="reference external" href="https://circus.readthedocs.org/en/latest/"&gt;Circus&lt;/a&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;circus.watcher&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Watcher&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scope&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'session'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;application&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;app_script&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start application in a separate process.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param port: a random port the application should listen to.&lt;/span&gt;
+&lt;span class="sd"&gt;    :param app_script: the path to application runner script.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+
+    &lt;span class="n"&gt;watcher&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Watcher&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'application'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;app_script&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'runserver {0}'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="n"&gt;watcher&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;addfinalizer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;watcher&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;watcher&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This is a rather limited solution, because we did not set up the database
+connection string. Furthermore, we couldn't pass it as an environment variable, nor
+pass the path to the custom settings. It is however possible to pass parameters to
+the script (app_script) in the example. This would help us to override the needed settings on the
+&lt;strong&gt;remote&lt;/strong&gt; side. But then we should somehow marshal the complex data structures via the command line.
+This would require more custom code to write.&lt;/p&gt;
+&lt;p&gt;The first solution that came to mind was to use
+&lt;a class="reference external" href="http://docs.python.org/2/library/multiprocessing.html#the-process-class"&gt;multiprocessing&lt;/a&gt;. This way we can use
+a python function instead of a file script to be a worker for our application. Code would look as follows:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;multiprocessing&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start web application.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param str database_connection: the database connection string.&lt;/span&gt;
+&lt;span class="sd"&gt;    :param port: the port number that will be used by runserver.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# Remove modules that happen to be imported by the parent process.&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+    &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;module&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;modules&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;difference&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;builtin_module_names&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="ow"&gt;not&lt;/span&gt; &lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;startswith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'multiprocessing'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;module&lt;/span&gt; &lt;span class="o"&gt;!=&lt;/span&gt; &lt;span class="n"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+            &lt;span class="k"&gt;del&lt;/span&gt; &lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;modules&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;module&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+
+    &lt;span class="c"&gt;# monkey patch the database connection&lt;/span&gt;
+    &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database&lt;/span&gt;
+    &lt;span class="n"&gt;database&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;
+
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.httpserver&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.ioloop&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.web&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.wsgi&lt;/span&gt;
+
+    &lt;span class="n"&gt;wsgi_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wsgi&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WSGIContainer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;app_wsgi_handler&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;tornado_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;r"/media/(.*)"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;StaticFileHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;"path"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;media_path&lt;/span&gt;&lt;span class="p"&gt;}),&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'.*'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FallbackHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fallback&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;wsgi_app&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt;
+    &lt;span class="p"&gt;])&lt;/span&gt;
+
+    &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;httpserver&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;HTTPServer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tornado_app&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;channel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'started app on port: {0}'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ioloop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;IOLoop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;instance&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scope&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'session'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;application&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start application in a separate process.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param port: a random port the application should listen to.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="n"&gt;process&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;multiprocessing&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Process&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;targer&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;addfinalizer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;process&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;terminate&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;process&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;process&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This has one big downside: memory. Multiprocessing uses &lt;a class="reference external" href="http://docs.python.org/2/library/os.html#os.fork"&gt;fork&lt;/a&gt; to
+do its work. This means that a lot of memory you've earned in the parent process will be copied into the child process.
+Of course it's declared to be copy-on-write but in reality python is not that efficient here.&lt;/p&gt;
+&lt;p&gt;So we decided to combine these 2 approaches: use a subprocess to run python but don't bother with marshalling
+the parameters manually via command line. The nice &lt;a class="reference external" href="http://codespeak.net/execnet"&gt;execnet&lt;/a&gt; library allows us to
+transparently run some python function inside of a remote python process. Here is the comprehensive example:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;execnet&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;channel&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start web application.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param channel: execnet channel to talk to the master process.&lt;/span&gt;
+&lt;span class="sd"&gt;    :param str database_connection: the database connection string.&lt;/span&gt;
+&lt;span class="sd"&gt;    :param port: the port number that will be used by runserver.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# monkey patch the database connection&lt;/span&gt;
+    &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;config&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;database&lt;/span&gt;
+    &lt;span class="n"&gt;database&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;
+
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.httpserver&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.ioloop&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.web&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;tornado.wsgi&lt;/span&gt;
+
+    &lt;span class="n"&gt;wsgi_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wsgi&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;WSGIContainer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;app_wsgi_handler&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;tornado_app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Application&lt;/span&gt;&lt;span class="p"&gt;([&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;r"/media/(.*)"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;StaticFileHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;"path"&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;media_path&lt;/span&gt;&lt;span class="p"&gt;}),&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'.*'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;web&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;FallbackHandler&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fallback&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;wsgi_app&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt;
+    &lt;span class="p"&gt;])&lt;/span&gt;
+
+    &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;httpserver&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;HTTPServer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tornado_app&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;server&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;listen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;channel&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'started app on port: {0}'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+    &lt;span class="n"&gt;tornado&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ioloop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;IOLoop&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;instance&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;scope&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'session'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;application&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Start application in a separate process.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    :param port: a random port the application should listen to.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+    &lt;span class="c"&gt;# create execnet gateway&lt;/span&gt;
+    &lt;span class="n"&gt;gw&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;execnet&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;makegateway&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="c"&gt;# set the same python system path on remote python as on current one&lt;/span&gt;
+    &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;sys&lt;/span&gt;
+    &lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remote_exec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="p"&gt;[&lt;/span&gt;
+            &lt;span class="s"&gt;"import sys"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s"&gt;"sys.path = {0}"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;sys&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;waitclose&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+    &lt;span class="c"&gt;# create channel running worker function&lt;/span&gt;
+    &lt;span class="n"&gt;channel&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remote_exec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;app_worker&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;port&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;database_connection&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;addfinalizer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;gw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;exit&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;gw&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;In this way we can attach any customizations before starting the application.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="other-isolated-resources"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id6"&gt;Other isolated resources&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Apart from the database connection string, there are other shared resources. One
+of them can be some folder where file artifacts need to be stored. They have to be isolated as
+well, because the filenames can clash in concurrent test processes (a.k.a. sessions).
+However, mocking can be done here in the same way as in the case of the connection string.&lt;/p&gt;
+&lt;p&gt;It is also possible to use only one server but with isolated databases. We then start as many MySQL
+instances as we have concurrent test sessions.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="requirements"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id7"&gt;Requirements&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Another nontrivial part is to distribute requirements to each node. We do this
+together with the code distribution as a virtualenv. Each node then activates
+it before running the tests:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;pytest_addoption&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Add options custom pytest options."""&lt;/span&gt;
+    &lt;span class="n"&gt;group&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;parser&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getgroup&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"xdist"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"distributed and subprocess32 testing"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;group&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_addoption&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="s"&gt;'--activate-script'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;action&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"store"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dest&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"activate_script"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;default&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;'env/bin/activate_this.py'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;help&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;"Activate virtual environment script (relative path). "&lt;/span&gt;
+        &lt;span class="s"&gt;"This is to make remote python aware about all the dependencies project needs."&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;pytest_configure_node&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Configure node information before it gets instantiated.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    Activate the virtual env, so the node is able to import Paylogic&lt;/span&gt;
+&lt;span class="sd"&gt;    dependencies.&lt;/span&gt;
+
+&lt;span class="sd"&gt;    """&lt;/span&gt;
+
+    &lt;span class="n"&gt;here&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;basename&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dirname&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;__file__&lt;/span&gt;&lt;span class="p"&gt;)))&lt;/span&gt;
+    &lt;span class="n"&gt;activate_script&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;normpath&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;here&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;config&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;option&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;activate_script&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+    &lt;span class="c"&gt;# remove pyc files and activate the virtual environment on the remote side.&lt;/span&gt;
+    &lt;span class="n"&gt;node&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gateway&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;remote_exec&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="se"&gt;\n&lt;/span&gt;&lt;span class="s"&gt;'&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="p"&gt;[&lt;/span&gt;
+            &lt;span class="s"&gt;"import os.path"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s"&gt;"import subprocess"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="sd"&gt;"""subprocess.check_call(['find', '-name', '"*.pyc"', '-delete'])"""&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s"&gt;"activate_this = '{0}'"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;activate_script&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+            &lt;span class="s"&gt;"if os.path.exists(activate_this):"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+            &lt;span class="s"&gt;"    execfile(activate_this, {'__file__': activate_this})"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="p"&gt;]&lt;/span&gt;
+    &lt;span class="p"&gt;))&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;waitclose&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="results"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id8"&gt;Results&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Test parallelization dramatically reduced the time needed to run unit and
+functional tests. It takes about 5 minutes to run unit and functional tests on a
+cluster of 6 old dual core machines, each of them running 2 sessions.&lt;/p&gt;
+&lt;p&gt;An experiment in the early stages gave these results:&lt;/p&gt;
+&lt;img alt="parallelization performance comparison graph" class="align-center" src="http://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
+&lt;p&gt;The blue line is the test distribution over cluster machines, one worker on each
+of them. The pink line represents the "ideal situation", where doubling the
+number of works decreases the tests execution time by a factor of 2. Finally, the
+yellow line is the run executed on a &lt;a class="reference external" href="http://www.asus.com/Notebooks_Ultrabooks/ASUS_ZENBOOK_UX32VD/#specifications"&gt;developer's machine&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;py.test-xdist behaves very well when it comes to parallel execution and the
+overhead is relatively small.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="open-source"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id9"&gt;Open source&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;We announce the open source pytest plugins which simplify the process of running services (memcached, mysql, etc)
+on demand for every concurrent test session.  We also will open source a helper
+for scheduling test jobs among test slave nodes.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="conclusion"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id10"&gt;Conclusion&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Automated testing facilitates development of complex software. However, if a
+lot of time is required to get a test result, automated testing will be rejected
+by the majority of the team. Test parallelization and execution over several nodes
+solves this problem, with as trade-off the extra effort needed to make the tests ready for
+parallelization.&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="testing"></category><category term="parallelization"></category><category term="pytest"></category><category term="pytest-xdist"></category></entry></feed>

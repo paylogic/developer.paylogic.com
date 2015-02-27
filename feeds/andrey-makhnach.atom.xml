@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/andrey-makhnach.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2014-10-31T11:00:00+01:00</updated><entry><title>How we use pytest and pytest-bdd in Paylogic.</title><link href="http://developer.paylogic.com/articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html" rel="alternate"></link><updated>2014-10-31T11:00:00+01:00</updated><author><name>Andrey Makhnach</name></author><id>tag:developer.paylogic.com,2014-10-31:articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html</id><summary type="html">&lt;div class="section" id="how-we-use-pytest-and-pytest-bdd-in-paylogic"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;How we use pytest and pytest-bdd in Paylogic&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;After some time of using &lt;a class="reference external" href="http://pytest.org"&gt;pytest&lt;/a&gt; and &lt;a class="reference external" href="https://github.com/olegpidsadnyi/pytest-bdd"&gt;pytest-bdd&lt;/a&gt;
+in Paylogic we developed some standards in the structure of folders with tests and fixtures, and the usage of pytest
+and pytest-bdd functionality. This article describes those standards and our usage patterns.&lt;/p&gt;
+&lt;div class="section" id="folder-structure"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id2"&gt;Folder structure&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;All our tests are stored in the tests folder in the root of the project folder. Our tests are separated by category,
+such as unit, functional, blackbox, etc. The tests are stored in the folders of their category. The
+structure looks as follows:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+tests/
+
+    fixtures/
+
+    blackbox/
+
+    functional/
+
+    unit/
+
+    conftest.py
+&lt;/pre&gt;
+&lt;p&gt;In &lt;em&gt;tests/conftest.py&lt;/em&gt; we register all global fixtures that represent objects, such as &lt;em&gt;event&lt;/em&gt;, &lt;em&gt;order&lt;/em&gt; and &lt;em&gt;merchant&lt;/em&gt;.
+Here we also register fixtures that represent attributes of objects like event_title, product_title, etc. The fixtures
+which are related to pytest-bdd, for example &lt;em&gt;pytestbdd_window_size&lt;/em&gt;, &lt;em&gt;pytestbdd_browser_load_timeout&lt;/em&gt;, etc., are also
+registered in &lt;em&gt;tests/conftest.py&lt;/em&gt; because they are common fixtures for both our functional as well as our blackbox tests.&lt;/p&gt;
+&lt;p&gt;I use the term "common fixtures" because &lt;em&gt;conftest.py&lt;/em&gt; gives us the possibility to separate fixtures and pytest's plugins
+hooks, and register them only for those tests that use them. In our case, we have fixtures/hooks which are
+common for all tests and at the same time we have fixtures/hooks which are related only to functional/blackbox tests,
+for example &lt;em&gt;pytestbdd_window_size&lt;/em&gt;. You can imagine that this fixture is only used by pytest-bdd and not by our unit tests.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="fixture-imports"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id3"&gt;Fixture imports&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;For registering fixtures we just import the fixtures from their packages. For example for registering the &lt;em&gt;order&lt;/em&gt; fixture
+and fixtures that represent attributes of &lt;em&gt;order&lt;/em&gt; object such as &lt;em&gt;order_title&lt;/em&gt;, &lt;em&gt;order_point_of_sale&lt;/em&gt;, etc. we just do:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;tests.fixtures.order&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;order&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;order_title&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;order_point_of_sale&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;A fixture that represents an object, e.g. an order, typically looks as follows:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;order&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="o"&gt;...&lt;/span&gt;
+    &lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;order_point_of_sale&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;order_products&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="o"&gt;...&lt;/span&gt;
+    &lt;span class="n"&gt;expiry_time&lt;/span&gt;
+&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Fixture which represents an order object."""&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;create_test_order&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="o"&gt;...&lt;/span&gt;
+        &lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;event&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;point_of_sale&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;order_point_of_sale&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;products&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;order_products&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="o"&gt;...&lt;/span&gt;
+        &lt;span class="n"&gt;expiry_time&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;expiry_time&lt;/span&gt;
+    &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;As you can see our order fixture is a regular pytest fixture, nothing special. It returns an instance of the Order
+model which in turn is created by the &lt;em&gt;create_test_order&lt;/em&gt; testhelper function.&lt;/p&gt;
+&lt;p&gt;We are using testhelper functions for creating fixtures and for populating the database with initial data after
+re-creating it. We use testhelpers instead of loading JSON or YAML fixtures because attributes of models change
+frequently and we decided that it would be better and more flexible to use just a list of testhelpers that are called in
+the right order for creating initial data.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="fixture-parametrization"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id4"&gt;Fixture parametrization&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="section" id="overriding-fixture-parameters"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="#id5"&gt;Overriding fixture parameters&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;The order fixture inherits from lots of other fixtures because we want to have the possibility to override attributes
+with which the order will be created. We override these using @pytest.mark.parametrize or with argumented steps in
+pytest-bdd.&lt;/p&gt;
+&lt;p&gt;For example if we need to test an order with a different &lt;em&gt;expiry_time&lt;/em&gt; we do it like this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pytest&lt;/span&gt;
+
+&lt;span class="nd"&gt;@pytest.mark.parametrize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;expiry_time&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="n"&gt;datetime&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;date&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;datetime&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;timedelta&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;days&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+        &lt;span class="n"&gt;datetime&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;date&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;now&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;datetime&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;timedelta&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;days&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_complete_order&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;order&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;order&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;complete&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;order&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;state&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;OrderState&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;COMPLETED&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now, test_complete_order test will be executed twice and every time we will have an order with a different &lt;em&gt;expiry_time&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;We also use &lt;em&gt;pytest.fixture(params=[...])&lt;/em&gt; to set parameters for fixtures:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pytest&lt;/span&gt;
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;params&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'127.0.0.1'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'192.168.0.1'&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;client_ip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;param&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;From the example you can see that as soon as we run tests that use the &lt;em&gt;client_ip&lt;/em&gt; fixture then pytest will run this
+test as many times as the number of parameters the &lt;em&gt;client_ip&lt;/em&gt; fixture has defined (in this case of course two).&lt;/p&gt;
+&lt;p&gt;Now the question is of course, what is the difference between those two parametrization methods? The difference is that
+&lt;em&gt;pytest.mark.parametrize&lt;/em&gt; will influence only the test on which it is explicitly defined, while &lt;em&gt;pytest.fixture(params=[..])&lt;/em&gt;
+influences every test that uses this fixture. If you would for example define three parameters for the above client_ip fixture,
+then each test using this fixture will now be executed three times, once for every param. You are basically creating
+three fixtures.&lt;/p&gt;
+&lt;p&gt;Regarding how frequently you would use &lt;em&gt;pytest.mark.parametrize&lt;/em&gt; compared of &lt;em&gt;pytest.fixture(params=[...])&lt;/em&gt;, it strongly
+depends on your code base, test code base and type of test. I don't think I can say anything meaningful about that in a
+general sense based on just our experiences.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="fixtures-for-mocking"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="#id6"&gt;Fixtures for mocking&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;We also use fixtures for mocking. For example in the &lt;a class="reference external" href="https://github.com/paylogic/settei"&gt;settei&lt;/a&gt;  project we needed
+to mock a required method of the &lt;em&gt;pkg_resources.EntryPoint&lt;/em&gt; class, so we wrote the following fixture:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# tests/test_get_entry_points.py&lt;/span&gt;
+&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;monkeypatch_entrypoint&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;monkeypatch&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;clean_config&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Monkeypatching EntryPoint."""&lt;/span&gt;
+    &lt;span class="n"&gt;monkeypatch&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;setattr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;pkg_resources&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;EntryPoint&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'require'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;require&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="err"&gt;…&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Each time when your tests depends on this fixture, the &lt;em&gt;require&lt;/em&gt; method of the
+&lt;em&gt;pkg_resources.EntryPoint&lt;/em&gt; class would be mocked.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="functional-testing"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id7"&gt;Functional testing&lt;/a&gt;&lt;/h3&gt;
+&lt;div class="section" id="parametrizing-scenarios"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="#id8"&gt;Parametrizing scenarios&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;We also use &lt;em&gt;pytest.mark.parametrize&lt;/em&gt; for functional testing with pytest-bdd. If you for example need to test the functionality of
+creating a product, the scenario of successfully creating a product can look like this:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+Scenario: Successfully creating a product
+Given I am a backoffice admin
+And I have an event
+
+When I go to the New product page
+And I fill in the name of the product
+And I fill in the quantity of the product equal to 5
+And I submit the form
+
+Then I should see a success message
+&lt;/pre&gt;
+&lt;p&gt;As you can see, nothing special. But if you for example need to test that a form should show an error message if the
+quantity of the product cannot equal 0, then you will create another scenario. It can look like this:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+Scenario: Unsuccessful creating of product
+Given I am a backoffice admin
+And I have an event
+
+When I go to the New product page
+And I fill in the name of the product
+And I fill in the quantity of the product equal to 0
+And I submit the form
+
+Then I should see an error message
+&lt;/pre&gt;
+&lt;p&gt;As we can see there is a lot of double work here, which is something we should try to avoid. Luckily, there is a solution. Let's merge
+these two scenarios into one:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+Scenario: Create product
+Given I am a backoffice admin
+And I have an event
+
+When I go to the New product page
+And I fill the name of product
+And I fill in the quantity of the product equal to &amp;lt;product_quantity&amp;gt;
+And I submit the form
+
+Then I should see a &amp;lt;message_status&amp;gt; message
+&lt;/pre&gt;
+&lt;p&gt;Then in your tests file you can define the scenario like this:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pytest&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pytest_bdd&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;scenario&lt;/span&gt;
+
+&lt;span class="nd"&gt;@pytest.mark.parametrize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'product_quantity'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'message_status'&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+    &lt;span class="p"&gt;[&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'success'&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;'error'&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="p"&gt;]&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="nd"&gt;@scenario&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'Create product'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_create_product&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;product_quantity&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;message_status&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Create product."""&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And now in your given, when and then steps you can ask for the &lt;em&gt;product_quantity&lt;/em&gt; and &lt;em&gt;message_status&lt;/em&gt; fixtures.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nd"&gt;@when&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'I fill in the quantity of the product equal to &amp;lt;product_quantity&amp;gt;'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;i_fill_the_quantity_of_product&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;product_quantity&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="err"&gt;…&lt;/span&gt;
+
+&lt;span class="nd"&gt;@then&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'I should see a &amp;lt;message_status&amp;gt; message'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;assert_that_i_see_message&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;message_status&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="err"&gt;…&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;There is one more thing which we also use in testing, which is the step with arguments (or argumented steps).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="steps-with-arguments"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="#id9"&gt;Steps with arguments&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Consider that, for some reason, you have a similar step in several scenarios, for example &lt;em&gt;"Given I have an event with
+2 products"&lt;/em&gt; and &lt;em&gt;"Given I have an event with 5 products"&lt;/em&gt;. In your test files you will then have two different steps
+defined that are actually almost the same. There is a solution which can help you use the same step for several
+scenarios with different behaviour.&lt;/p&gt;
+&lt;p&gt;In your scenarios you just write &lt;em&gt;"Given I have an event with 2 products"&lt;/em&gt; and &lt;em&gt;"Given I have an event with 5 products"&lt;/em&gt;, as
+you did before, but in your given.py file you write the following:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;re&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pytest_bdd&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;given&lt;/span&gt;
+
+&lt;span class="nd"&gt;@given&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;re&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;compile&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'I have an event with (?P&amp;lt;product_quantity&amp;gt;\d+) products'&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;i_have_an_event_with_products&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;product_quantity&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""I have an event with products."""&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now, if your event fixture uses the &lt;em&gt;product_quantity&lt;/em&gt; fixture, then for each scenario you will get the event with a
+different quantity of products, depending on what you write in your feature file.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="scenario-outlines"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="#id10"&gt;Scenario outlines&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Scenarios can also be parametrized to cover multiple cases. In the &lt;a class="reference external" href="http://docs.behat.org/en/v2.5/guides/1.gherkin.html"&gt;Gherkin language&lt;/a&gt;
+the variable templates are written using corner braces, like so: &amp;lt;somevalue&amp;gt;. Scenario outlines are supported by pytest-bdd
+exactly as described in the &lt;a class="reference external" href="http://docs.behat.org/en/v2.5/guides/1.gherkin.html#scenario-outlines"&gt;behave docs&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;A full example of a scenario outline can be found below.&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+Scenario Outline: Outlined given, when, thens
+Given there are &amp;lt;start&amp;gt; cucumbers
+When I eat &amp;lt;eat&amp;gt; cucumbers
+Then I should have &amp;lt;left&amp;gt; cucumbers
+
+Examples:
+| start | eat | left |
+|  12   |  5  |  7   |
+&lt;/pre&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pytest_bdd&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;given&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;when&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;then&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;scenario&lt;/span&gt;
+
+&lt;span class="nd"&gt;@scenario&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="s"&gt;'outline.feature'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="s"&gt;'Outlined given, when, thens'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;example_converters&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;eat&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;float&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;left&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_outlined&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+&lt;span class="k"&gt;pass&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@given&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'there are &amp;lt;start&amp;gt; cucumbers'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;start_cucumbers&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;dict&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@when&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'I eat &amp;lt;eat&amp;gt; cucumbers'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;eat_cucumbers&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;start_cucumbers&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;eat&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;eat&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;float&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;start_cucumbers&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'eat'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;eat&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@then&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;'I should have &amp;lt;left&amp;gt; cucumbers'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;should_have_left_cucumbers&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;start_cucumbers&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;eat&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;left&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;left&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;str&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;eat&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nb"&gt;int&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;left&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;start_cucumbers&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'start'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;start&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;start_cucumbers&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;'eat'&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;eat&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This code also shows the possibility to use converters which may be useful if you need parameter
+types different than strings.&lt;/p&gt;
+&lt;p&gt;There are two types of outlines, namely horizontal and vertical. These merely
+state how you write the possible values of the attributes. We saw an example of
+a horizontal outline above; the below is an example of a vertical outline. Note
+that you have to explicitly state "Vertical" to indicate that you are using the
+vertical outline type, otherwise pytest-bdd will default to horizontal.&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+Scenario Outline: Outlined given, when, thens
+Given there are &amp;lt;start&amp;gt; cucumbers
+When I eat &amp;lt;eat&amp;gt; cucumbers
+Then I should have &amp;lt;left&amp;gt; cucumbers
+
+Examples: Vertical
+| start | 12 | 2 |
+| eat   | 5  | 1 |
+| left  | 7  | 1 |
+&lt;/pre&gt;
+&lt;p&gt;Finally, you should not forget to register the given steps from &lt;em&gt;functional/steps/given.py&lt;/em&gt; in
+&lt;em&gt;functional/conftest.py&lt;/em&gt; in the functional folder.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# tests/functional/conftest.py&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;tests.functional.steps.given&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now your folder structure should look like this:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+tests/
+    fixtures/
+
+    blackbox/
+
+    functional/
+        steps
+            __init__.py
+            given.py
+        conftest.py
+    unit/
+    conftest.py
+&lt;/pre&gt;
+&lt;p&gt;All things registered in &lt;em&gt;tests/functional/conftest.py&lt;/em&gt; will now only be accessible in the scope of the functional tests.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="conclusion"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id11"&gt;Conclusion&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;That is how our core of storing/creating our tests looks like. I hope that this article will
+be useful for you. There are always ways to improve it and you are welcome in comments with your thoughts. We are
+planning to improve a relation between code and tests, fixtures.&lt;/p&gt;
+&lt;p&gt;Thank you for reading.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</summary><category term="open source"></category><category term="python"></category><category term="pytest"></category><category term="pytest-bdd"></category></entry></feed>
