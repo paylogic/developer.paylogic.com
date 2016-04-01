@@ -5,7 +5,7 @@
 # with FTP, SSH, rsync, Dropbox and S3).
 
 PY=python
-PELICAN=pelican
+PELICAN=$(CURDIR)/.env/bin/pelican
 PELICANOPTS=
 
 BASEDIR=$(CURDIR)
