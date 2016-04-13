@@ -223,7 +223,7 @@ all the properties in one row. For example,</p>
 languages, we would need to do <tt class="docutils literal">n*m</tt> joins. The difficult part comes from
 the fact that it was cumbersome to write those queries. In the case of
 the previous example,</p>
-<div class="highlight"><pre><span class="n">a_alias</span> <span class="o">=</span> <span class="n">aliased</span><span class="p">(</span><span class="n">Translation</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="n">a_alias</span> <span class="o">=</span> <span class="n">aliased</span><span class="p">(</span><span class="n">Translation</span><span class="p">)</span>
 
 <span class="n">q</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Event</span><span class="p">)</span><span class="o">.</span>\
     <span class="n">join</span><span class="p">(</span><span class="n">Translation</span><span class="p">)</span><span class="o">.</span>\
@@ -342,12 +342,12 @@ the number of joins is reduced from <tt class="docutils literal">n*m</tt> to <tt
 intuitive since all translated items are foreign keys to the <code>Translation</code>
 table, joining once per foreign key. Additionally, <tt class="docutils literal">traduki</tt> returns a user-friendly
 format of this result as a dictionary of language codes and translations. For example:</p>
-<div class="highlight"><pre><span class="p">{</span><span class="s">'en'</span><span class="p">:</span> <span class="s">'English title 1'</span><span class="p">,</span> <span class="s">'nl'</span><span class="p">:</span> <span class="s">'Dutch title 1'</span><span class="p">}</span>
+<div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'en'</span><span class="p">:</span> <span class="s1">'English title 1'</span><span class="p">,</span> <span class="s1">'nl'</span><span class="p">:</span> <span class="s1">'Dutch title 1'</span><span class="p">}</span>
 </pre></div>
 <p>In case of the second event, where the Dutch translation is not available,
 <tt class="docutils literal">traduki</tt> falls back to the language that we have defined, in this
 case English. So it will return:</p>
-<div class="highlight"><pre><span class="p">{</span><span class="s">'en'</span><span class="p">:</span> <span class="s">'English title 2'</span><span class="p">,</span> <span class="s">'nl'</span><span class="p">:</span> <span class="s">'English title 2'</span><span class="p">}</span>
+<div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'en'</span><span class="p">:</span> <span class="s1">'English title 2'</span><span class="p">,</span> <span class="s1">'nl'</span><span class="p">:</span> <span class="s1">'English title 2'</span><span class="p">}</span>
 </pre></div>
 <p>This approach has one drawback. When a new language is introduced then we need
 to alter the translations table to include it. Although this operation can be expensive,
@@ -365,13 +365,13 @@ split in parts, to better explain how each part works.</p>
 <p>The first part is straightforward. We do standard sqlalchemy imports,
 create the engine (in this case the database will be in memory), and define the
 declarative base for our models.</p>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">traduki</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">traduki</span>
 
 <span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span>
 
-<span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s">'sqlite://'</span><span class="p">)</span>
+<span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="s1">'sqlite://'</span><span class="p">)</span>
 
 <span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
 </pre></div>
@@ -383,24 +383,24 @@ request, something like <code>flask.request.locale</code> to get the current lan
 We use these callbacks when we deal with the initialization of the <code>i18n_attributes</code>.
 <tt class="docutils literal">traduki</tt> at the moment of initialization declares the model for the translations
 dynamically and sets up all the appropriate relationships.</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">get_current_language</span><span class="p">():</span>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_current_language</span><span class="p">():</span>
     <span class="sd">"""Current language callback for our project."""</span>
-    <span class="k">return</span> <span class="s">'en'</span>
+    <span class="k">return</span> <span class="s1">'en'</span>
 
 
 <span class="k">def</span> <span class="nf">get_language_chain</span><span class="p">():</span>
     <span class="sd">"""Language chain (fall-back rule) callback for our project."""</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s">'*'</span><span class="p">:</span> <span class="s">'en'</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">'*'</span><span class="p">:</span> <span class="s1">'en'</span><span class="p">}</span>
 
 <span class="n">i18n_attributes</span> <span class="o">=</span> <span class="n">traduki</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span>
-    <span class="n">Base</span><span class="p">,</span> <span class="p">[</span><span class="s">'en'</span><span class="p">,</span> <span class="s">'nl'</span><span class="p">],</span> <span class="n">get_current_language</span><span class="p">,</span> <span class="n">get_language_chain</span><span class="p">)</span>
+    <span class="n">Base</span><span class="p">,</span> <span class="p">[</span><span class="s1">'en'</span><span class="p">,</span> <span class="s1">'nl'</span><span class="p">],</span> <span class="n">get_current_language</span><span class="p">,</span> <span class="n">get_language_chain</span><span class="p">)</span>
 </pre></div>
 <p>The language list that we pass to <code>traduki.initialize</code> function is used
 to declare language columns in translations model. So if we use <code>['en', 'nl']</code>
 the resulting translations model would be something similar to the following declaration.</p>
-<div class="highlight"><pre><span class="k">class</span> <span class="nc">Translation</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Translation</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 
-    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">'traduki_translation'</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'traduki_translation'</span>
 
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
@@ -409,9 +409,9 @@ the resulting translations model would be something similar to the following dec
 </pre></div>
 <p>Back to our example, we define our model and use the column and relation provided by
 <tt class="docutils literal">traduki</tt>. The rest is just to have a complete and running example.</p>
-<div class="highlight"><pre><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
 
-    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s">'model'</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">'model'</span>
 
     <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
@@ -425,21 +425,21 @@ the resulting translations model would be something similar to the following dec
 <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">()</span>
-<span class="n">model</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="s">'en'</span><span class="p">:</span> <span class="s">'English title'</span><span class="p">,</span> <span class="s">'nl'</span><span class="p">:</span> <span class="s">'Dutch title'</span><span class="p">}</span>
+<span class="n">model</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'en'</span><span class="p">:</span> <span class="s1">'English title'</span><span class="p">,</span> <span class="s1">'nl'</span><span class="p">:</span> <span class="s1">'Dutch title'</span><span class="p">}</span>
 <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
 <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
-<span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">get_dict</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s">'en'</span><span class="p">:</span> <span class="s">'English title'</span><span class="p">,</span> <span class="s">'nl'</span><span class="p">:</span> <span class="s">'Dutch title'</span><span class="p">}</span>
-<span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">en</span> <span class="o">==</span> <span class="s">'English title'</span>
+<span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">get_dict</span><span class="p">()</span> <span class="o">==</span> <span class="p">{</span><span class="s1">'en'</span><span class="p">:</span> <span class="s1">'English title'</span><span class="p">,</span> <span class="s1">'nl'</span><span class="p">:</span> <span class="s1">'Dutch title'</span><span class="p">}</span>
+<span class="k">assert</span> <span class="n">model</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">en</span> <span class="o">==</span> <span class="s1">'English title'</span>
 </pre></div>
 <p>To run this example, copy and paste these parts in an <tt class="docutils literal">example.py</tt> file, and
 use the following commands to install the required packages and run the
 example:</p>
-<div class="highlight"><pre>virtualenv env
+<div class="highlight"><pre><span></span>virtualenv env
 
-<span class="nb">source </span>env/bin/activate
+<span class="nb">source</span> env/bin/activate
 
 pip install sqlalchemy traduki
 
@@ -451,7 +451,7 @@ python example.py
 <p>Querying translations can also be done using usual SQLAlchemy techniques.
 From the previous example, lets assume that we want to get all <code>Model</code>
 instances that have English translation for their <code>title</code>.</p>
-<div class="highlight"><pre><span class="n">english_title_objects</span> <span class="o">=</span> <span class="p">(</span>
+<div class="highlight"><pre><span></span><span class="n">english_title_objects</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Model</span><span class="p">)</span>
     <span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="n">i18n_attributes</span><span class="o">.</span><span class="n">Translation</span><span class="p">,</span>

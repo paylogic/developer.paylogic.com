@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+            <title>Factory injection, combining pytest with factory_boy by Oleg Pidsadnyi - Paylogic Developers</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+                <link href="http://developer.paylogic.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Full Atom Feed">
+
+
+
+
+                <link href="http://developer.paylogic.com/feeds/open-source.atom.xml" type="application/atom+xml" rel="alternate" title="Paylogic Developers Categories Atom Feed">
+
+
+
+
+            <link rel="shortcut icon" href="http://developer.paylogic.com/images/favicon.ico">
+
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/uikit.addons.min.css">
+            <link rel="stylesheet" type="text/css" href="http://developer.paylogic.com/theme/css/style.css">
+    </head>
+
+    <body>
+
+        <nav class="uk-navbar" data-uk-sticky>
+            <div class="uk-container uk-container-center">
+                <a href="/" class="uk-navbar-brand"><img alt="Paylogic" src="http://developer.paylogic.com/images/paylogic.png" /></a>
+                <div class="uk-navbar-content"><a href="/" class="pl-text-light">Developers</a></div>
+                <ul class="uk-navbar-nav uk-float-right uk-hidden-small">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent" data-uk-dropdown>
+                        <a href="#">Categories<i class="uk-icon-angle-down uk-margin-small-left"></i></a>
+                        <div class="uk-dropdown uk-dropdown-flip uk-dropdown-navbar">
+                            <ul class="uk-nav uk-nav-navbar">
+                                        <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                        <li class="uk-active"><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                        <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <a href="#offcanvas-nav" class="uk-navbar-toggle uk-visible-small uk-float-right" data-uk-offcanvas></a>
+            </div>
+        </nav>
+
+        <div id="offcanvas-nav" class="uk-offcanvas">
+            <div class="uk-offcanvas-bar">
+                <ul class="uk-nav uk-nav-offcanvas uk-nav-parent-icon" data-uk-nav="{multiple:true}">
+                        <li><a href="/pages/integration.html">Integration</a></li>
+                        <li><a href="/archives.html">Articles</a></li>
+                        <li><a href="/authors.html">Authors</a></li>
+                    <li class="uk-parent">
+                        <a href="#">Categories</a>
+                        <ul class="uk-nav-sub">
+                                    <li><a href="http://developer.paylogic.com/category/agile.html">Agile</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/devops.html">DevOps</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/general.html">General</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/integration.html">Integration</a></li>
+                                    <li class="uk-active"><a href="http://developer.paylogic.com/category/open-source.html">Open source</a></li>
+                                    <li><a href="http://developer.paylogic.com/category/testing.html">Testing</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <main class="pl-content">
+<section class="pl-section">
+    <div class="uk-container uk-container-center">
+        <div class="uk-grid" data-uk-grid-margin>
+            <div class="uk-width-medium-1-4 uk-hidden-small">
+                <div class="toc uk-text-small" data-uk-sticky="{top:76}" data-uk-scrollspy-nav>
+                <div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#factory-injection-combining-pytest-with-factory-boy" id="id1">Factory injection, combining pytest with factory_boy</a><ul>
+<li><a class="reference internal" href="#dependency-injection" id="id2">Dependency injection</a></li>
+<li><a class="reference internal" href="#ideal-test" id="id3">Ideal test</a></li>
+<li><a class="reference internal" href="#factory-pattern" id="id4">Factory pattern</a></li>
+<li><a class="reference internal" href="#factory-vs-dependency-injection" id="id5">Factory vs dependency injection</a><ul>
+<li><a class="reference internal" href="#pytest-factoryboy" id="id6">pytest-factoryboy</a><ul>
+<li><a class="reference internal" href="#factory-fixture" id="id7">Factory Fixture</a></li>
+<li><a class="reference internal" href="#model-fixture" id="id8">Model Fixture</a></li>
+<li><a class="reference internal" href="#attributes-are-fixtures" id="id9">Attributes are Fixtures</a></li>
+<li><a class="reference internal" href="#subfactory" id="id10">SubFactory</a></li>
+<li><a class="reference internal" href="#related-factory" id="id11">Related Factory</a></li>
+<li><a class="reference internal" href="#post-generation" id="id12">post-generation</a></li>
+<li><a class="reference internal" href="#integration" id="id13">Integration</a></li>
+<li><a class="reference internal" href="#fixture-partial-specialization" id="id14">Fixture partial specialization</a></li>
+<li><a class="reference internal" href="#fixture-attributes" id="id15">Fixture attributes</a></li>
+<li><a class="reference internal" href="#post-generation-dependencies" id="id16">Post-generation dependencies</a></li>
+<li><a class="reference internal" href="#hooks" id="id17">Hooks</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#conclusion" id="id18">Conclusion</a></li>
+<li><a class="reference internal" href="#future" id="id19">Future</a></li>
+<li><a class="reference internal" href="#links" id="id20">Links</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+                </div>
+            </div>
+            <div class="uk-width-medium-3-4">
+                <article class="uk-article">
+                    <table class="uk-table uk-table-middle pl-table-article-meta">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="uk-thumbnail uk-margin-right">
+                                        <i class="uk-icon-user uk-icon-large"></i>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="uk-article-meta">
+                                        Written by
+                                            <a class="url fn" href="http://developer.paylogic.com/author/oleg-pidsadnyi.html">Oleg Pidsadnyi</a>
+                                        on Fri 01 April 2016<br />Posted in <a href="http://developer.paylogic.com/category/open-source.html">Open source</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h1 class="uk-article-title">Factory injection, combining pytest with factory_boy</h1>
+                    <hr class="uk-article-divider">
+                    <div class="pl-article-content"><div class="section" id="factory-injection-combining-pytest-with-factory-boy">
+<h2><a class="toc-backref" href="#id1">Factory injection, combining pytest with factory_boy</a></h2>
+
+<p>The most annoying in writing tests is the setup. All this boilerplate requires so much effort and
+thinking. You would prefer to focus on taking an action and asserting the result knowing some precondition, than
+diving again and again into researching how to make it happen. It would be nice to have some idea,
+some pattern that helps you to get started.</p>
+<p>Normally testing tools don't provide any pattern to help you creating the test data.
+Developers are just writing chunks of code and create entities imperatively. Then they are trying to
+reuse this code, share it between different functions. But as a matter of fact these fixtures
+are not refactored too often as too many tests are using them. So the code gets duplicated with lots of flavors.</p>
+<p>And in case of BDD it quickly ends up with scripting the creation of an entire hierarchy:</p>
+<div class="highlight"><pre><span></span><span class="k">Scenario:</span><span class="nf"> Dark Helmet vs Lone Star v1</span>
+
+<span class="k">        Given </span><span class="nf">I am your father's brother's nephew's cousin's former roommate</span>
+
+<span class="nf">        </span><span class="k">When </span><span class="nf">So what does that make us?</span>
+
+<span class="nf">        </span><span class="k">Then </span><span class="nf">Absolutely nothing</span>
+</pre></div>
+<p>This fixture is a very complicated flavor. Flavors have a huge downside of encapsulating the creation code,
+that makes it impossible to reuse and to parametrize, so let's split it:</p>
+<div class="highlight"><pre><span></span><span class="k">Scenario:</span><span class="nf"> Dark Helmet vs Lone Star v2</span>
+<span class="k">        Given </span><span class="nf">there's a room</span>
+<span class="nf">        </span><span class="k">And </span><span class="nf">there's you</span>
+<span class="nf">        </span><span class="k">And </span><span class="nf">you have a father</span>
+<span class="nf">        </span><span class="k">And </span><span class="nf">your father has a brother</span>
+<span class="nf">        </span><span class="k">And </span><span class="nf">your father's brother has a nephew</span>
+<span class="nf">        </span><span class="k">And </span><span class="nf">your father's brother's nephew has a cousin</span>
+<span class="nf">        </span><span class="k">And </span><span class="nf">there's I am</span>
+<span class="nf">        </span><span class="k">And </span><span class="nf">your father's brother's nephew's cousin's lived in the room</span>
+<span class="nf">        </span><span class="k">And </span><span class="nf">I lived in the room</span>
+
+<span class="nf">        </span><span class="k">When </span><span class="nf">So what does that make us?</span>
+
+<span class="nf">        </span><span class="k">Then </span><span class="nf">Absolutely nothing</span>
+</pre></div>
+<p>And this is getting even worse, but it is realistic! Imagine how terrible it is to reuse this setup for similar tests.
+But there's a solution to that - Gherkin Background section:</p>
+<div class="highlight"><pre><span></span><span class="k">Feature:</span><span class="nf"> Spaceballs</span>
+
+<span class="nf">        </span><span class="k">Background:</span><span class="nf"></span>
+<span class="k">                Given </span><span class="nf">there's a room</span>
+<span class="nf">                </span><span class="k">And </span><span class="nf">there's you</span>
+<span class="nf">                </span><span class="k">And </span><span class="nf">you have a father</span>
+<span class="nf">                </span><span class="k">And </span><span class="nf">your father has a brother</span>
+<span class="nf">                </span><span class="k">And </span><span class="nf">your father's brother has a nephew</span>
+<span class="nf">                </span><span class="k">And </span><span class="nf">your father's brother's nephew has a cousin</span>
+<span class="nf">                </span><span class="k">And </span><span class="nf">there's I am</span>
+
+<span class="nf">        </span><span class="k">Scenario:</span><span class="nf"> Dark Helmet vs Lone Star v3</span>
+<span class="k">                Given </span><span class="nf">your father's brother's nephew's cousin's lived in the room</span>
+<span class="nf">                </span><span class="k">And </span><span class="nf">I lived in the room</span>
+
+<span class="nf">                </span><span class="k">When </span><span class="nf">So what does that make us?</span>
+
+<span class="nf">                </span><span class="k">Then </span><span class="nf">Absolutely nothing</span>
+</pre></div>
+<p>How is it now different from the v1? A lot more paper work and the flavor is still there.
+Anyway you have to address that particular person by some symbolic name, especially because these steps
+are executed separately and the context is shared between them.</p>
+<p>Popular BDD tools are providing this feature, but every step has to come up with certain variable name,
+put it in the context, make sure to check if it was already created.
+It also implies that the given steps have to be in a certain order which is again too programmatic.</p>
+<p>On the other hand most systems have a statically defined hierarchy. In case you need an object all
+non-nullable parents in the hierarchy have to be created, otherwise this object cannot exist. All the preconditions
+that make your system valid are not really worth mentioning. This is the so called just-enough-specification principle
+of Gherkin where you specify only the facts that you need to observe later assuming everything else simply works.</p>
+<p>Certain flavors usually also have statically defined roles in the systems with much shorter names.
+To achieve that there should be some kind of pattern to make sure all of the object's dependencies are created without
+mentioning them explicitly.</p>
+<p>At Paylogic we gained quite some experience by using pytest for more than 7 years, you can read some
+<a class="reference external" href="http://developer.paylogic.com/articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html">previous articles</a>.</p>
+<div class="section" id="dependency-injection">
+<h3><a class="toc-backref" href="#id2">Dependency injection</a></h3>
+<p>The main difference between pytest and most of the other testing tools is dependency injection.</p>
+<div class="highlight"><pre><span></span><span class="nd">@pytest.fixture</span>
+<span class="k">def</span> <span class="nf">you</span><span class="p">(</span><span class="n">your_father</span><span class="p">):</span>
+        <span class="sd">"""You can't be created without your father."""</span>
+        <span class="o">...</span>
+</pre></div>
+<p>Basically the entire hierarchy is configured statically in the code as dependencies. It is easy to follow the flow
+by looking at definitions. Each fixture cares only about creating itself and ordering all necessary information as
+dependencies.</p>
+<p>In pytest-BDD we implemented dependency injection support for the steps, so that pytest fixtures are shared among them
+instead of the context object that you have to feed in an imperative way.</p>
+<p>Compared to the other testing tools code written using pytest has more declarative way rather than imperative
+and dependencies allow just-enough-specification.</p>
+</div>
+<div class="section" id="ideal-test">
+<h3><a class="toc-backref" href="#id3">Ideal test</a></h3>
+<p>What would be the ideal test?
+I would say the one where I mention only those attributes that make the test case, these values are defined
+as close as possible to the test code where I can compare them with the assertion section.</p>
+<p>pytest has an elegant way to parametrize tests:</p>
+<div class="highlight"><pre><span></span><span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">"book__price"</span><span class="p">,</span> <span class="p">[</span><span class="n">Amount</span><span class="p">(</span><span class="s2">"EUR"</span><span class="p">,</span> <span class="s2">"15.20"</span><span class="p">)])</span>
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span>
+        <span class="p">(</span><span class="s2">"author__fee_percent"</span><span class="p">,</span> <span class="s2">"expected_author_fee"</span><span class="p">),</span>
+        <span class="p">(</span>
+                <span class="p">(</span><span class="mi">27</span><span class="p">,</span> <span class="n">Amount</span><span class="p">(</span><span class="s2">"EUR"</span><span class="p">,</span> <span class="s2">"4.104"</span><span class="p">)),</span>
+                <span class="p">(</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">Amount</span><span class="p">(</span><span class="s2">"EUR"</span><span class="p">,</span> <span class="s2">"1.9"</span><span class="p">)),</span>
+        <span class="p">),</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_unicode</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">expected_author_fee</span><span class="p">):</span>
+        <span class="sd">"""Test author fee calculation."""</span>
+        <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">author_fee</span> <span class="o">==</span> <span class="n">expected_author_fee</span>
+</pre></div>
+<p>The only downside of using pytest fixtures is finding their implementation since you don't have to import them.
+Fixtures can be inherited and overridden so you are not always sure in what context you are. It would be
+nice to have a more compact representation of their definitions or to avoid their manual definition completely.</p>
+</div>
+<div class="section" id="factory-pattern">
+<h3><a class="toc-backref" href="#id4">Factory pattern</a></h3>
+<p>There's a great project for Python called <a class="reference external" href="https://factoryboy.readthedocs.org">factory_boy</a>. It allows creating objects starting on any level of the
+model hierarchy, also creating all of the necessary dependencies. Factory pattern solves the problem of the encapsulation,
+so that any value can passed to any level.</p>
+<p>It is declarative, compact and easy to maintain. Factories are look-alike models and provide a great overview on
+what values attributes will get.</p>
+<p>There are post-generation declarations and actions that help you solve problems related to circular dependencies
+and to apply some side effects after the object is created.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">factory</span>
+<span class="kn">import</span> <span class="nn">faker</span>
+
+<span class="n">fake</span> <span class="o">=</span> <span class="n">faker</span><span class="o">.</span><span class="n">Factory</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">AuthorFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">Factory</span><span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">Author</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">LazyAttribute</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">fake</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+
+
+
+<span class="k">class</span> <span class="nc">BookFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">Factory</span><span class="p">):</span>
+
+        <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">Book</span>
+
+        <span class="c1"># Parent object is created at first</span>
+        <span class="n">author</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">SubFactory</span><span class="p">(</span><span class="n">AuthorFactory</span><span class="p">)</span>
+
+        <span class="n">title</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">LazyAttribute</span><span class="p">(</span><span class="k">lambda</span> <span class="n">f</span><span class="p">:</span> <span class="n">fake</span><span class="o">.</span><span class="n">sentence</span><span class="p">())</span>
+
+
+<span class="c1"># Create a book with default values.</span>
+<span class="n">book</span> <span class="o">=</span> <span class="n">BookFactory</span><span class="p">()</span>
+
+<span class="c1"># Create a book with specific title value.</span>
+<span class="n">book_with_title</span> <span class="o">=</span> <span class="n">BookFactory</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">'pytest in a nutshell'</span><span class="p">)</span>
+
+<span class="c1"># Create a book parametrized with specific author name.</span>
+<span class="n">book_with_author_name</span> <span class="o">=</span> <span class="n">BookFactory</span><span class="p">(</span><span class="n">author__name</span><span class="o">=</span><span class="s1">'John Smith'</span><span class="p">)</span>
+
+<span class="c1"># Creates books with titles "Book 1", "Book 2", "Book 3", etc.</span>
+<span class="n">tons_of_books</span> <span class="o">=</span> <span class="n">BookFactory</span><span class="o">.</span><span class="n">create_batch</span><span class="p">(</span>
+        <span class="n">size</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">factory</span><span class="o">.</span><span class="n">Sequence</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="s2">"Book {0}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span>
+<span class="p">)</span>
+</pre></div>
+<p>The double underscore syntax allows you to address the attribute, the attribute of the attribute etc.
+This is a nice technique that helps creating complex and large datasets for various needs.</p>
+<p>These datasets can be totally parallel hierarchies or a common parent can be passed to bind them.
+You can even configure certain rules about how to obtain the parent on the attribute declaration.</p>
+<p>We use it to populate our sandbox environment database with demo data that 3rd parties can use.</p>
+<p>Normally for well isolated test you don't need the entire hierarchy. It takes too much time and resource
+to create everything. It should be like a lightning that is reaching the target following the shortest path,
+create only what's necessary to make it work.</p>
+<p>Also the tests that are separated in steps want to use only relevant nodes of the hierarchy, not navigating
+through an entire hierarchy to reach a certain instance or attribute. And this is what pytest is good at,
+also solving the problem of binding objects to the common parent which is an instance of a fixture in the session.</p>
+</div>
+<div class="section" id="factory-vs-dependency-injection">
+<h3><a class="toc-backref" href="#id5">Factory vs dependency injection</a></h3>
+<p>So just to recap, Factory is good at compact declarative style with a good overview of what would be the values,
+flexibility in parametrization on any level of hierarchy.</p>
+<p>pytest is good at delivering fully configured fixtures at any point of the test setup and parametrization of the
+test case.</p>
+<p>What if there could be a way to combine those two to take advantage of:</p>
+<ul class="simple">
+<li>Minimum objects creation in the hierarchy path.</li>
+<li>Easily accessed instances of the hierarchy path by conventional names.</li>
+<li>Strong convention of naming attributes for the parametrization.</li>
+<li>Compact declarative notation for the models and attributes.</li>
+</ul>
+<p>It is possible to parametrize anything using pytest as long as it is a fixture. It means that we need
+fixtures not only for the principal entities, but also for all their attributes.
+Since fixture names are unique within the scope of a test session and represent the same instance, the double
+underscore convention of factory_boy can be also applied.</p>
+<div class="section" id="pytest-factoryboy">
+<h4><a class="toc-backref" href="#id6">pytest-factoryboy</a></h4>
+<p>So I made a library where I'm trying to combine the best practices of dependency injection and the factory pattern.
+The main idea is that the logic of creating attributes is incorporated in the factory attribute declarations
+and dependencies are represented by sub-factory attributes.</p>
+<p>Basically there's no need for manual implementation of the fixtures since factories can be introspected and fixtures
+can be automatically generated. Only registration is needed where you can optionally choose a name for the fixture.</p>
+<div class="section" id="factory-fixture">
+<h5><a class="toc-backref" href="#id7">Factory Fixture</a></h5>
+<p>Factory fixtures allow using factories without importing them. Name convention is lowercase-underscore
+class name.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">factory</span>
+<span class="kn">from</span> <span class="nn">pytest_factoryboy</span> <span class="kn">import</span> <span class="n">register</span>
+
+<span class="k">class</span> <span class="nc">AuthorFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">Factory</span><span class="p">):</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Author</span>
+
+
+<span class="n">register</span><span class="p">(</span><span class="n">AuthorFactory</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">test_factory_fixture</span><span class="p">(</span><span class="n">author_factory</span><span class="p">):</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">author_factory</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"Charles Dickens"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">author</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Charles Dickens"</span>
+</pre></div>
+<p>Basically you don't have to be bothered importing the factory at all. The only thing you should keep in mind
+is the naming convention to guess the name and just request it in your fixture or your test function.</p>
+</div>
+<div class="section" id="model-fixture">
+<h5><a class="toc-backref" href="#id8">Model Fixture</a></h5>
+<p>Model fixture implements an instance of a model created by the factory. Name convention is lowercase-underscore
+class name.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">factory</span>
+<span class="kn">from</span> <span class="nn">pytest_factoryboy</span> <span class="kn">import</span> <span class="n">register</span>
+
+<span class="nd">@register</span>
+<span class="k">class</span> <span class="nc">AuthorFactory</span><span class="p">(</span><span class="n">Factory</span><span class="p">):</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Author</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Charles Dickens"</span>
+
+
+<span class="k">def</span> <span class="nf">test_model_fixture</span><span class="p">(</span><span class="n">author</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">author</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Charles Dickens"</span>
+</pre></div>
+<p>Model fixtures can be registered with specific names. For example if you address instances of some collection
+by names like "first", "second" or of another parent as "other":</p>
+<div class="highlight"><pre><span></span><span class="n">register</span><span class="p">(</span><span class="n">BookFactory</span><span class="p">)</span>  <span class="c1"># book</span>
+<span class="n">register</span><span class="p">(</span><span class="n">BookFactory</span><span class="p">,</span> <span class="s2">"second_book"</span><span class="p">)</span>  <span class="c1"># second_book</span>
+
+<span class="n">register</span><span class="p">(</span><span class="n">AuthorFactory</span><span class="p">)</span> <span class="c1"># author</span>
+<span class="n">register</span><span class="p">(</span><span class="n">AuthorFactory</span><span class="p">,</span> <span class="s2">"second_author"</span><span class="p">)</span> <span class="c1"># second_author</span>
+
+<span class="n">register</span><span class="p">(</span><span class="n">BookFactory</span><span class="p">,</span> <span class="s2">"other_book"</span><span class="p">)</span>  <span class="c1"># other_book, book of another author</span>
+
+<span class="nd">@pytest.fixture</span>
+<span class="k">def</span> <span class="nf">other_book__author</span><span class="p">(</span><span class="n">second_author</span><span class="p">):</span>
+    <span class="sd">"""Make the relation of the second_book to another (second) author."""</span>
+    <span class="k">return</span> <span class="n">second_author</span>
+</pre></div>
+</div>
+<div class="section" id="attributes-are-fixtures">
+<h5><a class="toc-backref" href="#id9">Attributes are Fixtures</a></h5>
+<p>There are fixtures created for factory attributes. Attribute names are prefixed with the model fixture name and
+double underscore (similar to the convention used by factory boy).</p>
+<div class="highlight"><pre><span></span><span class="nd">@pytest.mark.parametrized</span><span class="p">(</span><span class="s2">"author__name"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"Bill Gates"</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">test_model_fixture</span><span class="p">(</span><span class="n">author</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">author</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Bill Gates"</span>
+</pre></div>
+</div>
+<div class="section" id="subfactory">
+<h5><a class="toc-backref" href="#id10">SubFactory</a></h5>
+<p>Sub-factory attribute points to the model fixture of the sub-factory.
+Attributes of sub-factories are injected as dependencies to the model fixture and can be <a class="reference external" href="http://pytest.org/latest/fixture.html#override-a-fixture-with-direct-test-parametrization">overridden</a> via
+parametrization.</p>
+</div>
+<div class="section" id="related-factory">
+<h5><a class="toc-backref" href="#id11">Related Factory</a></h5>
+<p>Related factory attribute points to the model fixture of the related factory.
+Attributes of related factories are injected as dependencies to the model fixture and can be <a class="reference external" href="http://pytest.org/latest/fixture.html#override-a-fixture-with-direct-test-parametrization">overridden</a> via
+parametrization.</p>
+</div>
+<div class="section" id="post-generation">
+<h5><a class="toc-backref" href="#id12">post-generation</a></h5>
+<p>Post-generation attribute fixture implements only the extracted value for the post generation function.</p>
+</div>
+<div class="section" id="integration">
+<h5><a class="toc-backref" href="#id13">Integration</a></h5>
+<p>An example of <a class="reference external" href="https://factoryboy.readthedocs.org">factory_boy</a> and <a class="reference external" href="http://pytest.org">pytest</a> integration.</p>
+<p>factories/__init__.py:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">factory</span>
+<span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Factory</span> <span class="k">as</span> <span class="n">FakerFactory</span>
+
+<span class="n">faker</span> <span class="o">=</span> <span class="n">FakerFactory</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">AuthorFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">django</span><span class="o">.</span><span class="n">DjangoModelFactory</span><span class="p">):</span>
+
+    <span class="sd">"""Author factory."""</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">LazyAttribute</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">faker</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="s1">'app.Author'</span>
+
+
+<span class="k">class</span> <span class="nc">BookFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">django</span><span class="o">.</span><span class="n">DjangoModelFactory</span><span class="p">):</span>
+
+    <span class="sd">"""Book factory."""</span>
+
+    <span class="n">title</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">LazyAttribute</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">faker</span><span class="o">.</span><span class="n">sentence</span><span class="p">(</span><span class="n">nb_words</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="s1">'app.Book'</span>
+
+    <span class="n">author</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">SubFactory</span><span class="p">(</span><span class="n">AuthorFactory</span><span class="p">)</span>
+</pre></div>
+<p>tests/conftest.py:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_factoryboy</span> <span class="kn">import</span> <span class="n">register</span>
+
+<span class="kn">from</span> <span class="nn">factories</span> <span class="kn">import</span> <span class="n">AuthorFactory</span><span class="p">,</span> <span class="n">BookFactory</span>
+
+<span class="n">register</span><span class="p">(</span><span class="n">AuthorFactory</span><span class="p">)</span>
+<span class="n">register</span><span class="p">(</span><span class="n">BookFactory</span><span class="p">)</span>
+</pre></div>
+<p>tests/test_models.py:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">app.models</span> <span class="kn">import</span> <span class="n">Book</span>
+<span class="kn">from</span> <span class="nn">factories</span> <span class="kn">import</span> <span class="n">BookFactory</span>
+
+<span class="k">def</span> <span class="nf">test_book_factory</span><span class="p">(</span><span class="n">book_factory</span><span class="p">):</span>
+    <span class="sd">"""Factories become fixtures automatically."""</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">book_factory</span><span class="p">,</span> <span class="n">BookFactory</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">test_book</span><span class="p">(</span><span class="n">book</span><span class="p">):</span>
+    <span class="sd">"""Instances become fixtures automatically."""</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">Book</span><span class="p">)</span>
+
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">"book__title"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"pytest for Dummies"</span><span class="p">])</span>
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">"author__name"</span><span class="p">,</span> <span class="p">[</span><span class="s2">"Bill Gates"</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">test_parametrized</span><span class="p">(</span><span class="n">book</span><span class="p">):</span>
+    <span class="sd">"""You can set any factory attribute as a fixture using naming convention."""</span>
+    <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"pytest for Dummies"</span>
+    <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">author</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Bill Gates"</span>
+</pre></div>
+</div>
+<div class="section" id="fixture-partial-specialization">
+<h5><a class="toc-backref" href="#id14">Fixture partial specialization</a></h5>
+<p>There is a possibility to pass keyword parameters in order to override factory attribute values during fixture
+registration. This comes in handy when your test case is requesting a lot of fixture flavors. Too much for the
+regular pytest parametrization.
+In this case you can register fixture flavors in the local test module and specify value deviations inside <tt class="docutils literal">register</tt>
+function calls.</p>
+<div class="highlight"><pre><span></span><span class="n">register</span><span class="p">(</span><span class="n">AuthorFactory</span><span class="p">,</span> <span class="s2">"male_author"</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="s2">"M"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"John Doe"</span><span class="p">)</span>
+<span class="n">register</span><span class="p">(</span><span class="n">AuthorFactory</span><span class="p">,</span> <span class="s2">"female_author"</span><span class="p">,</span> <span class="n">gender</span><span class="o">=</span><span class="s2">"F"</span><span class="p">)</span>
+
+
+<span class="nd">@pytest.fixture</span>
+<span class="k">def</span> <span class="nf">female_author__name</span><span class="p">():</span>
+    <span class="sd">"""Override female author name as a separate fixture."""</span>
+    <span class="k">return</span> <span class="s2">"Jane Doe"</span>
+
+
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">"male_author__age"</span><span class="p">,</span> <span class="p">[</span><span class="mi">42</span><span class="p">])</span>  <span class="c1"># Override even more</span>
+<span class="k">def</span> <span class="nf">test_partial</span><span class="p">(</span><span class="n">male_author</span><span class="p">,</span> <span class="n">female_author</span><span class="p">):</span>
+    <span class="sd">"""Test fixture partial specialization."""</span>
+    <span class="k">assert</span> <span class="n">male_author</span><span class="o">.</span><span class="n">gender</span> <span class="o">==</span> <span class="s2">"M"</span>
+    <span class="k">assert</span> <span class="n">male_author</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"John Doe"</span>
+    <span class="k">assert</span> <span class="n">male_author</span><span class="o">.</span><span class="n">age</span> <span class="o">==</span> <span class="mi">42</span>
+
+    <span class="k">assert</span> <span class="n">female_author</span><span class="o">.</span><span class="n">gender</span> <span class="o">==</span> <span class="s2">"F"</span>
+    <span class="k">assert</span> <span class="n">female_author</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">"Jane Doe"</span>
+</pre></div>
+</div>
+<div class="section" id="fixture-attributes">
+<h5><a class="toc-backref" href="#id15">Fixture attributes</a></h5>
+<p>Sometimes it is necessary to pass an instance of another fixture as an attribute value to the factory.
+It is possible to override the generated attribute fixture where desired values can be requested as
+fixture dependencies. There is also a lazy wrapper for the fixture that can be used in the parametrization
+without defining fixtures in a module.</p>
+<p>LazyFixture constructor accepts either existing fixture name or callable with dependencies:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">pytest_factoryboy</span> <span class="kn">import</span> <span class="n">register</span><span class="p">,</span> <span class="n">LazyFixture</span>
+
+
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">"book__author"</span><span class="p">,</span> <span class="p">[</span><span class="n">LazyFixture</span><span class="p">(</span><span class="s2">"another_author"</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_lazy_fixture_name</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">another_author</span><span class="p">):</span>
+    <span class="sd">"""Test that book author is replaced with another author by fixture name."""</span>
+    <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">author</span> <span class="o">==</span> <span class="n">another_author</span>
+
+
+<span class="nd">@pytest.mark.parametrize</span><span class="p">(</span><span class="s2">"book__author"</span><span class="p">,</span> <span class="p">[</span><span class="n">LazyFixture</span><span class="p">(</span><span class="k">lambda</span> <span class="n">another_author</span><span class="p">:</span> <span class="n">another_author</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">test_lazy_fixture_callable</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">another_author</span><span class="p">):</span>
+    <span class="sd">"""Test that book author is replaced with another author by callable."""</span>
+    <span class="k">assert</span> <span class="n">book</span><span class="o">.</span><span class="n">author</span> <span class="o">==</span> <span class="n">another_author</span>
+
+
+<span class="c1"># Can also be used in the partial specialization during the registration.</span>
+<span class="n">register</span><span class="p">(</span><span class="n">AuthorFactory</span><span class="p">,</span> <span class="s2">"another_book"</span><span class="p">,</span> <span class="n">author</span><span class="o">=</span><span class="n">LazyFixture</span><span class="p">(</span><span class="s2">"another_author"</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="section" id="post-generation-dependencies">
+<h5><a class="toc-backref" href="#id16">Post-generation dependencies</a></h5>
+<p>Unlike factory_boy which binds related objects using an internal container to store results of lazy evaluation,
+pytest-factoryboy relies on the pytest request.</p>
+<p>Circular dependencies between objects can be resolved using post-generation hooks/related factories in combination with
+passing the SelfAttribute, but in the case of pytest request fixture functions have to return values in order to be cached
+in the request and to become available to other fixtures.</p>
+<p>That's why evaluation of the post-generation declaration in pytest-factoryboy is deferred until calling
+the test function.
+This solves circular dependency resolution for situations like:</p>
+<pre class="literal-block">
+o-&gt;[ A ]--&gt;[ B ]&lt;--[ C ]-o
+|                        |
+o----(C depends on A)----o
+</pre>
+<p>On the other hand deferring the evaluation of post-generation declarations makes their result unavailable during
+the generation of objects that are not in the circular dependency, but they rely on the post-generation action.
+It is possible to declare such dependencies to be evaluated earlier, right before generating the requested object.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_factoryboy</span> <span class="kn">import</span> <span class="n">register</span>
+
+
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+
+<span class="k">class</span> <span class="nc">Bar</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foo</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="n">foo</span>
+
+
+<span class="nd">@register</span>
+<span class="k">class</span> <span class="nc">FooFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">Factory</span><span class="p">):</span>
+
+    <span class="sd">"""Foo factory."""</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Foo</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nd">@factory.post_generation</span>
+    <span class="k">def</span> <span class="nf">set1</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="n">create</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">foo</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<span class="k">class</span> <span class="nc">BarFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">Factory</span><span class="p">):</span>
+
+    <span class="sd">"""Bar factory."""</span>
+
+    <span class="n">foo</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">SubFactory</span><span class="p">(</span><span class="n">FooFactory</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_create</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">model_class</span><span class="p">,</span> <span class="n">foo</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">foo</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">1</span>  <span class="c1"># Assert that set1 is evaluated before object generation</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">BarFactory</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">_create</span><span class="p">(</span><span class="n">model_class</span><span class="p">,</span> <span class="n">foo</span><span class="o">=</span><span class="n">foo</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">Bar</span>
+
+
+<span class="n">register</span><span class="p">(</span>
+    <span class="n">BarFactory</span><span class="p">,</span>
+    <span class="s1">'bar'</span><span class="p">,</span>
+    <span class="n">_postgen_dependencies</span><span class="o">=</span><span class="p">[</span><span class="s2">"foo__set1"</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="sd">"""Forces 'set1' to be evaluated first."""</span>
+
+
+<span class="k">def</span> <span class="nf">test_depends_on_set1</span><span class="p">(</span><span class="n">bar</span><span class="p">):</span>
+    <span class="sd">"""Test that post-generation hooks are done and the value is 2."""</span>
+    <span class="k">assert</span> <span class="n">depends_on_1</span><span class="o">.</span><span class="n">foo</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">1</span>
+</pre></div>
+<p>All post-generation/RelatedFactory attributes specified in the <cite>_postgen_dependencies</cite> list during factory registration
+are evaluated before the object generation.</p>
+<p>In case you are using an ORM, SQLAlchemy is especially good with post-generation actions. It is as lazy as possible
+and doesn't require to bind objects by using constructors or primary keys to be generated.
+SQLAlchemy is your friend here.</p>
+</div>
+<div class="section" id="hooks">
+<h5><a class="toc-backref" href="#id17">Hooks</a></h5>
+<p>pytest-factoryboy exposes several <a class="reference external" href="http://pytest.org/latest/plugins.html#well-specified-hooks">pytest hooks</a>
+which might be helpful for e.g. controlling database transaction, for reporting etc:</p>
+<ul class="simple">
+<li>pytest_factoryboy_done(request) - Called after all factory based fixtures and their post-generation actions have been evaluated.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h4><a class="toc-backref" href="#id18">Conclusion</a></h4>
+<p>As pytest helps you write better programs, pytest-factoryboy helps you write better tests.
+Conventions and limitations allow you to focus on the test exercise and assertions rather than implementation
+of complicated test setups.</p>
+<p>It is easy to parametrize particular low-level attributes of your models, but it is also easy to identify
+higher level flags to apply all the side effects for the certain workflows in your system.</p>
+<p>In both cases it is not needed to navigate through files and folders, looking for specific (inherited) fixture
+implementations. It is enough to take a look at the factory classes to get an idea of what to expect,
+but in most cases it is easy to guess by combining the model name and the attribute name that you know by heart.</p>
+<p>It is also a great help in behavioral tests to introduce homogenic given steps and avoid fixture flavors.
+Since you are not implementing complete fixtures manually, flavors just don't exist.</p>
+<p>Given steps are simply specifying attribute values for the models depending on them or applying some mutations
+after the instance is created. And again you are operating only the attributes declared on the factory level
+that define your data or dispatch the workflow of your system.</p>
+</div>
+<div class="section" id="future">
+<h4><a class="toc-backref" href="#id19">Future</a></h4>
+<p>Is there more room to automate? Yes.</p>
+<p>Python is an amazing dynamic language with a lot of introspection possibilities. Most of the good libraries provide
+tools for introspection.</p>
+<p>In case of SQLAlchemy and if you are decorating your types with meaningful types, for example by using Email,
+Password, Address types from the SQLAlchemy-Utils, you could generate base classes for your factories
+and let faker provide you with realistic human-readable values.</p>
+<p>There's a project that I want to continue on called Alchemyboy that allows generation of the base classes for
+factories based on SQLAlchemy models.</p>
+</div>
+<div class="section" id="links">
+<h4><a class="toc-backref" href="#id20">Links</a></h4>
+<ul class="simple">
+<li><a class="reference external" href="http://developer.paylogic.com/articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html">How we use pytest and pytest-bdd in Paylogic.</a></li>
+<li><a class="reference external" href="http://pytest.org/latest/">pytest - helps you write better programs.</a></li>
+<li><a class="reference external" href="http://pytest-bdd.readthedocs.org/en/latest/">pytest-bdd</a></li>
+<li><a class="reference external" href="https://factoryboy.readthedocs.org">factory_boy</a></li>
+<li><a class="reference external" href="http://pytest-factoryboy.readthedocs.org">pytest-factoryboy - factory_boy integration with the pytest.</a></li>
+<li><a class="reference external" href="http://www.sqlalchemy.org">SQLAlchemy</a></li>
+<li><a class="reference external" href="http://sqlalchemy-utils.readthedocs.org">SQLAlchemy-Utils</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+                        <hr class="uk-article-divider">
+                        <div class="comments">
+                            <h2>Comments</h2>
+                            <div id="disqus_thread"></div>
+                            <script type="text/javascript">
+                                var disqus_identifier = "articles/factory-injection-combining-pytest-factory_boy.html";
+                                (function() {
+                                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                                    dsq.src = 'http://paylogicdevportal.disqus.com/embed.js';
+                                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                                })();
+                            </script>
+                        </div>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+        </main>
+
+        <footer class="pl-footer">
+            <div>
+                <div class="uk-container uk-container-center uk-text-center uk-text-small">
+                    <ul class="uk-subnav uk-subnav-line">
+                        <li><a href="http://developer.paylogic.com/pages/about.html">About</a></li>
+                        <li><a href="https://shopping-api-docs.sandbox.paylogic.com/" target="_blank">API</a></li>
+                        <li><a href="https://github.com/paylogic" target="_blank">GitHub</a></li>
+                        <li><a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a></li>
+                    </ul>
+                    Copyright (c) 2014 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
+                    built using the awesome <a href="http://getpelican.com" target="_blank">Pelican</a> static site generator.<br>
+                    This work is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+                </div>
+            </div>
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/uikit.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/sticky.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/cover.min.js"></script>
+        <script src="http://developer.paylogic.com/theme/js/application.js"></script>
+
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-13304573-19', 'paylogic.com');
+            ga('send', 'pageview');
+        </script>
+
+    </body>
+</html>

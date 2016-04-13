@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>Paylogic Developers</title><link>http://developer.paylogic.com/</link><description></description><lastBuildDate>Fri, 01 Apr 2016 11:02:00 +0200</lastBuildDate><item><title>Factory injection, combining pytest with factory_boy</title><link>http://developer.paylogic.com/articles/factory-injection-combining-pytest-factory_boy.html</link><description>&lt;div class="section" id="factory-injection-combining-pytest-with-factory-boy"&gt;
+&lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Factory injection, combining pytest with factory_boy&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;The most annoying in writing tests is the setup. All this boilerplate requires so much effort and
+thinking. You would prefer to focus on taking an action and asserting the result knowing some precondition, than
+diving again and again into researching how to make it happen. It would be nice to have some idea,
+some pattern that helps you to get started.&lt;/p&gt;
+&lt;p&gt;Normally testing tools don't provide any pattern to help you creating the test data.
+Developers are just writing chunks of code and create entities imperatively. Then they are trying to
+reuse this code, share it between different functions. But as a matter of fact these fixtures
+are not refactored too often as too many tests are using them. So the code gets duplicated with lots of flavors.&lt;/p&gt;
+&lt;p&gt;And in case of BDD it quickly ends up with scripting the creation of an entire hierarchy:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;Scenario:&lt;/span&gt;&lt;span class="nf"&gt; Dark Helmet vs Lone Star v1&lt;/span&gt;
+
+&lt;span class="k"&gt;        Given &lt;/span&gt;&lt;span class="nf"&gt;I am your father's brother's nephew's cousin's former roommate&lt;/span&gt;
+
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;When &lt;/span&gt;&lt;span class="nf"&gt;So what does that make us?&lt;/span&gt;
+
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;Then &lt;/span&gt;&lt;span class="nf"&gt;Absolutely nothing&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;This fixture is a very complicated flavor. Flavors have a huge downside of encapsulating the creation code,
+that makes it impossible to reuse and to parametrize, so let's split it:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;Scenario:&lt;/span&gt;&lt;span class="nf"&gt; Dark Helmet vs Lone Star v2&lt;/span&gt;
+&lt;span class="k"&gt;        Given &lt;/span&gt;&lt;span class="nf"&gt;there's a room&lt;/span&gt;
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;there's you&lt;/span&gt;
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;you have a father&lt;/span&gt;
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;your father has a brother&lt;/span&gt;
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;your father's brother has a nephew&lt;/span&gt;
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;your father's brother's nephew has a cousin&lt;/span&gt;
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;there's I am&lt;/span&gt;
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;your father's brother's nephew's cousin's lived in the room&lt;/span&gt;
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;I lived in the room&lt;/span&gt;
+
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;When &lt;/span&gt;&lt;span class="nf"&gt;So what does that make us?&lt;/span&gt;
+
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;Then &lt;/span&gt;&lt;span class="nf"&gt;Absolutely nothing&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;And this is getting even worse, but it is realistic! Imagine how terrible it is to reuse this setup for similar tests.
+But there's a solution to that - Gherkin Background section:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;Feature:&lt;/span&gt;&lt;span class="nf"&gt; Spaceballs&lt;/span&gt;
+
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;Background:&lt;/span&gt;&lt;span class="nf"&gt;&lt;/span&gt;
+&lt;span class="k"&gt;                Given &lt;/span&gt;&lt;span class="nf"&gt;there's a room&lt;/span&gt;
+&lt;span class="nf"&gt;                &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;there's you&lt;/span&gt;
+&lt;span class="nf"&gt;                &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;you have a father&lt;/span&gt;
+&lt;span class="nf"&gt;                &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;your father has a brother&lt;/span&gt;
+&lt;span class="nf"&gt;                &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;your father's brother has a nephew&lt;/span&gt;
+&lt;span class="nf"&gt;                &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;your father's brother's nephew has a cousin&lt;/span&gt;
+&lt;span class="nf"&gt;                &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;there's I am&lt;/span&gt;
+
+&lt;span class="nf"&gt;        &lt;/span&gt;&lt;span class="k"&gt;Scenario:&lt;/span&gt;&lt;span class="nf"&gt; Dark Helmet vs Lone Star v3&lt;/span&gt;
+&lt;span class="k"&gt;                Given &lt;/span&gt;&lt;span class="nf"&gt;your father's brother's nephew's cousin's lived in the room&lt;/span&gt;
+&lt;span class="nf"&gt;                &lt;/span&gt;&lt;span class="k"&gt;And &lt;/span&gt;&lt;span class="nf"&gt;I lived in the room&lt;/span&gt;
+
+&lt;span class="nf"&gt;                &lt;/span&gt;&lt;span class="k"&gt;When &lt;/span&gt;&lt;span class="nf"&gt;So what does that make us?&lt;/span&gt;
+
+&lt;span class="nf"&gt;                &lt;/span&gt;&lt;span class="k"&gt;Then &lt;/span&gt;&lt;span class="nf"&gt;Absolutely nothing&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;How is it now different from the v1? A lot more paper work and the flavor is still there.
+Anyway you have to address that particular person by some symbolic name, especially because these steps
+are executed separately and the context is shared between them.&lt;/p&gt;
+&lt;p&gt;Popular BDD tools are providing this feature, but every step has to come up with certain variable name,
+put it in the context, make sure to check if it was already created.
+It also implies that the given steps have to be in a certain order which is again too programmatic.&lt;/p&gt;
+&lt;p&gt;On the other hand most systems have a statically defined hierarchy. In case you need an object all
+non-nullable parents in the hierarchy have to be created, otherwise this object cannot exist. All the preconditions
+that make your system valid are not really worth mentioning. This is the so called just-enough-specification principle
+of Gherkin where you specify only the facts that you need to observe later assuming everything else simply works.&lt;/p&gt;
+&lt;p&gt;Certain flavors usually also have statically defined roles in the systems with much shorter names.
+To achieve that there should be some kind of pattern to make sure all of the object's dependencies are created without
+mentioning them explicitly.&lt;/p&gt;
+&lt;p&gt;At Paylogic we gained quite some experience by using pytest for more than 7 years, you can read some
+&lt;a class="reference external" href="http://developer.paylogic.com/articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html"&gt;previous articles&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="section" id="dependency-injection"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id2"&gt;Dependency injection&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;The main difference between pytest and most of the other testing tools is dependency injection.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;you&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;your_father&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="sd"&gt;"""You can't be created without your father."""&lt;/span&gt;
+        &lt;span class="o"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Basically the entire hierarchy is configured statically in the code as dependencies. It is easy to follow the flow
+by looking at definitions. Each fixture cares only about creating itself and ordering all necessary information as
+dependencies.&lt;/p&gt;
+&lt;p&gt;In pytest-BDD we implemented dependency injection support for the steps, so that pytest fixtures are shared among them
+instead of the context object that you have to feed in an imperative way.&lt;/p&gt;
+&lt;p&gt;Compared to the other testing tools code written using pytest has more declarative way rather than imperative
+and dependencies allow just-enough-specification.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="ideal-test"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id3"&gt;Ideal test&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;What would be the ideal test?
+I would say the one where I mention only those attributes that make the test case, these values are defined
+as close as possible to the test code where I can compare them with the assertion section.&lt;/p&gt;
+&lt;p&gt;pytest has an elegant way to parametrize tests:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nd"&gt;@pytest.mark.parametrize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"book__price"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;Amount&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"EUR"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"15.20"&lt;/span&gt;&lt;span class="p"&gt;)])&lt;/span&gt;
+&lt;span class="nd"&gt;@pytest.mark.parametrize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"author__fee_percent"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"expected_author_fee"&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+        &lt;span class="p"&gt;(&lt;/span&gt;
+                &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;27&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Amount&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"EUR"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"4.104"&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt;
+                &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mf"&gt;12.5&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Amount&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"EUR"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"1.9"&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt;
+        &lt;span class="p"&gt;),&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_unicode&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;expected_author_fee&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="sd"&gt;"""Test author fee calculation."""&lt;/span&gt;
+        &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;author_fee&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;expected_author_fee&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The only downside of using pytest fixtures is finding their implementation since you don't have to import them.
+Fixtures can be inherited and overridden so you are not always sure in what context you are. It would be
+nice to have a more compact representation of their definitions or to avoid their manual definition completely.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="factory-pattern"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id4"&gt;Factory pattern&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;There's a great project for Python called &lt;a class="reference external" href="https://factoryboy.readthedocs.org"&gt;factory_boy&lt;/a&gt;. It allows creating objects starting on any level of the
+model hierarchy, also creating all of the necessary dependencies. Factory pattern solves the problem of the encapsulation,
+so that any value can passed to any level.&lt;/p&gt;
+&lt;p&gt;It is declarative, compact and easy to maintain. Factories are look-alike models and provide a great overview on
+what values attributes will get.&lt;/p&gt;
+&lt;p&gt;There are post-generation declarations and actions that help you solve problems related to circular dependencies
+and to apply some side effects after the object is created.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;factory&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;faker&lt;/span&gt;
+
+&lt;span class="n"&gt;fake&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;faker&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Factory&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Factory&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+        &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Author&lt;/span&gt;
+
+        &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;LazyAttribute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;fake&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;BookFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Factory&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+        &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+                &lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Book&lt;/span&gt;
+
+        &lt;span class="c1"&gt;# Parent object is created at first&lt;/span&gt;
+        &lt;span class="n"&gt;author&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SubFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+        &lt;span class="n"&gt;title&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;LazyAttribute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;fake&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sentence&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+
+
+&lt;span class="c1"&gt;# Create a book with default values.&lt;/span&gt;
+&lt;span class="n"&gt;book&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;BookFactory&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Create a book with specific title value.&lt;/span&gt;
+&lt;span class="n"&gt;book_with_title&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;BookFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;title&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'pytest in a nutshell'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Create a book parametrized with specific author name.&lt;/span&gt;
+&lt;span class="n"&gt;book_with_author_name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;BookFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;author__name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;'John Smith'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Creates books with titles "Book 1", "Book 2", "Book 3", etc.&lt;/span&gt;
+&lt;span class="n"&gt;tons_of_books&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;BookFactory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;create_batch&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;100000&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;title&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Sequence&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;"Book {0}"&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;)),&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;The double underscore syntax allows you to address the attribute, the attribute of the attribute etc.
+This is a nice technique that helps creating complex and large datasets for various needs.&lt;/p&gt;
+&lt;p&gt;These datasets can be totally parallel hierarchies or a common parent can be passed to bind them.
+You can even configure certain rules about how to obtain the parent on the attribute declaration.&lt;/p&gt;
+&lt;p&gt;We use it to populate our sandbox environment database with demo data that 3rd parties can use.&lt;/p&gt;
+&lt;p&gt;Normally for well isolated test you don't need the entire hierarchy. It takes too much time and resource
+to create everything. It should be like a lightning that is reaching the target following the shortest path,
+create only what's necessary to make it work.&lt;/p&gt;
+&lt;p&gt;Also the tests that are separated in steps want to use only relevant nodes of the hierarchy, not navigating
+through an entire hierarchy to reach a certain instance or attribute. And this is what pytest is good at,
+also solving the problem of binding objects to the common parent which is an instance of a fixture in the session.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="factory-vs-dependency-injection"&gt;
+&lt;h3&gt;&lt;a class="toc-backref" href="#id5"&gt;Factory vs dependency injection&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;So just to recap, Factory is good at compact declarative style with a good overview of what would be the values,
+flexibility in parametrization on any level of hierarchy.&lt;/p&gt;
+&lt;p&gt;pytest is good at delivering fully configured fixtures at any point of the test setup and parametrization of the
+test case.&lt;/p&gt;
+&lt;p&gt;What if there could be a way to combine those two to take advantage of:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Minimum objects creation in the hierarchy path.&lt;/li&gt;
+&lt;li&gt;Easily accessed instances of the hierarchy path by conventional names.&lt;/li&gt;
+&lt;li&gt;Strong convention of naming attributes for the parametrization.&lt;/li&gt;
+&lt;li&gt;Compact declarative notation for the models and attributes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is possible to parametrize anything using pytest as long as it is a fixture. It means that we need
+fixtures not only for the principal entities, but also for all their attributes.
+Since fixture names are unique within the scope of a test session and represent the same instance, the double
+underscore convention of factory_boy can be also applied.&lt;/p&gt;
+&lt;div class="section" id="pytest-factoryboy"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="#id6"&gt;pytest-factoryboy&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;So I made a library where I'm trying to combine the best practices of dependency injection and the factory pattern.
+The main idea is that the logic of creating attributes is incorporated in the factory attribute declarations
+and dependencies are represented by sub-factory attributes.&lt;/p&gt;
+&lt;p&gt;Basically there's no need for manual implementation of the fixtures since factories can be introspected and fixtures
+can be automatically generated. Only registration is needed where you can optionally choose a name for the fixture.&lt;/p&gt;
+&lt;div class="section" id="factory-fixture"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id7"&gt;Factory Fixture&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;Factory fixtures allow using factories without importing them. Name convention is lowercase-underscore
+class name.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;factory&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pytest_factoryboy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;register&lt;/span&gt;
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Factory&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Author&lt;/span&gt;
+
+
+&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_factory_fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;author_factory&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="n"&gt;author&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;author_factory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"Charles Dickens"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"Charles Dickens"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Basically you don't have to be bothered importing the factory at all. The only thing you should keep in mind
+is the naming convention to guess the name and just request it in your fixture or your test function.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="model-fixture"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id8"&gt;Model Fixture&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;Model fixture implements an instance of a model created by the factory. Name convention is lowercase-underscore
+class name.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;factory&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pytest_factoryboy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;register&lt;/span&gt;
+
+&lt;span class="nd"&gt;@register&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Factory&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Author&lt;/span&gt;
+
+    &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;"Charles Dickens"&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_model_fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"Charles Dickens"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Model fixtures can be registered with specific names. For example if you address instances of some collection
+by names like "first", "second" or of another parent as "other":&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BookFactory&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# book&lt;/span&gt;
+&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BookFactory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"second_book"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# second_book&lt;/span&gt;
+
+&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# author&lt;/span&gt;
+&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"second_author"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="c1"&gt;# second_author&lt;/span&gt;
+
+&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BookFactory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"other_book"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;  &lt;span class="c1"&gt;# other_book, book of another author&lt;/span&gt;
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;other_book__author&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;second_author&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Make the relation of the second_book to another (second) author."""&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;second_author&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="attributes-are-fixtures"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id9"&gt;Attributes are Fixtures&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;There are fixtures created for factory attributes. Attribute names are prefixed with the model fixture name and
+double underscore (similar to the convention used by factory boy).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nd"&gt;@pytest.mark.parametrized&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"author__name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"Bill Gates"&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_model_fixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"Bill Gates"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="subfactory"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id10"&gt;SubFactory&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;Sub-factory attribute points to the model fixture of the sub-factory.
+Attributes of sub-factories are injected as dependencies to the model fixture and can be &lt;a class="reference external" href="http://pytest.org/latest/fixture.html#override-a-fixture-with-direct-test-parametrization"&gt;overridden&lt;/a&gt; via
+parametrization.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="related-factory"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id11"&gt;Related Factory&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;Related factory attribute points to the model fixture of the related factory.
+Attributes of related factories are injected as dependencies to the model fixture and can be &lt;a class="reference external" href="http://pytest.org/latest/fixture.html#override-a-fixture-with-direct-test-parametrization"&gt;overridden&lt;/a&gt; via
+parametrization.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="post-generation"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id12"&gt;post-generation&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;Post-generation attribute fixture implements only the extracted value for the post generation function.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="integration"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id13"&gt;Integration&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;An example of &lt;a class="reference external" href="https://factoryboy.readthedocs.org"&gt;factory_boy&lt;/a&gt; and &lt;a class="reference external" href="http://pytest.org"&gt;pytest&lt;/a&gt; integration.&lt;/p&gt;
+&lt;p&gt;factories/__init__.py:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;factory&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;faker&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Factory&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;FakerFactory&lt;/span&gt;
+
+&lt;span class="n"&gt;faker&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;FakerFactory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;create&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;django&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DjangoModelFactory&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="sd"&gt;"""Author factory."""&lt;/span&gt;
+
+    &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;LazyAttribute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;faker&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+
+    &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'app.Author'&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;BookFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;django&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;DjangoModelFactory&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="sd"&gt;"""Book factory."""&lt;/span&gt;
+
+    &lt;span class="n"&gt;title&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;LazyAttribute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;faker&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sentence&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;nb_words&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+
+    &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s1"&gt;'app.Book'&lt;/span&gt;
+
+    &lt;span class="n"&gt;author&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SubFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;tests/conftest.py:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pytest_factoryboy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;register&lt;/span&gt;
+
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;factories&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;BookFactory&lt;/span&gt;
+
+&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BookFactory&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;tests/test_models.py:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;app.models&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Book&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;factories&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;BookFactory&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_book_factory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;book_factory&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Factories become fixtures automatically."""&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;book_factory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;BookFactory&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_book&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Instances become fixtures automatically."""&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="nb"&gt;isinstance&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;Book&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nd"&gt;@pytest.mark.parametrize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"book__title"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"pytest for Dummies"&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="nd"&gt;@pytest.mark.parametrize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"author__name"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"Bill Gates"&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_parametrized&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""You can set any factory attribute as a fixture using naming convention."""&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"pytest for Dummies"&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"Bill Gates"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="fixture-partial-specialization"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id14"&gt;Fixture partial specialization&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;There is a possibility to pass keyword parameters in order to override factory attribute values during fixture
+registration. This comes in handy when your test case is requesting a lot of fixture flavors. Too much for the
+regular pytest parametrization.
+In this case you can register fixture flavors in the local test module and specify value deviations inside &lt;tt class="docutils literal"&gt;register&lt;/tt&gt;
+function calls.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"male_author"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;gender&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"M"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"John Doe"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"female_author"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;gender&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;"F"&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.fixture&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;female_author__name&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Override female author name as a separate fixture."""&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;"Jane Doe"&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.mark.parametrize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"male_author__age"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;42&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;  &lt;span class="c1"&gt;# Override even more&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_partial&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;male_author&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;female_author&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Test fixture partial specialization."""&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;male_author&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gender&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"M"&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;male_author&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"John Doe"&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;male_author&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;age&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;42&lt;/span&gt;
+
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;female_author&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;gender&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"F"&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;female_author&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s2"&gt;"Jane Doe"&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="fixture-attributes"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id15"&gt;Fixture attributes&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;Sometimes it is necessary to pass an instance of another fixture as an attribute value to the factory.
+It is possible to override the generated attribute fixture where desired values can be requested as
+fixture dependencies. There is also a lazy wrapper for the fixture that can be used in the parametrization
+without defining fixtures in a module.&lt;/p&gt;
+&lt;p&gt;LazyFixture constructor accepts either existing fixture name or callable with dependencies:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pytest&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pytest_factoryboy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;LazyFixture&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.mark.parametrize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"book__author"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;LazyFixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"another_author"&lt;/span&gt;&lt;span class="p"&gt;)])&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_lazy_fixture_name&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;another_author&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Test that book author is replaced with another author by fixture name."""&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;author&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;another_author&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@pytest.mark.parametrize&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"book__author"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;LazyFixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;lambda&lt;/span&gt; &lt;span class="n"&gt;another_author&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="n"&gt;another_author&lt;/span&gt;&lt;span class="p"&gt;)])&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_lazy_fixture_callable&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;another_author&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Test that book author is replaced with another author by callable."""&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;book&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;author&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="n"&gt;another_author&lt;/span&gt;
+
+
+&lt;span class="c1"&gt;# Can also be used in the partial specialization during the registration.&lt;/span&gt;
+&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;AuthorFactory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;"another_book"&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;author&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;LazyFixture&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;"another_author"&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="post-generation-dependencies"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id16"&gt;Post-generation dependencies&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;Unlike factory_boy which binds related objects using an internal container to store results of lazy evaluation,
+pytest-factoryboy relies on the pytest request.&lt;/p&gt;
+&lt;p&gt;Circular dependencies between objects can be resolved using post-generation hooks/related factories in combination with
+passing the SelfAttribute, but in the case of pytest request fixture functions have to return values in order to be cached
+in the request and to become available to other fixtures.&lt;/p&gt;
+&lt;p&gt;That's why evaluation of the post-generation declaration in pytest-factoryboy is deferred until calling
+the test function.
+This solves circular dependency resolution for situations like:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+o-&amp;gt;[ A ]--&amp;gt;[ B ]&amp;lt;--[ C ]-o
+|                        |
+o----(C depends on A)----o
+&lt;/pre&gt;
+&lt;p&gt;On the other hand deferring the evaluation of post-generation declarations makes their result unavailable during
+the generation of objects that are not in the circular dependency, but they rely on the post-generation action.
+It is possible to declare such dependencies to be evaluated earlier, right before generating the requested object.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;pytest_factoryboy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;register&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Foo&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Bar&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;object&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;__init__&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="bp"&gt;self&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;
+
+
+&lt;span class="nd"&gt;@register&lt;/span&gt;
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;FooFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Factory&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="sd"&gt;"""Foo factory."""&lt;/span&gt;
+
+    &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Foo&lt;/span&gt;
+
+    &lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@factory.post_generation&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;set1&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;create&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;kwargs&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+
+
+&lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;BarFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Factory&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+
+    &lt;span class="sd"&gt;"""Bar factory."""&lt;/span&gt;
+
+    &lt;span class="n"&gt;foo&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;factory&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;SubFactory&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;FooFactory&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="nd"&gt;@classmethod&lt;/span&gt;
+    &lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;_create&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cls&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;model_class&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+        &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;  &lt;span class="c1"&gt;# Assert that set1 is evaluated before object generation&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nb"&gt;super&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;BarFactory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cls&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;_create&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;model_class&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;Meta&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;model&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Bar&lt;/span&gt;
+
+
+&lt;span class="n"&gt;register&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;BarFactory&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="s1"&gt;'bar'&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;_postgen_dependencies&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;"foo__set1"&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="sd"&gt;"""Forces 'set1' to be evaluated first."""&lt;/span&gt;
+
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;test_depends_on_set1&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;bar&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+    &lt;span class="sd"&gt;"""Test that post-generation hooks are done and the value is 2."""&lt;/span&gt;
+    &lt;span class="k"&gt;assert&lt;/span&gt; &lt;span class="n"&gt;depends_on_1&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;foo&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;value&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;All post-generation/RelatedFactory attributes specified in the &lt;cite&gt;_postgen_dependencies&lt;/cite&gt; list during factory registration
+are evaluated before the object generation.&lt;/p&gt;
+&lt;p&gt;In case you are using an ORM, SQLAlchemy is especially good with post-generation actions. It is as lazy as possible
+and doesn't require to bind objects by using constructors or primary keys to be generated.
+SQLAlchemy is your friend here.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="hooks"&gt;
+&lt;h5&gt;&lt;a class="toc-backref" href="#id17"&gt;Hooks&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;pytest-factoryboy exposes several &lt;a class="reference external" href="http://pytest.org/latest/plugins.html#well-specified-hooks"&gt;pytest hooks&lt;/a&gt;
+which might be helpful for e.g. controlling database transaction, for reporting etc:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;pytest_factoryboy_done(request) - Called after all factory based fixtures and their post-generation actions have been evaluated.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="conclusion"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="#id18"&gt;Conclusion&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;As pytest helps you write better programs, pytest-factoryboy helps you write better tests.
+Conventions and limitations allow you to focus on the test exercise and assertions rather than implementation
+of complicated test setups.&lt;/p&gt;
+&lt;p&gt;It is easy to parametrize particular low-level attributes of your models, but it is also easy to identify
+higher level flags to apply all the side effects for the certain workflows in your system.&lt;/p&gt;
+&lt;p&gt;In both cases it is not needed to navigate through files and folders, looking for specific (inherited) fixture
+implementations. It is enough to take a look at the factory classes to get an idea of what to expect,
+but in most cases it is easy to guess by combining the model name and the attribute name that you know by heart.&lt;/p&gt;
+&lt;p&gt;It is also a great help in behavioral tests to introduce homogenic given steps and avoid fixture flavors.
+Since you are not implementing complete fixtures manually, flavors just don't exist.&lt;/p&gt;
+&lt;p&gt;Given steps are simply specifying attribute values for the models depending on them or applying some mutations
+after the instance is created. And again you are operating only the attributes declared on the factory level
+that define your data or dispatch the workflow of your system.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="future"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="#id19"&gt;Future&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;Is there more room to automate? Yes.&lt;/p&gt;
+&lt;p&gt;Python is an amazing dynamic language with a lot of introspection possibilities. Most of the good libraries provide
+tools for introspection.&lt;/p&gt;
+&lt;p&gt;In case of SQLAlchemy and if you are decorating your types with meaningful types, for example by using Email,
+Password, Address types from the SQLAlchemy-Utils, you could generate base classes for your factories
+and let faker provide you with realistic human-readable values.&lt;/p&gt;
+&lt;p&gt;There's a project that I want to continue on called Alchemyboy that allows generation of the base classes for
+factories based on SQLAlchemy models.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="links"&gt;
+&lt;h4&gt;&lt;a class="toc-backref" href="#id20"&gt;Links&lt;/a&gt;&lt;/h4&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://developer.paylogic.com/articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html"&gt;How we use pytest and pytest-bdd in Paylogic.&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://pytest.org/latest/"&gt;pytest - helps you write better programs.&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://pytest-bdd.readthedocs.org/en/latest/"&gt;pytest-bdd&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="https://factoryboy.readthedocs.org"&gt;factory_boy&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://pytest-factoryboy.readthedocs.org"&gt;pytest-factoryboy - factory_boy integration with the pytest.&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://www.sqlalchemy.org"&gt;SQLAlchemy&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="reference external" href="http://sqlalchemy-utils.readthedocs.org"&gt;SQLAlchemy-Utils&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Oleg Pidsadnyi</dc:creator><pubDate>Fri, 01 Apr 2016 11:02:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2016-04-01:articles/factory-injection-combining-pytest-factory_boy.html</guid><category>open source</category><category>python</category><category>pytest</category><category>pytest-bdd</category><category>factory_boy</category><category>pytest-factoryboy</category></item></channel></rss>

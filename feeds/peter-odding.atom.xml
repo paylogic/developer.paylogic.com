@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/peter-odding.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2013-05-14T00:28:00+02:00</updated><entry><title>Using Debian packages for Python deployments</title><link href="http://developer.paylogic.com/articles/debian-packages.html" rel="alternate"></link><updated>2013-05-14T00:28:00+02:00</updated><author><name>Peter Odding</name></author><id>tag:developer.paylogic.com,2013-05-14:articles/debian-packages.html</id><summary type="html">
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/peter-odding.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2013-05-14T00:28:00+02:00</updated><entry><title>Using Debian packages for Python deployments</title><link href="http://developer.paylogic.com/articles/debian-packages.html" rel="alternate"></link><published>2013-05-14T00:28:00+02:00</published><author><name>Peter Odding</name></author><id>tag:developer.paylogic.com,2013-05-14:articles/debian-packages.html</id><summary type="html">
 &lt;p&gt;At Paylogic we use Debian packages to deploy our Python applications. This
 article explains how we got started.&lt;/p&gt;
 &lt;p&gt;This is a large article but if you just want to get started building Debian
@@ -84,13 +84,13 @@ running Debian or a derivative Linux distribution!&lt;/p&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id8"&gt;Creating your first Debian package&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;To create a simple Debian package we only need a single file and a single
 command. Here's how you get started:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# Create a directory to hold the files contained in the package.&lt;/span&gt;
-mkdir my-package &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="nb"&gt;cd &lt;/span&gt;my-package
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Create a directory to hold the files contained in the package.&lt;/span&gt;
+mkdir my-package &lt;span class="o"&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class="nb"&gt;cd&lt;/span&gt; my-package
 
-&lt;span class="c"&gt;# Create a directory with the package's control files.&lt;/span&gt;
+&lt;span class="c1"&gt;# Create a directory with the package's control files.&lt;/span&gt;
 mkdir DEBIAN
 
-&lt;span class="c"&gt;# Create the main control file with package metadata.&lt;/span&gt;
+&lt;span class="c1"&gt;# Create the main control file with package metadata.&lt;/span&gt;
 cat &amp;gt; DEBIAN/control &lt;span class="s"&gt;&amp;lt;&amp;lt; EOF&lt;/span&gt;
 &lt;span class="s"&gt;Package: name-of-package&lt;/span&gt;
 &lt;span class="s"&gt;Version: 1.0&lt;/span&gt;
@@ -102,7 +102,7 @@ cat &amp;gt; DEBIAN/control &lt;span class="s"&gt;&amp;lt;&amp;lt; EOF&lt;/span&
 &lt;span class="s"&gt;Description: Explanation of why name-of-package is so cool&lt;/span&gt;
 &lt;span class="s"&gt;EOF&lt;/span&gt;
 
-&lt;span class="c"&gt;# Build the package using the accepted naming scheme.&lt;/span&gt;
+&lt;span class="c1"&gt;# Build the package using the accepted naming scheme.&lt;/span&gt;
 &lt;span class="nv"&gt;NAME&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;awk &lt;span class="s1"&gt;'/^Package:/ {print $2}'&lt;/span&gt; DEBIAN/control&lt;span class="k"&gt;)&lt;/span&gt;
 &lt;span class="nv"&gt;VERSION&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;awk &lt;span class="s1"&gt;'/^Version:/ {print $2}'&lt;/span&gt; DEBIAN/control&lt;span class="k"&gt;)&lt;/span&gt;
 &lt;span class="nv"&gt;ARCH&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="k"&gt;$(&lt;/span&gt;awk &lt;span class="s1"&gt;'/^Architecture:/ {print $2}'&lt;/span&gt; DEBIAN/control&lt;span class="k"&gt;)&lt;/span&gt;
@@ -126,25 +126,25 @@ you use &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;apt-get&lt;/s
 support installation of local &lt;tt class="docutils literal"&gt;*.deb&lt;/tt&gt; archives; it needs a repository. In
 other words, once you start using dependencies you will want to setup a Debian
 package repository for your packages! Here's how you get started:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# Create repository layout, copy packages.&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Create repository layout, copy packages.&lt;/span&gt;
 mkdir -p repo/binary
 cp *.deb repo/binary
-&lt;span class="nb"&gt;cd &lt;/span&gt;repo
+&lt;span class="nb"&gt;cd&lt;/span&gt; repo
 
-&lt;span class="c"&gt;# Create list of packages.&lt;/span&gt;
-rm -f Packages Packages.gz Release Release.gpg  &lt;span class="c"&gt;# cleanup after previous run&lt;/span&gt;
+&lt;span class="c1"&gt;# Create list of packages.&lt;/span&gt;
+rm -f Packages Packages.gz Release Release.gpg  &lt;span class="c1"&gt;# cleanup after previous run&lt;/span&gt;
 dpkg-scanpackages -m . &lt;span class="p"&gt;|&lt;/span&gt; sed &lt;span class="s1"&gt;'s@: \./@: @'&lt;/span&gt; &amp;gt; Packages
 
-&lt;span class="c"&gt;# Create compressed copy of list.&lt;/span&gt;
+&lt;span class="c1"&gt;# Create compressed copy of list.&lt;/span&gt;
 cat Packages &lt;span class="p"&gt;|&lt;/span&gt; gzip &amp;gt; Packages.gz
 
-&lt;span class="c"&gt;# Generate release file.&lt;/span&gt;
-rm -f Release Release.gpg  &lt;span class="c"&gt;# cleanup after previous run&lt;/span&gt;
+&lt;span class="c1"&gt;# Generate release file.&lt;/span&gt;
+rm -f Release Release.gpg  &lt;span class="c1"&gt;# cleanup after previous run&lt;/span&gt;
 &lt;span class="nv"&gt;LANG&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; apt-ftparchive release . &amp;gt; Release.tmp
 mv Release.tmp Release
 
-&lt;span class="c"&gt;# Sign release file.&lt;/span&gt;
-rm -f Release.gpg  &lt;span class="c"&gt;# cleanup after previous run&lt;/span&gt;
+&lt;span class="c1"&gt;# Sign release file.&lt;/span&gt;
+rm -f Release.gpg  &lt;span class="c1"&gt;# cleanup after previous run&lt;/span&gt;
 gpg -abs -o Release.gpg Release
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;There are several gotcha's in the above piece of shell script:&lt;/p&gt;
@@ -182,7 +182,7 @@ used to sign the Release file has to be installed on the remote machines.
 Assuming you have SSH and sudo access to the server where you generated the GPG
 key &lt;cite&gt;and&lt;/cite&gt; the one where you want to install the GPG key, the following command
 will install the GPG key:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;ssh build-server sudo -i gpg --armor --export &lt;span class="p"&gt;|&lt;/span&gt; ssh target-host sudo apt-key add -
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ssh build-server sudo -i gpg --armor --export &lt;span class="p"&gt;|&lt;/span&gt; ssh target-host sudo apt-key add -
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -201,7 +201,7 @@ installation/removal scripts, dpkg triggers and generation of configuration
 files. Stay tuned!&lt;/p&gt;
 &lt;!-- External references: --&gt;
 &lt;/div&gt;
-</summary><category term="python"></category><category term="deployment"></category><category term="automation"></category><category term="debian"></category><category term="packaging"></category></entry><entry><title>pip-accel: Accelerator for pip, the Python package manager</title><link href="http://developer.paylogic.com/articles/pip-accel.html" rel="alternate"></link><updated>2013-05-14T00:28:00+02:00</updated><author><name>Peter Odding</name></author><id>tag:developer.paylogic.com,2013-05-14:articles/pip-accel.html</id><summary type="html">
+</summary><category term="python"></category><category term="deployment"></category><category term="automation"></category><category term="debian"></category><category term="packaging"></category></entry><entry><title>pip-accel: Accelerator for pip, the Python package manager</title><link href="http://developer.paylogic.com/articles/pip-accel.html" rel="alternate"></link><published>2013-05-14T00:28:00+02:00</published><author><name>Peter Odding</name></author><id>tag:developer.paylogic.com,2013-05-14:articles/pip-accel.html</id><summary type="html">
 &lt;p&gt;Recently we published &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;pip-accel&lt;/a&gt; to &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;GitHub&lt;/a&gt; and &lt;a class="reference external" href="https://pypi.python.org/pypi/pip-accel"&gt;PyPI&lt;/a&gt;, in this article we'll
 tell you why and how we created this project.&lt;/p&gt;
 &lt;div class="section" id="introduction"&gt;
@@ -342,7 +342,7 @@ This local source package index is just a directory with source packages
 downloaded from PyPI and distribution websites.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;We then run &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt; as follows:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;pip install --no-index --find-links&lt;span class="o"&gt;=&lt;/span&gt;file://&lt;span class="nv"&gt;$LOCAL_INDEX&lt;/span&gt; --requirement&lt;span class="o"&gt;=&lt;/span&gt;example.txt
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ pip install --no-index --find-links&lt;span class="o"&gt;=&lt;/span&gt;file://&lt;span class="nv"&gt;$LOCAL_INDEX&lt;/span&gt; --requirement&lt;span class="o"&gt;=&lt;/span&gt;example.txt
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;If the command succeeds it means all of the requirements (including the
 transitive dependencies) can be satisfied from the local index. In this case
@@ -355,10 +355,10 @@ we don't need a network connection!&lt;/p&gt;
 &lt;p&gt;Our second problem was that &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt; always recompiles binary modules. This isn't
 very hard to fix. Here's how you create a dumb binary distribution (a tar
 archive with binary artifacts specific to your current system):&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;python setup.py bdist_dumb --format&lt;span class="o"&gt;=&lt;/span&gt;gztar
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python setup.py bdist_dumb --format&lt;span class="o"&gt;=&lt;/span&gt;gztar
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Unfortunately these distributions are really dumb:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;tar tf ipython-0.13.2.linux-x86_64.tar.gz &lt;span class="p"&gt;|&lt;/span&gt; tail -n1
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ tar tf ipython-0.13.2.linux-x86_64.tar.gz &lt;span class="p"&gt;|&lt;/span&gt; tail -n1
 ./home/peter/.virtualenvs/pip-accel/lib/python2.6/site-packages/IPython/lib/security.py
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Dumb binary distributions contain hard coded pathnames specific to the virtual
@@ -372,7 +372,7 @@ course with a bit of work these pathnames can be normalized to the root of the
 &lt;h2&gt;&lt;a class="toc-backref" href="#id9"&gt;Putting it all together: pip-accel&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;So now you know why and how &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;pip-accel&lt;/a&gt; was born! It's available on &lt;a class="reference external" href="https://pypi.python.org/pypi/pip-accel"&gt;PyPI&lt;/a&gt; and
 &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;GitHub&lt;/a&gt; but if you just want to try it out you can use the following:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nv"&gt;$ &lt;/span&gt;pip install pip-accel
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ pip install pip-accel
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;The command &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pip-accel&lt;/span&gt;&lt;/tt&gt; will be installed in your environment. You should be
 able to use it just like &lt;a class="reference external" href="http://www.pip-installer.org/"&gt;pip&lt;/a&gt;, simply type &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pip-accel&lt;/span&gt;&lt;/tt&gt; where you would

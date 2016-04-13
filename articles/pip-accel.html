@@ -265,7 +265,7 @@ This local source package index is just a directory with source packages
 downloaded from PyPI and distribution websites.</p>
 </li>
 <li><p class="first">We then run <a class="reference external" href="http://www.pip-installer.org/">pip</a> as follows:</p>
-<div class="highlight"><pre><span class="nv">$ </span>pip install --no-index --find-links<span class="o">=</span>file://<span class="nv">$LOCAL_INDEX</span> --requirement<span class="o">=</span>example.txt
+<div class="highlight"><pre><span></span>$ pip install --no-index --find-links<span class="o">=</span>file://<span class="nv">$LOCAL_INDEX</span> --requirement<span class="o">=</span>example.txt
 </pre></div>
 <p>If the command succeeds it means all of the requirements (including the
 transitive dependencies) can be satisfied from the local index. In this case
@@ -278,10 +278,10 @@ we don't need a network connection!</p>
 <p>Our second problem was that <a class="reference external" href="http://www.pip-installer.org/">pip</a> always recompiles binary modules. This isn't
 very hard to fix. Here's how you create a dumb binary distribution (a tar
 archive with binary artifacts specific to your current system):</p>
-<div class="highlight"><pre><span class="nv">$ </span>python setup.py bdist_dumb --format<span class="o">=</span>gztar
+<div class="highlight"><pre><span></span>$ python setup.py bdist_dumb --format<span class="o">=</span>gztar
 </pre></div>
 <p>Unfortunately these distributions are really dumb:</p>
-<div class="highlight"><pre><span class="nv">$ </span>tar tf ipython-0.13.2.linux-x86_64.tar.gz <span class="p">|</span> tail -n1
+<div class="highlight"><pre><span></span>$ tar tf ipython-0.13.2.linux-x86_64.tar.gz <span class="p">|</span> tail -n1
 ./home/peter/.virtualenvs/pip-accel/lib/python2.6/site-packages/IPython/lib/security.py
 </pre></div>
 <p>Dumb binary distributions contain hard coded pathnames specific to the virtual
@@ -295,7 +295,7 @@ course with a bit of work these pathnames can be normalized to the root of the
 <h2><a class="toc-backref" href="#id9">Putting it all together: pip-accel</a></h2>
 <p>So now you know why and how <a class="reference external" href="https://github.com/paylogic/pip-accel">pip-accel</a> was born! It's available on <a class="reference external" href="https://pypi.python.org/pypi/pip-accel">PyPI</a> and
 <a class="reference external" href="https://github.com/paylogic/pip-accel">GitHub</a> but if you just want to try it out you can use the following:</p>
-<div class="highlight"><pre><span class="nv">$ </span>pip install pip-accel
+<div class="highlight"><pre><span></span>$ pip install pip-accel
 </pre></div>
 <p>The command <tt class="docutils literal"><span class="pre">pip-accel</span></tt> will be installed in your environment. You should be
 able to use it just like <a class="reference external" href="http://www.pip-installer.org/">pip</a>, simply type <tt class="docutils literal"><span class="pre">pip-accel</span></tt> where you would

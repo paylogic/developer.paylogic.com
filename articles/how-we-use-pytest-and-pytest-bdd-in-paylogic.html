@@ -160,7 +160,7 @@ for example <em>pytestbdd_window_size</em>. You can imagine that this fixture is
 <h3><a class="toc-backref" href="#id3">Fixture imports</a></h3>
 <p>For registering fixtures we just import the fixtures from their packages. For example for registering the <em>order</em> fixture
 and fixtures that represent attributes of <em>order</em> object such as <em>order_title</em>, <em>order_point_of_sale</em>, etc. we just do:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">tests.fixtures.order</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tests.fixtures.order</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">order</span><span class="p">,</span>
     <span class="n">order_title</span><span class="p">,</span>
     <span class="n">order_point_of_sale</span><span class="p">,</span>
@@ -168,7 +168,7 @@ and fixtures that represent attributes of <em>order</em> object such as <em>orde
 <span class="p">)</span>
 </pre></div>
 <p>A fixture that represents an object, e.g. an order, typically looks as follows:</p>
-<div class="highlight"><pre><span class="nd">@pytest.fixture</span>
+<div class="highlight"><pre><span></span><span class="nd">@pytest.fixture</span>
 <span class="k">def</span> <span class="nf">order</span><span class="p">(</span>
     <span class="o">...</span>
     <span class="n">event</span><span class="p">,</span>
@@ -202,7 +202,7 @@ the right order for creating initial data.</p>
 with which the order will be created. We override these using @pytest.mark.parametrize or with argumented steps in
 pytest-bdd.</p>
 <p>For example if we need to test an order with a different <em>expiry_time</em> we do it like this:</p>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
 <span class="nd">@pytest.mark.parametrize</span><span class="p">(</span>
     <span class="n">expiry_time</span><span class="p">,</span>
@@ -217,9 +217,9 @@ pytest-bdd.</p>
 </pre></div>
 <p>Now, test_complete_order test will be executed twice and every time we will have an order with a different <em>expiry_time</em>.</p>
 <p>We also use <em>pytest.fixture(params=[...])</em> to set parameters for fixtures:</p>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 
-<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="s">'127.0.0.1'</span><span class="p">,</span> <span class="s">'192.168.0.1'</span><span class="p">])</span>
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="p">[</span><span class="s1">'127.0.0.1'</span><span class="p">,</span> <span class="s1">'192.168.0.1'</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">client_ip</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">param</span>
 </pre></div>
@@ -238,12 +238,12 @@ general sense based on just our experiences.</p>
 <h4><a class="toc-backref" href="#id6">Fixtures for mocking</a></h4>
 <p>We also use fixtures for mocking. For example in the <a class="reference external" href="https://github.com/paylogic/settei">settei</a>  project we needed
 to mock a required method of the <em>pkg_resources.EntryPoint</em> class, so we wrote the following fixture:</p>
-<div class="highlight"><pre><span class="c"># tests/test_get_entry_points.py</span>
+<div class="highlight"><pre><span></span><span class="c1"># tests/test_get_entry_points.py</span>
 <span class="o">...</span>
 <span class="nd">@pytest.fixture</span>
 <span class="k">def</span> <span class="nf">monkeypatch_entrypoint</span><span class="p">(</span><span class="n">monkeypatch</span><span class="p">,</span> <span class="n">clean_config</span><span class="p">):</span>
     <span class="sd">"""Monkeypatching EntryPoint."""</span>
-    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setattr</span><span class="p">(</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">EntryPoint</span><span class="p">,</span> <span class="s">'require'</span><span class="p">,</span> <span class="n">require</span><span class="p">)</span>
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setattr</span><span class="p">(</span><span class="n">pkg_resources</span><span class="o">.</span><span class="n">EntryPoint</span><span class="p">,</span> <span class="s1">'require'</span><span class="p">,</span> <span class="n">require</span><span class="p">)</span>
     <span class="err">…</span>
 </pre></div>
 <p>Each time when your tests depends on this fixture, the <em>require</em> method of the
@@ -297,26 +297,26 @@ And I submit the form
 Then I should see a &lt;message_status&gt; message
 </pre>
 <p>Then in your tests file you can define the scenario like this:</p>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pytest</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pytest</span>
 <span class="kn">from</span> <span class="nn">pytest_bdd</span> <span class="kn">import</span> <span class="n">scenario</span>
 
 <span class="nd">@pytest.mark.parametrize</span><span class="p">(</span>
-    <span class="p">[</span><span class="s">'product_quantity'</span><span class="p">,</span> <span class="s">'message_status'</span><span class="p">],</span>
+    <span class="p">[</span><span class="s1">'product_quantity'</span><span class="p">,</span> <span class="s1">'message_status'</span><span class="p">],</span>
     <span class="p">[</span>
-        <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s">'success'</span><span class="p">),</span>
-        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">'error'</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s1">'success'</span><span class="p">),</span>
+        <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">'error'</span><span class="p">),</span>
     <span class="p">]</span>
 <span class="p">)</span>
-<span class="nd">@scenario</span><span class="p">(</span><span class="s">'Create product'</span><span class="p">)</span>
+<span class="nd">@scenario</span><span class="p">(</span><span class="s1">'Create product'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_create_product</span><span class="p">(</span><span class="n">product_quantity</span><span class="p">,</span> <span class="n">message_status</span><span class="p">)</span>
     <span class="sd">"""Create product."""</span>
 </pre></div>
 <p>And now in your given, when and then steps you can ask for the <em>product_quantity</em> and <em>message_status</em> fixtures.</p>
-<div class="highlight"><pre><span class="nd">@when</span><span class="p">(</span><span class="s">'I fill in the quantity of the product equal to &lt;product_quantity&gt;'</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="nd">@when</span><span class="p">(</span><span class="s1">'I fill in the quantity of the product equal to &lt;product_quantity&gt;'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">i_fill_the_quantity_of_product</span><span class="p">(</span><span class="n">product_quantity</span><span class="p">):</span>
     <span class="err">…</span>
 
-<span class="nd">@then</span><span class="p">(</span><span class="s">'I should see a &lt;message_status&gt; message'</span><span class="p">)</span>
+<span class="nd">@then</span><span class="p">(</span><span class="s1">'I should see a &lt;message_status&gt; message'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">assert_that_i_see_message</span><span class="p">(</span><span class="n">message_status</span><span class="p">):</span>
     <span class="err">…</span>
 </pre></div>
@@ -330,11 +330,11 @@ defined that are actually almost the same. There is a solution which can help yo
 scenarios with different behaviour.</p>
 <p>In your scenarios you just write <em>"Given I have an event with 2 products"</em> and <em>"Given I have an event with 5 products"</em>, as
 you did before, but in your given.py file you write the following:</p>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">re</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">from</span> <span class="nn">pytest_bdd</span> <span class="kn">import</span> <span class="n">given</span>
 
-<span class="nd">@given</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">'I have an event with (?P&lt;product_quantity&gt;\d+) products'</span><span class="p">))</span>
+<span class="nd">@given</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">'I have an event with (?P&lt;product_quantity&gt;\d+) products'</span><span class="p">))</span>
 <span class="k">def</span> <span class="nf">i_have_an_event_with_products</span><span class="p">(</span><span class="n">product_quantity</span><span class="p">):</span>
     <span class="sd">"""I have an event with products."""</span>
 </pre></div>
@@ -357,35 +357,35 @@ Examples:
 | start | eat | left |
 |  12   |  5  |  7   |
 </pre>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">pytest_bdd</span> <span class="kn">import</span> <span class="n">given</span><span class="p">,</span> <span class="n">when</span><span class="p">,</span> <span class="n">then</span><span class="p">,</span> <span class="n">scenario</span>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pytest_bdd</span> <span class="kn">import</span> <span class="n">given</span><span class="p">,</span> <span class="n">when</span><span class="p">,</span> <span class="n">then</span><span class="p">,</span> <span class="n">scenario</span>
 
 <span class="nd">@scenario</span><span class="p">(</span>
-    <span class="s">'outline.feature'</span><span class="p">,</span>
-    <span class="s">'Outlined given, when, thens'</span><span class="p">,</span>
+    <span class="s1">'outline.feature'</span><span class="p">,</span>
+    <span class="s1">'Outlined given, when, thens'</span><span class="p">,</span>
     <span class="n">example_converters</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">eat</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 <span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_outlined</span><span class="p">():</span>
 <span class="k">pass</span>
 
 
-<span class="nd">@given</span><span class="p">(</span><span class="s">'there are &lt;start&gt; cucumbers'</span><span class="p">)</span>
+<span class="nd">@given</span><span class="p">(</span><span class="s1">'there are &lt;start&gt; cucumbers'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">start_cucumbers</span><span class="p">(</span><span class="n">start</span><span class="p">):</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">)</span>
 
 
-<span class="nd">@when</span><span class="p">(</span><span class="s">'I eat &lt;eat&gt; cucumbers'</span><span class="p">)</span>
+<span class="nd">@when</span><span class="p">(</span><span class="s1">'I eat &lt;eat&gt; cucumbers'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">eat_cucumbers</span><span class="p">(</span><span class="n">start_cucumbers</span><span class="p">,</span> <span class="n">eat</span><span class="p">):</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eat</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
-    <span class="n">start_cucumbers</span><span class="p">[</span><span class="s">'eat'</span><span class="p">]</span> <span class="o">=</span> <span class="n">eat</span>
+    <span class="n">start_cucumbers</span><span class="p">[</span><span class="s1">'eat'</span><span class="p">]</span> <span class="o">=</span> <span class="n">eat</span>
 
 
-<span class="nd">@then</span><span class="p">(</span><span class="s">'I should have &lt;left&gt; cucumbers'</span><span class="p">)</span>
+<span class="nd">@then</span><span class="p">(</span><span class="s1">'I should have &lt;left&gt; cucumbers'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">should_have_left_cucumbers</span><span class="p">(</span><span class="n">start_cucumbers</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">eat</span><span class="p">,</span> <span class="n">left</span><span class="p">):</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">start</span> <span class="o">-</span> <span class="n">eat</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">start_cucumbers</span><span class="p">[</span><span class="s">'start'</span><span class="p">]</span> <span class="o">==</span> <span class="n">start</span>
-    <span class="k">assert</span> <span class="n">start_cucumbers</span><span class="p">[</span><span class="s">'eat'</span><span class="p">]</span> <span class="o">==</span> <span class="n">eat</span>
+    <span class="k">assert</span> <span class="n">start_cucumbers</span><span class="p">[</span><span class="s1">'start'</span><span class="p">]</span> <span class="o">==</span> <span class="n">start</span>
+    <span class="k">assert</span> <span class="n">start_cucumbers</span><span class="p">[</span><span class="s1">'eat'</span><span class="p">]</span> <span class="o">==</span> <span class="n">eat</span>
 </pre></div>
 <p>This code also shows the possibility to use converters which may be useful if you need parameter
 types different than strings.</p>
@@ -407,7 +407,7 @@ Examples: Vertical
 </pre>
 <p>Finally, you should not forget to register the given steps from <em>functional/steps/given.py</em> in
 <em>functional/conftest.py</em> in the functional folder.</p>
-<div class="highlight"><pre><span class="c"># tests/functional/conftest.py</span>
+<div class="highlight"><pre><span></span><span class="c1"># tests/functional/conftest.py</span>
 <span class="kn">from</span> <span class="nn">tests.functional.steps.given</span> <span class="kn">import</span> <span class="o">*</span>
 </pre></div>
 <p>Now your folder structure should look like this:</p>

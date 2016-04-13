@@ -169,17 +169,17 @@ the <a class="reference external" href="https://www.djangoproject.com/">Django</
 <a class="reference external" href="http://flask.pocoo.org/">Flask</a> development server, <a class="reference external" href="http://pythonpaste.org/modules/httpserver.html">paste</a>
 http server and so on.</p>
 <p>A typical development session looks like this:</p>
-<div class="highlight"><pre>virtualenv env  <span class="c"># Create a virtualenv.</span>
-<span class="nb">source </span>env/bin/activate  <span class="c"># Activate it.</span>
-pip install -r requirements-testing.txt  <span class="c"># Install all the needed packages.</span>
-&lt;generate settings <span class="nb">command</span>&gt;  <span class="c"># Generate settings (set up the database connection string etc).</span>
-&lt;database schema generation <span class="nb">command</span>&gt; <span class="c"># Generate the database schema and insert initial data into it.</span>
+<div class="highlight"><pre><span></span>virtualenv env  <span class="c1"># Create a virtualenv.</span>
+<span class="nb">source</span> env/bin/activate  <span class="c1"># Activate it.</span>
+pip install -r requirements-testing.txt  <span class="c1"># Install all the needed packages.</span>
+&lt;generate settings command&gt;  <span class="c1"># Generate settings (set up the database connection string etc).</span>
+&lt;database schema generation command&gt; <span class="c1"># Generate the database schema and insert initial data into it.</span>
 
-<span class="c"># Implement changes for given feature.</span>
+<span class="c1"># Implement changes for given feature.</span>
 
-<span class="c"># Start web application(s)</span>
+<span class="c1"># Start web application(s)</span>
 
-py.test tests  <span class="c"># Run the tests.</span>
+py.test tests  <span class="c1"># Run the tests.</span>
 </pre></div>
 <p>Dependency satisfaction, configuration, database instantiation and population
 together with the startup of the required web application(s) is done outside of the test run.
@@ -294,19 +294,19 @@ templates before the test run! An example of configuration using python modules 
 to the ones we want. This would entail some crazy text file editing scripts to
 alter settings. In addition, it is not the way <a class="reference external" href="https://pypi.python.org/pypi/pytest-xdist">pytest-xdist</a> works.</p>
 <p>Another way is to mock the connection string using a fixture:</p>
-<div class="highlight"><pre><span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s">'session'</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">'session'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">database_settings</span><span class="p">(</span><span class="n">database_connection</span><span class="p">):</span>
     <span class="sd">"""Mock the database settings.</span>
 
 <span class="sd">    :param str database_connection: the database connection string.</span>
 
 <span class="sd">    """</span>
-    <span class="c"># Reset the connection string.</span>
+    <span class="c1"># Reset the connection string.</span>
     <span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">database</span>
     <span class="n">config</span><span class="o">.</span><span class="n">database_connection</span> <span class="o">=</span> <span class="n">database_connection</span>
 </pre></div>
 <p>To make the mock successful, our code should behave accordingly. Instead of:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">config.database</span> <span class="kn">import</span> <span class="n">database_connection</span>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">config.database</span> <span class="kn">import</span> <span class="n">database_connection</span>
 
 
 <span class="k">def</span> <span class="nf">connect_to_db</span><span class="p">():</span>
@@ -318,7 +318,7 @@ alter settings. In addition, it is not the way <a class="reference external" hre
     <span class="k">return</span> <span class="n">Connection</span><span class="p">(</span><span class="n">database_connection</span><span class="p">)</span>
 </pre></div>
 <p>we write:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">database</span>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">database</span>
 
 
 <span class="k">def</span> <span class="nf">connect_to_db</span><span class="p">():</span>
@@ -341,10 +341,10 @@ start two instances of a web application, we need to change:</p>
 </blockquote>
 <p>An application could be a fixture that starts a subprocess and passes the custom
 port, if we use <a class="reference external" href="https://circus.readthedocs.org/en/latest/">Circus</a>:</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">circus.watcher</span> <span class="kn">import</span> <span class="n">Watcher</span>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">circus.watcher</span> <span class="kn">import</span> <span class="n">Watcher</span>
 
 
-<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s">'session'</span><span class="p">)</span>
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">'session'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">app_script</span><span class="p">):</span>
     <span class="sd">"""Start application in a separate process.</span>
 
@@ -354,9 +354,9 @@ port, if we use <a class="reference external" href="https://circus.readthedocs.o
 <span class="sd">    """</span>
 
     <span class="n">watcher</span> <span class="o">=</span> <span class="n">Watcher</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s">'application'</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">'application'</span><span class="p">,</span>
         <span class="n">cmd</span><span class="o">=</span><span class="n">app_script</span><span class="p">,</span>
-        <span class="n">args</span><span class="o">=</span><span class="s">'runserver {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">),</span>
+        <span class="n">args</span><span class="o">=</span><span class="s1">'runserver {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">),</span>
     <span class="p">)</span>
 
     <span class="n">watcher</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -373,7 +373,7 @@ This would require more custom code to write.</p>
 <p>The first solution that came to mind was to use
 <a class="reference external" href="http://docs.python.org/2/library/multiprocessing.html#the-process-class">multiprocessing</a>. This way we can use
 a python function instead of a file script to be a worker for our application. Code would look as follows:</p>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">multiprocessing</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">multiprocessing</span>
 
 <span class="k">def</span> <span class="nf">app_worker</span><span class="p">(</span><span class="n">database_connection</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
     <span class="sd">"""Start web application.</span>
@@ -382,13 +382,13 @@ a python function instead of a file script to be a worker for our application. C
 <span class="sd">    :param port: the port number that will be used by runserver.</span>
 
 <span class="sd">    """</span>
-    <span class="c"># Remove modules that happen to be imported by the parent process.</span>
+    <span class="c1"># Remove modules that happen to be imported by the parent process.</span>
     <span class="kn">import</span> <span class="nn">sys</span>
     <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">builtin_module_names</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">module</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">'multiprocessing'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">module</span> <span class="o">!=</span> <span class="n">__name__</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">module</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'multiprocessing'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">module</span> <span class="o">!=</span> <span class="n">__name__</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">module</span><span class="p">]</span>
 
-    <span class="c"># monkey patch the database connection</span>
+    <span class="c1"># monkey patch the database connection</span>
     <span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">database</span>
     <span class="n">database</span><span class="o">.</span><span class="n">database_connection</span> <span class="o">=</span> <span class="n">database_connection</span>
 
@@ -400,17 +400,17 @@ a python function instead of a file script to be a worker for our application. C
     <span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIContainer</span><span class="p">(</span>
         <span class="n">app_wsgi_handler</span><span class="p">)</span>
     <span class="n">tornado_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
-        <span class="p">(</span><span class="s">r"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
-        <span class="p">(</span><span class="s">'.*'</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">FallbackHandler</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="n">wsgi_app</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">r"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'.*'</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">FallbackHandler</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="n">wsgi_app</span><span class="p">)),</span>
     <span class="p">])</span>
 
     <span class="n">server</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">httpserver</span><span class="o">.</span><span class="n">HTTPServer</span><span class="p">(</span><span class="n">tornado_app</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
-    <span class="n">channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s">'started app on port: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
+    <span class="n">channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">'started app on port: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
     <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 
-<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s">'session'</span><span class="p">)</span>
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">'session'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">database_connection</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="sd">"""Start application in a separate process.</span>
 
@@ -432,7 +432,7 @@ Of course it's declared to be copy-on-write but in reality python is not that ef
 <p>So we decided to combine these 2 approaches: use a subprocess to run python but don't bother with marshalling
 the parameters manually via command line. The nice <a class="reference external" href="http://codespeak.net/execnet">execnet</a> library allows us to
 transparently run some python function inside of a remote python process. Here is the comprehensive example:</p>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">execnet</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">execnet</span>
 
 <span class="k">def</span> <span class="nf">app_worker</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">database_connection</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
     <span class="sd">"""Start web application.</span>
@@ -442,7 +442,7 @@ transparently run some python function inside of a remote python process. Here i
 <span class="sd">    :param port: the port number that will be used by runserver.</span>
 
 <span class="sd">    """</span>
-    <span class="c"># monkey patch the database connection</span>
+    <span class="c1"># monkey patch the database connection</span>
     <span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">database</span>
     <span class="n">database</span><span class="o">.</span><span class="n">database_connection</span> <span class="o">=</span> <span class="n">database_connection</span>
 
@@ -454,36 +454,36 @@ transparently run some python function inside of a remote python process. Here i
     <span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIContainer</span><span class="p">(</span>
         <span class="n">app_wsgi_handler</span><span class="p">)</span>
     <span class="n">tornado_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
-        <span class="p">(</span><span class="s">r"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
-        <span class="p">(</span><span class="s">'.*'</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">FallbackHandler</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="n">wsgi_app</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">r"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
+        <span class="p">(</span><span class="s1">'.*'</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">FallbackHandler</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="n">wsgi_app</span><span class="p">)),</span>
     <span class="p">])</span>
 
     <span class="n">server</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">httpserver</span><span class="o">.</span><span class="n">HTTPServer</span><span class="p">(</span><span class="n">tornado_app</span><span class="p">)</span>
     <span class="n">server</span><span class="o">.</span><span class="n">listen</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
-    <span class="n">channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s">'started app on port: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
+    <span class="n">channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">'started app on port: {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
     <span class="n">tornado</span><span class="o">.</span><span class="n">ioloop</span><span class="o">.</span><span class="n">IOLoop</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 
-<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s">'session'</span><span class="p">)</span>
+<span class="nd">@pytest.fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s1">'session'</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">database_connection</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
     <span class="sd">"""Start application in a separate process.</span>
 
 <span class="sd">    :param port: a random port the application should listen to.</span>
 
 <span class="sd">    """</span>
-    <span class="c"># create execnet gateway</span>
+    <span class="c1"># create execnet gateway</span>
     <span class="n">gw</span> <span class="o">=</span> <span class="n">execnet</span><span class="o">.</span><span class="n">makegateway</span><span class="p">()</span>
 
-    <span class="c"># set the same python system path on remote python as on current one</span>
+    <span class="c1"># set the same python system path on remote python as on current one</span>
     <span class="kn">import</span> <span class="nn">sys</span>
-    <span class="n">gw</span><span class="o">.</span><span class="n">remote_exec</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">gw</span><span class="o">.</span><span class="n">remote_exec</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="s">"import sys"</span><span class="p">,</span>
-            <span class="s">"sys.path = {0}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+            <span class="s2">"import sys"</span><span class="p">,</span>
+            <span class="s2">"sys.path = {0}"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
         <span class="p">]</span>
     <span class="p">))</span><span class="o">.</span><span class="n">waitclose</span><span class="p">()</span>
 
-    <span class="c"># create channel running worker function</span>
+    <span class="c1"># create channel running worker function</span>
     <span class="n">channel</span> <span class="o">=</span> <span class="n">gw</span><span class="o">.</span><span class="n">remote_exec</span><span class="p">(</span>
         <span class="n">app_worker</span><span class="p">,</span>
         <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
@@ -509,15 +509,15 @@ instances as we have concurrent test sessions.</p>
 <p>Another nontrivial part is to distribute requirements to each node. We do this
 together with the code distribution as a virtualenv. Each node then activates
 it before running the tests:</p>
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">pytest_addoption</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">pytest_addoption</span><span class="p">(</span><span class="n">parser</span><span class="p">):</span>
     <span class="sd">"""Add options custom pytest options."""</span>
-    <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getgroup</span><span class="p">(</span><span class="s">"xdist"</span><span class="p">,</span> <span class="s">"distributed and subprocess32 testing"</span><span class="p">)</span>
+    <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">getgroup</span><span class="p">(</span><span class="s2">"xdist"</span><span class="p">,</span> <span class="s2">"distributed and subprocess32 testing"</span><span class="p">)</span>
     <span class="n">group</span><span class="o">.</span><span class="n">_addoption</span><span class="p">(</span>
-        <span class="s">'--activate-script'</span><span class="p">,</span>
-        <span class="n">action</span><span class="o">=</span><span class="s">"store"</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">"activate_script"</span><span class="p">,</span>
-        <span class="n">default</span><span class="o">=</span><span class="s">'env/bin/activate_this.py'</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s">"Activate virtual environment script (relative path). "</span>
-        <span class="s">"This is to make remote python aware about all the dependencies project needs."</span><span class="p">)</span>
+        <span class="s1">'--activate-script'</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store"</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">"activate_script"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">'env/bin/activate_this.py'</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Activate virtual environment script (relative path). "</span>
+        <span class="s2">"This is to make remote python aware about all the dependencies project needs."</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">pytest_configure_node</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
     <span class="sd">"""Configure node information before it gets instantiated.</span>
@@ -530,15 +530,15 @@ it before running the tests:</p>
     <span class="n">here</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)))</span>
     <span class="n">activate_script</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">activate_script</span><span class="p">))</span>
 
-    <span class="c"># remove pyc files and activate the virtual environment on the remote side.</span>
-    <span class="n">node</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">remote_exec</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="c1"># remove pyc files and activate the virtual environment on the remote side.</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">gateway</span><span class="o">.</span><span class="n">remote_exec</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="s">"import os.path"</span><span class="p">,</span>
-            <span class="s">"import subprocess"</span><span class="p">,</span>
+            <span class="s2">"import os.path"</span><span class="p">,</span>
+            <span class="s2">"import subprocess"</span><span class="p">,</span>
             <span class="sd">"""subprocess.check_call(['find', '-name', '"*.pyc"', '-delete'])"""</span><span class="p">,</span>
-            <span class="s">"activate_this = '{0}'"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">activate_script</span><span class="p">),</span>
-            <span class="s">"if os.path.exists(activate_this):"</span><span class="p">,</span>
-            <span class="s">"    execfile(activate_this, {'__file__': activate_this})"</span><span class="p">,</span>
+            <span class="s2">"activate_this = '{0}'"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">activate_script</span><span class="p">),</span>
+            <span class="s2">"if os.path.exists(activate_this):"</span><span class="p">,</span>
+            <span class="s2">"    execfile(activate_this, {'__file__': activate_this})"</span><span class="p">,</span>
         <span class="p">]</span>
     <span class="p">))</span><span class="o">.</span><span class="n">waitclose</span><span class="p">()</span>
 </pre></div>

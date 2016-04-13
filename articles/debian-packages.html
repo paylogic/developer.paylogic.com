@@ -203,13 +203,13 @@ running Debian or a derivative Linux distribution!</p>
 <h3><a class="toc-backref" href="#id8">Creating your first Debian package</a></h3>
 <p>To create a simple Debian package we only need a single file and a single
 command. Here's how you get started:</p>
-<div class="highlight"><pre><span class="c"># Create a directory to hold the files contained in the package.</span>
-mkdir my-package <span class="o">&amp;&amp;</span> <span class="nb">cd </span>my-package
+<div class="highlight"><pre><span></span><span class="c1"># Create a directory to hold the files contained in the package.</span>
+mkdir my-package <span class="o">&amp;&amp;</span> <span class="nb">cd</span> my-package
 
-<span class="c"># Create a directory with the package's control files.</span>
+<span class="c1"># Create a directory with the package's control files.</span>
 mkdir DEBIAN
 
-<span class="c"># Create the main control file with package metadata.</span>
+<span class="c1"># Create the main control file with package metadata.</span>
 cat &gt; DEBIAN/control <span class="s">&lt;&lt; EOF</span>
 <span class="s">Package: name-of-package</span>
 <span class="s">Version: 1.0</span>
@@ -221,7 +221,7 @@ cat &gt; DEBIAN/control <span class="s">&lt;&lt; EOF</span>
 <span class="s">Description: Explanation of why name-of-package is so cool</span>
 <span class="s">EOF</span>
 
-<span class="c"># Build the package using the accepted naming scheme.</span>
+<span class="c1"># Build the package using the accepted naming scheme.</span>
 <span class="nv">NAME</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">'/^Package:/ {print $2}'</span> DEBIAN/control<span class="k">)</span>
 <span class="nv">VERSION</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">'/^Version:/ {print $2}'</span> DEBIAN/control<span class="k">)</span>
 <span class="nv">ARCH</span><span class="o">=</span><span class="k">$(</span>awk <span class="s1">'/^Architecture:/ {print $2}'</span> DEBIAN/control<span class="k">)</span>
@@ -245,25 +245,25 @@ you use <tt class="docutils literal"><span class="pre">apt-get</span></tt> it wi
 support installation of local <tt class="docutils literal">*.deb</tt> archives; it needs a repository. In
 other words, once you start using dependencies you will want to setup a Debian
 package repository for your packages! Here's how you get started:</p>
-<div class="highlight"><pre><span class="c"># Create repository layout, copy packages.</span>
+<div class="highlight"><pre><span></span><span class="c1"># Create repository layout, copy packages.</span>
 mkdir -p repo/binary
 cp *.deb repo/binary
-<span class="nb">cd </span>repo
+<span class="nb">cd</span> repo
 
-<span class="c"># Create list of packages.</span>
-rm -f Packages Packages.gz Release Release.gpg  <span class="c"># cleanup after previous run</span>
+<span class="c1"># Create list of packages.</span>
+rm -f Packages Packages.gz Release Release.gpg  <span class="c1"># cleanup after previous run</span>
 dpkg-scanpackages -m . <span class="p">|</span> sed <span class="s1">'s@: \./@: @'</span> &gt; Packages
 
-<span class="c"># Create compressed copy of list.</span>
+<span class="c1"># Create compressed copy of list.</span>
 cat Packages <span class="p">|</span> gzip &gt; Packages.gz
 
-<span class="c"># Generate release file.</span>
-rm -f Release Release.gpg  <span class="c"># cleanup after previous run</span>
+<span class="c1"># Generate release file.</span>
+rm -f Release Release.gpg  <span class="c1"># cleanup after previous run</span>
 <span class="nv">LANG</span><span class="o">=</span> apt-ftparchive release . &gt; Release.tmp
 mv Release.tmp Release
 
-<span class="c"># Sign release file.</span>
-rm -f Release.gpg  <span class="c"># cleanup after previous run</span>
+<span class="c1"># Sign release file.</span>
+rm -f Release.gpg  <span class="c1"># cleanup after previous run</span>
 gpg -abs -o Release.gpg Release
 </pre></div>
 <p>There are several gotcha's in the above piece of shell script:</p>
@@ -301,7 +301,7 @@ used to sign the Release file has to be installed on the remote machines.
 Assuming you have SSH and sudo access to the server where you generated the GPG
 key <cite>and</cite> the one where you want to install the GPG key, the following command
 will install the GPG key:</p>
-<div class="highlight"><pre>ssh build-server sudo -i gpg --armor --export <span class="p">|</span> ssh target-host sudo apt-key add -
+<div class="highlight"><pre><span></span>ssh build-server sudo -i gpg --armor --export <span class="p">|</span> ssh target-host sudo apt-key add -
 </pre></div>
 </div>
 </div>

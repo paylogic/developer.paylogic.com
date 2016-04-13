@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Paylogic Developers</title><link>http://developer.paylogic.com/</link><description></description><atom:link href="http://developer.paylogic.com/feeds/lars-de-ridder.rss.xml" rel="self"></atom:link><lastBuildDate>Thu, 09 Oct 2014 10:28:00 +0200</lastBuildDate><item><title>Lessons learned using SCRUM</title><link>http://developer.paylogic.com/articles/lessons-scrum.html</link><description>
+<rss version="2.0"><channel><title>Paylogic Developers</title><link>http://developer.paylogic.com/</link><description></description><lastBuildDate>Thu, 09 Oct 2014 10:28:00 +0200</lastBuildDate><item><title>Lessons learned using SCRUM</title><link>http://developer.paylogic.com/articles/lessons-scrum.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Paylogic has been using &lt;a class="reference external" href="https://www.scrum.org/"&gt;SCRUM&lt;/a&gt; for its engineering process for years now.
@@ -155,7 +155,7 @@ in Paylogic however, so perhaps I'll write another article about that by that
 time.&lt;/p&gt;
 &lt;!-- External references: --&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Lars de Ridder</dc:creator><pubDate>Thu, 09 Oct 2014 10:28:00 +0200</pubDate><guid>tag:developer.paylogic.com,2014-10-09:articles/lessons-scrum.html</guid><category>scrum</category><category>agile</category><category>project management</category><category>scrum master</category><category>product owner</category></item><item><title>How we use Trello and custom tooling to streamline our development process</title><link>http://developer.paylogic.com/articles/trello.html</link><description>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Lars de Ridder</dc:creator><pubDate>Thu, 09 Oct 2014 10:28:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-10-09:articles/lessons-scrum.html</guid><category>scrum</category><category>agile</category><category>project management</category><category>scrum master</category><category>product owner</category></item><item><title>How we use Trello and custom tooling to streamline our development process</title><link>http://developer.paylogic.com/articles/trello.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;One of the challenges in the abstract world of code (and at the same time one of
@@ -354,4 +354,4 @@ which I didn't know about before, but it looks promising as well. Give it a go!&
 &lt;p&gt;And don't forget to check out the &lt;a class="reference external" href="https://trello.com/taco-game"&gt;taco game&lt;/a&gt;.&lt;/p&gt;
 &lt;!-- External references: --&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Lars de Ridder</dc:creator><pubDate>Tue, 07 Oct 2014 12:05:00 +0200</pubDate><guid>tag:developer.paylogic.com,2014-10-07:articles/trello.html</guid><category>trello</category><category>fogbugz</category><category>burndown</category><category>scrum</category><category>agile</category></item></channel></rss>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Lars de Ridder</dc:creator><pubDate>Tue, 07 Oct 2014 12:05:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-10-07:articles/trello.html</guid><category>trello</category><category>fogbugz</category><category>burndown</category><category>scrum</category><category>agile</category></item></channel></rss>

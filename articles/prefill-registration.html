@@ -128,7 +128,7 @@ prefilling the registration form in the front office.</em></p>
 <h2><a class="toc-backref" href="#id3">JSON data format</a></h2>
 <p>The first step is to construct the data. The data should be structured using
 JSON. The JSON data should adhere to the following format:</p>
-<div class="highlight"><pre><span class="p">{</span>
+<div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="s2">"first_name"</span><span class="o">:</span> <span class="s2">"Test Client First Name"</span><span class="p">,</span>
   <span class="s2">"last_name"</span><span class="o">:</span> <span class="s2">"Test Client Last Name"</span><span class="p">,</span>
   <span class="s2">"email"</span><span class="o">:</span> <span class="s2">"test@testmail.com"</span><span class="p">,</span>
@@ -184,21 +184,21 @@ the Paylogic support team.</p>
 <p>The compression is done using the <a class="reference external" href="http://www.zlib.net/">zlib</a>
 standard python module. The data is encoded to utf-8 prior to compression. Data
 encoding is performed using base64 as specified in <a class="reference external" href="http://tools.ietf.org/html/rfc3548.html">RFC 3548</a></p>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">zlib</span>
 
 <span class="kn">from</span> <span class="nn">base64</span> <span class="kn">import</span> <span class="n">urlsafe_b64encode</span>
 
-<span class="c"># construct the json data</span>
-<span class="n">json_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">"first_name"</span><span class="p">:</span> <span class="s">"Test Client First Name"</span><span class="p">,</span> <span class="o">...</span> <span class="p">}</span>
+<span class="c1"># construct the json data</span>
+<span class="n">json_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"first_name"</span><span class="p">:</span> <span class="s2">"Test Client First Name"</span><span class="p">,</span> <span class="o">...</span> <span class="p">}</span>
 
-<span class="c"># create a string of the json data</span>
+<span class="c1"># create a string of the json data</span>
 <span class="n">json_data_string</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
 
-<span class="c"># encode the data to utf8 and compress it</span>
-<span class="n">compressed_data</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">json_data_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">'utf8'</span><span class="p">))</span>
+<span class="c1"># encode the data to utf8 and compress it</span>
+<span class="n">compressed_data</span> <span class="o">=</span> <span class="n">zlib</span><span class="o">.</span><span class="n">compress</span><span class="p">(</span><span class="n">json_data_string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf8'</span><span class="p">))</span>
 
-<span class="c"># encode the data using base64 and urlsafe</span>
+<span class="c1"># encode the data using base64 and urlsafe</span>
 <span class="n">encoded</span> <span class="o">=</span> <span class="n">urlsafe_b64encode</span><span class="p">(</span><span class="n">compressed_data</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -208,7 +208,7 @@ encoding is performed using base64 as specified in <a class="reference external"
 method, which uses the <a class="reference external" href="http://www.zlib.net/">zlib</a> data format. The data is
 encoded to utf-8 prior to compression. Data encoding is performed using base64
 as specified in <a class="reference external" href="http://tools.ietf.org/html/rfc3548.html">RFC 3548</a></p>
-<div class="highlight"><pre><span class="cp">&lt;?php</span>
+<div class="highlight"><pre><span></span><span class="cp">&lt;?php</span>
 <span class="c1"># create a string of the json data</span>
 <span class="nv">$json_data_string</span> <span class="o">=</span> <span class="s1">'{"first_name": "Test Client First Name", ... }'</span><span class="p">;</span>
 
@@ -251,7 +251,7 @@ step needs to be performed. The Javascript code below should be appended at the
 end of the landing page HTML document. This ensures that the data is read from
 the landing page URL and that it is appended in the queue URL, which resides as
 an iframe inside the landing page HTML document.</p>
-<div class="highlight"><pre><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;</span>
+<div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">"text/javascript"</span><span class="p">&gt;</span>
 <span class="kd">var</span> <span class="nx">getHashParam</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/([^#&amp;]+)/g</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// This is to ensure that if the variable contains '=' then they remain in the value.</span>
@@ -267,7 +267,7 @@ an iframe inside the landing page HTML document.</p>
   <span class="p">});</span>
 <span class="p">};</span>
 <span class="nx">getHashParam</span><span class="p">();</span>
-<span class="nt">&lt;/script&gt;</span>
+<span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
 </div>

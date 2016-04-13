@@ -210,16 +210,16 @@ or application.</p>
 <h4>Groups and environments</h4>
 <p>A group is a container of environments. An example of a group with two environments
 could be:</p>
-<div class="highlight"><pre><span class="n">setup</span> <span class="p">(</span>
-    <span class="c"># ...</span>
+<div class="highlight"><pre><span></span><span class="n">setup</span> <span class="p">(</span>
+    <span class="c1"># ...</span>
     <span class="n">entry_points</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s">'settings_application_name'</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s">'default = path.to.package.of.application_name.default_settings:generate_config'</span><span class="p">,</span>
-            <span class="s">'local = path.to.package.of.application_name.local_settings:generate_config'</span><span class="p">,</span>
+        <span class="s1">'settings_application_name'</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">'default = path.to.package.of.application_name.default_settings:generate_config'</span><span class="p">,</span>
+            <span class="s1">'local = path.to.package.of.application_name.local_settings:generate_config'</span><span class="p">,</span>
         <span class="p">],</span>
-        <span class="c"># ...</span>
+        <span class="c1"># ...</span>
     <span class="p">},</span>
-    <span class="c"># ...</span>
+    <span class="c1"># ...</span>
 <span class="p">)</span>
 </pre></div>
 <p>The name of the group consists of two parts. The first is a standard prefix
@@ -261,20 +261,20 @@ The rest of this section goes into more detail for each of the above steps.</p>
 free to choose the name of the function to be used as an entry point. In this case,
 we chose the name <code>generate_config</code>. Let's assume that our package contains
 two applications.</p>
-<div class="highlight"><pre><span class="c"># package/setup.py</span>
+<div class="highlight"><pre><span></span><span class="c1"># package/setup.py</span>
 <span class="n">setup</span> <span class="p">(</span>
-    <span class="c"># ...</span>
+    <span class="c1"># ...</span>
     <span class="n">entry_points</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s">'settings_application1'</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s">'default = path.to.application1.default_settings:generate_config'</span><span class="p">,</span>
-            <span class="s">'local = path.to.application1.local_settings:generate_config'</span><span class="p">,</span>
+        <span class="s1">'settings_application1'</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">'default = path.to.application1.default_settings:generate_config'</span><span class="p">,</span>
+            <span class="s1">'local = path.to.application1.local_settings:generate_config'</span><span class="p">,</span>
         <span class="p">],</span>
-        <span class="s">'settings_application2'</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s">'default = path.to.application2.default_settings:generate_config'</span><span class="p">,</span>
-            <span class="s">'local = path.to.application2.local_settings:generate_config'</span><span class="p">,</span>
+        <span class="s1">'settings_application2'</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s1">'default = path.to.application2.default_settings:generate_config'</span><span class="p">,</span>
+            <span class="s1">'local = path.to.application2.local_settings:generate_config'</span><span class="p">,</span>
         <span class="p">],</span>
     <span class="p">},</span>
-    <span class="c"># ...</span>
+    <span class="c1"># ...</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -288,21 +288,21 @@ The <code>generate_config</code> function, in our case, returns an instance of t
 be loaded from a python file, or come from an object. If there is any error
 during configuration or a <code>Config</code> instance is not returned, then a
 <code>WrongConfigTypeError</code> exception is raised.</p>
-<div class="highlight"><pre><span class="c"># package/application1/default_settings.py</span>
+<div class="highlight"><pre><span></span><span class="c1"># package/application1/default_settings.py</span>
 <span class="kn">from</span> <span class="nn">settei.config</span> <span class="kn">import</span> <span class="n">Config</span>
 
 <span class="k">def</span> <span class="nf">generate_config</span><span class="p">():</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
 
-    <span class="c"># create settings directly</span>
-    <span class="n">config</span><span class="p">[</span><span class="s">'QUESTION'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'The Ultimate Question of Life, the Universe, and Everything'</span>
-    <span class="n">config</span><span class="p">[</span><span class="s">'ANSWER'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">41</span>
+    <span class="c1"># create settings directly</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">'QUESTION'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'The Ultimate Question of Life, the Universe, and Everything'</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">'ANSWER'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">41</span>
 
-    <span class="c"># or load them from a file</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">from_pyfile</span><span class="p">(</span><span class="s">'full/path/to/file.py'</span><span class="p">)</span>
+    <span class="c1"># or load them from a file</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">from_pyfile</span><span class="p">(</span><span class="s1">'full/path/to/file.py'</span><span class="p">)</span>
 
-    <span class="c"># or from an object</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s">'path.to.object'</span><span class="p">)</span>
+    <span class="c1"># or from an object</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">from_object</span><span class="p">(</span><span class="s1">'path.to.object'</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">config</span>
 </pre></div>
@@ -318,33 +318,33 @@ if we want to load settings for the application <code>application1</code> and we
 defined a group of environments with the name <code>settings_application1</code>,
 then in the <code>get_config</code> function we just use the name of the application,
 which in this case is <code>application1</code>.</p>
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">settei</span> <span class="kn">import</span> <span class="n">get_config</span>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">settei</span> <span class="kn">import</span> <span class="n">get_config</span>
 
-<span class="c"># get config settings for 'applicaion1' application and 'local' environment</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="s">'application1'</span><span class="p">,</span> <span class="s">'local'</span><span class="p">)</span>
+<span class="c1"># get config settings for 'applicaion1' application and 'local' environment</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="s1">'application1'</span><span class="p">,</span> <span class="s1">'local'</span><span class="p">)</span>
 
-<span class="c"># get config settings for 'application2' application and 'local' environment</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="s">'application2'</span><span class="p">,</span> <span class="s">'local'</span><span class="p">)</span>
+<span class="c1"># get config settings for 'application2' application and 'local' environment</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="s1">'application2'</span><span class="p">,</span> <span class="s1">'local'</span><span class="p">)</span>
 
-<span class="c"># now you can use it as you want</span>
-<span class="n">DEBUG</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s">'DEBUG'</span><span class="p">]</span>
+<span class="c1"># now you can use it as you want</span>
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">'DEBUG'</span><span class="p">]</span>
 </pre></div>
 <p>If the environment from which we want to read settings does not exist, then an
 <code>EnvironmentNotSpecified</code> exception is raised.</p>
 <p>Another way to define the desired environment is using the
 <code>CONFIG_ENVIRONMENT</code> environment variable.</p>
-<div class="highlight"><pre><span class="c"># run in this way</span>
-<span class="err">$</span> <span class="n">env</span> <span class="n">CONFIG_ENVIRONMENT</span><span class="o">=</span><span class="s">'dev'</span> <span class="n">python</span> <span class="n">my_incredible_script</span><span class="o">.</span><span class="n">py</span>
+<div class="highlight"><pre><span></span><span class="c1"># run in this way</span>
+<span class="err">$</span> <span class="n">env</span> <span class="n">CONFIG_ENVIRONMENT</span><span class="o">=</span><span class="s1">'dev'</span> <span class="n">python</span> <span class="n">my_incredible_script</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 <p>Then, in <tt class="docutils literal">my_incredible_script.py</tt> when the <code>get_config</code> function is
 used, we do not need to specify an environment as it will use the <code>dev</code>
 environment that is defined by <code>CONFIG_ENVIRONMENT</code>.</p>
-<div class="highlight"><pre><span class="c"># and in my_incredible_script.py we can use get_config</span>
+<div class="highlight"><pre><span></span><span class="c1"># and in my_incredible_script.py we can use get_config</span>
 <span class="kn">from</span> <span class="nn">settei</span> <span class="kn">import</span> <span class="n">get_config</span>
 
-<span class="c"># get config settings for 'application1' application and 'dev' environment,</span>
-<span class="c"># which has been specified when running my_incredible_script.py</span>
-<span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="s">'application1'</span><span class="p">)</span>
+<span class="c1"># get config settings for 'application1' application and 'dev' environment,</span>
+<span class="c1"># which has been specified when running my_incredible_script.py</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="s1">'application1'</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="section" id="settings-inheritance">
@@ -354,47 +354,47 @@ for settings that belong to the same group of environments. For instance, if
 you want your <code>local</code> settings to inherit the <code>default</code> settings,
 then in the <code>generate_config</code> function you should mention the name of
 environment from which you want to inherit.</p>
-<div class="highlight"><pre><span class="c"># in your application1/local_settings.py file</span>
-<span class="c"># 'default' is the environment from which we want to inherit settings</span>
+<div class="highlight"><pre><span></span><span class="c1"># in your application1/local_settings.py file</span>
+<span class="c1"># 'default' is the environment from which we want to inherit settings</span>
 <span class="k">def</span> <span class="nf">generate_config</span><span class="p">(</span><span class="n">default</span><span class="p">):</span>
 
-    <span class="c"># change a setting, the right answer is 42</span>
-    <span class="n">default</span><span class="p">[</span><span class="s">'ANSWER'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
+    <span class="c1"># change a setting, the right answer is 42</span>
+    <span class="n">default</span><span class="p">[</span><span class="s1">'ANSWER'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
 
     <span class="k">return</span> <span class="n">default</span>
 </pre></div>
 <p>If we read the <code>local</code> settings, then we will see that
 <code>config['ANSWER']</code> setting returns the value defined in
 <code>local_settings.py</code>, as we would expect.</p>
-<div class="highlight"><pre><span class="o">&gt;&gt;</span> <span class="kn">from</span> <span class="nn">settei</span> <span class="kn">import</span> <span class="n">get_config</span>
-<span class="o">&gt;&gt;</span> <span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="s">'application1'</span><span class="p">,</span> <span class="s">'local'</span><span class="p">)</span>
-<span class="o">&gt;&gt;</span> <span class="k">print</span> <span class="n">config</span><span class="p">[</span><span class="s">'QUESTION'</span><span class="p">]</span>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;</span> <span class="kn">from</span> <span class="nn">settei</span> <span class="kn">import</span> <span class="n">get_config</span>
+<span class="o">&gt;&gt;</span> <span class="n">config</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">(</span><span class="s1">'application1'</span><span class="p">,</span> <span class="s1">'local'</span><span class="p">)</span>
+<span class="o">&gt;&gt;</span> <span class="k">print</span> <span class="n">config</span><span class="p">[</span><span class="s1">'QUESTION'</span><span class="p">]</span>
 <span class="n">The</span> <span class="n">Ultimate</span> <span class="n">Question</span> <span class="n">of</span> <span class="n">Life</span><span class="p">,</span> <span class="n">the</span> <span class="n">Universe</span><span class="p">,</span> <span class="ow">and</span> <span class="n">Everything</span>
-<span class="o">&gt;&gt;</span> <span class="k">print</span> <span class="n">config</span><span class="p">[</span><span class="s">'ANSWER'</span><span class="p">]</span>
+<span class="o">&gt;&gt;</span> <span class="k">print</span> <span class="n">config</span><span class="p">[</span><span class="s1">'ANSWER'</span><span class="p">]</span>
 <span class="mi">42</span>
 </pre></div>
 <p>Inheriting other settings does not stop us from introducing additional ones.
 Attention should be paid though as new settings could be overwritten by any
 inherited ones with the same name.</p>
-<div class="highlight"><pre><span class="c"># in your package/application1/local_settings.py file</span>
+<div class="highlight"><pre><span></span><span class="c1"># in your package/application1/local_settings.py file</span>
 <span class="kn">from</span> <span class="nn">settei.config</span> <span class="kn">import</span> <span class="n">Config</span>
 
 <span class="k">def</span> <span class="nf">generate_config</span><span class="p">(</span><span class="n">default</span><span class="p">):</span>
     <span class="n">local</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
 
-    <span class="c"># change a setting, the right answer is 42</span>
-    <span class="n">default</span><span class="p">[</span><span class="s">'ANSWER'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
+    <span class="c1"># change a setting, the right answer is 42</span>
+    <span class="n">default</span><span class="p">[</span><span class="s1">'ANSWER'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">42</span>
 
-    <span class="c"># introduce an additional setting</span>
-    <span class="n">local</span><span class="p">[</span><span class="s">'NEW'</span><span class="p">]</span> <span class="o">=</span> <span class="s">'A new setting'</span>
+    <span class="c1"># introduce an additional setting</span>
+    <span class="n">local</span><span class="p">[</span><span class="s1">'NEW'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'A new setting'</span>
 
-    <span class="c"># this will be overwritten with the 'ANSWER' from the 'default' environment</span>
-    <span class="n">local</span><span class="p">[</span><span class="s">'ANSWER'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">43</span>
+    <span class="c1"># this will be overwritten with the 'ANSWER' from the 'default' environment</span>
+    <span class="n">local</span><span class="p">[</span><span class="s1">'ANSWER'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">43</span>
 
-    <span class="c"># update the 'local' settings with the 'default' settings</span>
+    <span class="c1"># update the 'local' settings with the 'default' settings</span>
     <span class="n">local</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
 
-    <span class="c"># local['ANSWER'] will be 42 here again</span>
+    <span class="c1"># local['ANSWER'] will be 42 here again</span>
     <span class="k">return</span> <span class="n">local</span>
 </pre></div>
 <p>If the provided environment in <code>generate_config</code> is missing or not
