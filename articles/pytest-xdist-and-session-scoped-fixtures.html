@@ -144,7 +144,7 @@ described in this article.</p>
     <span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIContainer</span><span class="p">(</span>
         <span class="n">app_wsgi_handler</span><span class="p">)</span>
     <span class="n">tornado_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
-        <span class="p">(</span><span class="s2">r"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
         <span class="p">(</span><span class="s1">'.*'</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">FallbackHandler</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="n">wsgi_app</span><span class="p">)),</span>
     <span class="p">])</span>
 
@@ -334,7 +334,7 @@ as you will probably run into the same issues as we did.</p>
                         <li><a href="https://github.com/paylogic" target="_blank">GitHub</a></li>
                         <li><a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a></li>
                     </ul>
-                    Copyright (c) 2014 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
+                    Copyright (c) 2017 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
                     built using the awesome <a href="http://getpelican.com" target="_blank">Pelican</a> static site generator.<br>
                     This work is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
                 </div>

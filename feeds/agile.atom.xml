@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/agile.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2014-10-09T10:28:00+02:00</updated><entry><title>Lessons learned using SCRUM</title><link href="http://developer.paylogic.com/articles/lessons-scrum.html" rel="alternate"></link><published>2014-10-09T10:28:00+02:00</published><author><name>Lars de Ridder</name></author><id>tag:developer.paylogic.com,2014-10-09:articles/lessons-scrum.html</id><summary type="html">
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/agile.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2014-10-09T10:28:00+02:00</updated><entry><title>Lessons learned using SCRUM</title><link href="http://developer.paylogic.com/articles/lessons-scrum.html" rel="alternate"></link><published>2014-10-09T10:28:00+02:00</published><updated>2014-10-09T10:28:00+02:00</updated><author><name>Lars de Ridder</name></author><id>tag:developer.paylogic.com,2014-10-09:articles/lessons-scrum.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Paylogic has been using &lt;a class="reference external" href="https://www.scrum.org/"&gt;SCRUM&lt;/a&gt; for its engineering process for years now.
@@ -155,7 +155,7 @@ in Paylogic however, so perhaps I'll write another article about that by that
 time.&lt;/p&gt;
 &lt;!-- External references: --&gt;
 &lt;/div&gt;
-</summary><category term="scrum"></category><category term="agile"></category><category term="project management"></category><category term="scrum master"></category><category term="product owner"></category></entry><entry><title>How we use Trello and custom tooling to streamline our development process</title><link href="http://developer.paylogic.com/articles/trello.html" rel="alternate"></link><published>2014-10-07T12:05:00+02:00</published><author><name>Lars de Ridder</name></author><id>tag:developer.paylogic.com,2014-10-07:articles/trello.html</id><summary type="html">
+</summary><category term="scrum"></category><category term="agile"></category><category term="project management"></category><category term="scrum master"></category><category term="product owner"></category></entry><entry><title>How we use Trello and custom tooling to streamline our development process</title><link href="http://developer.paylogic.com/articles/trello.html" rel="alternate"></link><published>2014-10-07T12:05:00+02:00</published><updated>2014-10-07T12:05:00+02:00</updated><author><name>Lars de Ridder</name></author><id>tag:developer.paylogic.com,2014-10-07:articles/trello.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;One of the challenges in the abstract world of code (and at the same time one of
@@ -354,7 +354,7 @@ which I didn't know about before, but it looks promising as well. Give it a go!&
 &lt;p&gt;And don't forget to check out the &lt;a class="reference external" href="https://trello.com/taco-game"&gt;taco game&lt;/a&gt;.&lt;/p&gt;
 &lt;!-- External references: --&gt;
 &lt;/div&gt;
-</summary><category term="trello"></category><category term="fogbugz"></category><category term="burndown"></category><category term="scrum"></category><category term="agile"></category></entry><entry><title>Continuous Delivery</title><link href="http://developer.paylogic.com/articles/continuous-delivery.html" rel="alternate"></link><published>2013-05-30T01:08:00+02:00</published><author><name>Òscar Vilaplana</name></author><id>tag:developer.paylogic.com,2013-05-30:articles/continuous-delivery.html</id><summary type="html">
+</summary><category term="trello"></category><category term="fogbugz"></category><category term="burndown"></category><category term="scrum"></category><category term="agile"></category></entry><entry><title>Continuous Delivery</title><link href="http://developer.paylogic.com/articles/continuous-delivery.html" rel="alternate"></link><published>2013-05-30T01:08:00+02:00</published><updated>2013-05-30T01:08:00+02:00</updated><author><name>Òscar Vilaplana</name></author><id>tag:developer.paylogic.com,2013-05-30:articles/continuous-delivery.html</id><summary type="html">
 &lt;p&gt;&lt;em&gt;When you do Continuous Delivery you can deploy whenever you want: you
 made it as easy as possible and you have become very good at it.
 Everyone in the Engineering and Operations teams knows how to deploy

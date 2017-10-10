@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/spyros-ioakeimidis.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2014-10-27T10:00:00+01:00</updated><entry><title>Traduki</title><link href="http://developer.paylogic.com/articles/traduki.html" rel="alternate"></link><published>2014-10-27T10:00:00+01:00</published><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-10-27:articles/traduki.html</id><summary type="html">
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/spyros-ioakeimidis.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2014-10-27T10:00:00+01:00</updated><entry><title>Traduki</title><link href="http://developer.paylogic.com/articles/traduki.html" rel="alternate"></link><published>2014-10-27T10:00:00+01:00</published><updated>2014-10-27T10:00:00+01:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-10-27:articles/traduki.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;tt class="docutils literal"&gt;traduki&lt;/tt&gt; is an &lt;a class="reference external" href="https://github.com/paylogic/traduki"&gt;open source&lt;/a&gt;
@@ -370,7 +370,7 @@ useful for projects that require an efficient and easy to use internationalizati
 We are waiting for your feedback and recommendations. Check &lt;a class="reference external" href="https://github.com/paylogic/traduki"&gt;traduki&lt;/a&gt;
 in our github profile.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="internationalization"></category><category term="sqlalchemy"></category><category term="python"></category><category term="database"></category><category term="i18n"></category></entry><entry><title>Settei</title><link href="http://developer.paylogic.com/articles/settei.html" rel="alternate"></link><published>2014-04-29T12:03:00+02:00</published><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-04-29:articles/settei.html</id><summary type="html">
+</summary><category term="internationalization"></category><category term="sqlalchemy"></category><category term="python"></category><category term="database"></category><category term="i18n"></category></entry><entry><title>Settei</title><link href="http://developer.paylogic.com/articles/settei.html" rel="alternate"></link><published>2014-04-29T12:03:00+02:00</published><updated>2014-04-29T12:03:00+02:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-04-29:articles/settei.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;settei&lt;/code&gt; is a general purpose python settings library which uses
@@ -660,7 +660,7 @@ e.g. a live environment, where settings usually differ a lot from those used
 during development. Finally, settings inheritance, which is accomplished by using
 dependency injection, provides the modularity and extensibility we needed.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="open source"></category><category term="python"></category><category term="settings"></category><category term="entry points"></category><category term="setuptools"></category></entry><entry><title>Prefill Registration Data</title><link href="http://developer.paylogic.com/articles/prefill-registration.html" rel="alternate"></link><published>2013-12-02T10:56:00+01:00</published><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2013-12-02:articles/prefill-registration.html</id><summary type="html">
+</summary><category term="open source"></category><category term="python"></category><category term="settings"></category><category term="entry points"></category><category term="setuptools"></category></entry><entry><title>Prefill Registration Data</title><link href="http://developer.paylogic.com/articles/prefill-registration.html" rel="alternate"></link><published>2013-12-02T10:56:00+01:00</published><updated>2013-12-02T10:56:00+01:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2013-12-02:articles/prefill-registration.html</id><summary type="html">
 &lt;p&gt;&lt;em&gt;Paylogic offers a feature to allow the prefilling of the personal data of a
 consumer during the sales process via a personalized URL. This can be used
 whenever a merchant already has the data of the consumers and wants to offer

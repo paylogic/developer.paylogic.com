@@ -385,7 +385,7 @@ a python function instead of a file script to be a worker for our application. C
     <span class="c1"># Remove modules that happen to be imported by the parent process.</span>
     <span class="kn">import</span> <span class="nn">sys</span>
     <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">builtin_module_names</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">module</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'multiprocessing'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">module</span> <span class="o">!=</span> <span class="n">__name__</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">module</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'multiprocessing'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">module</span> <span class="o">!=</span> <span class="vm">__name__</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">module</span><span class="p">]</span>
 
     <span class="c1"># monkey patch the database connection</span>
@@ -400,7 +400,7 @@ a python function instead of a file script to be a worker for our application. C
     <span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIContainer</span><span class="p">(</span>
         <span class="n">app_wsgi_handler</span><span class="p">)</span>
     <span class="n">tornado_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
-        <span class="p">(</span><span class="s2">r"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
         <span class="p">(</span><span class="s1">'.*'</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">FallbackHandler</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="n">wsgi_app</span><span class="p">)),</span>
     <span class="p">])</span>
 
@@ -454,7 +454,7 @@ transparently run some python function inside of a remote python process. Here i
     <span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIContainer</span><span class="p">(</span>
         <span class="n">app_wsgi_handler</span><span class="p">)</span>
     <span class="n">tornado_app</span> <span class="o">=</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">([</span>
-        <span class="p">(</span><span class="s2">r"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
+        <span class="p">(</span><span class="sa">r</span><span class="s2">"/media/(.*)"</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">StaticFileHandler</span><span class="p">,</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="n">media_path</span><span class="p">}),</span>
         <span class="p">(</span><span class="s1">'.*'</span><span class="p">,</span> <span class="n">tornado</span><span class="o">.</span><span class="n">web</span><span class="o">.</span><span class="n">FallbackHandler</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="n">wsgi_app</span><span class="p">)),</span>
     <span class="p">])</span>
 
@@ -527,7 +527,7 @@ it before running the tests:</p>
 
 <span class="sd">    """</span>
 
-    <span class="n">here</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">)))</span>
+    <span class="n">here</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
     <span class="n">activate_script</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">option</span><span class="o">.</span><span class="n">activate_script</span><span class="p">))</span>
 
     <span class="c1"># remove pyc files and activate the virtual environment on the remote side.</span>
@@ -601,7 +601,7 @@ parallelization.</p>
                         <li><a href="https://github.com/paylogic" target="_blank">GitHub</a></li>
                         <li><a href="http://www.pygrunn.org/" target="_blank">PyGrunn</a></li>
                     </ul>
-                    Copyright (c) 2014 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
+                    Copyright (c) 2017 <a href="http://www.paylogic.com" target="_blank">Paylogic</a>,
                     built using the awesome <a href="http://getpelican.com" target="_blank">Pelican</a> static site generator.<br>
                     This work is licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
                 </div>
