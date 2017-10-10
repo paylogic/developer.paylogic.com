@@ -210,7 +210,7 @@ body {
 }
 
 a, .uk-link {
-    color: #ff7f00;
+    color: #FFB200;
 }
 
 h2 a:hover span.pl-text-normal,
@@ -224,7 +224,7 @@ a:hover, .uk-link:hover {
 }
 
 a.uk-panel:hover {
-    color: #ff7f00;
+    color: #FFB200;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -300,12 +300,12 @@ ul li > *:last-child, ol li > *:last-child {
 
 .uk-nav-navbar > li > a:hover,
 .uk-nav-navbar > li > a:focus {
-    background: #ff7f00;
+    background: #FFB200;
     color: #FFFFFF;
 }
 
 .uk-nav-navbar > li.uk-active > a {
-    background: #ff7f00;
+    background: #FFB200;
     color: #FFFFFF;
 }
 
@@ -342,7 +342,7 @@ ul li > *:last-child, ol li > *:last-child {
 
 .uk-navbar-toggle:hover,
 .uk-navbar-toggle:focus {
-    color: #ff7f00;
+    color: #FFB200;
 }
 
 .uk-navbar-content > a,
@@ -433,7 +433,7 @@ html .uk-nav.uk-nav-offcanvas > li.uk-active > a {
 }
 
 .uk-subnav > li > a {
-    color: #ff7f00;
+    color: #FFB200;
 }
 
 .uk-subnav > li > a:hover {
@@ -485,7 +485,7 @@ html .uk-nav.uk-nav-offcanvas > li.uk-active > a {
 }
 
 #table-of-contents a:hover {
-    color: #ff7f00;
+    color: #FFB200;
 }
 
 #table-of-contents a.uk-active {
