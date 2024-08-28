@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>Paylogic Developers</title><link>http://developer.paylogic.com/</link><description></description><lastBuildDate>Mon, 09 Feb 2015 13:01:00 +0100</lastBuildDate><item><title>pushserver</title><link>http://developer.paylogic.com/articles/pushserver.html</link><description>
+<rss version="2.0"><channel><title>Paylogic Developers</title><link>https://developer.paylogic.com/</link><description></description><lastBuildDate>Mon, 09 Feb 2015 13:01:00 +0100</lastBuildDate><item><title>pushserver</title><link>https://developer.paylogic.com/articles/pushserver.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Paylogic is constantly working to improve the user experience of it's ticketing platform. When buying a ticket, one of
@@ -84,11 +84,11 @@ Flask-sse on top of redis-cluster allows us to have a high available, scalable w
 &lt;div class="section" id="use-case"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;Use-case&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;A possible use-case can be drawn as follows:&lt;/p&gt;
-&lt;img alt="pushserver use-case from the user perspective" class="align-center" src="http://developer.paylogic.com/images/pushserver/diagram-user-perspective.png"/&gt;
+&lt;img alt="pushserver use-case from the user perspective" class="align-center" src="https://developer.paylogic.com/images/pushserver/diagram-user-perspective.png"/&gt;
 &lt;p&gt;The actor changes some data on the backend via a normal request to the backend. All users receive the broadcasted
 message from the backend via long-lasting channel for server-sent events.&lt;/p&gt;
 &lt;p&gt;The deployment may look like this:&lt;/p&gt;
-&lt;img alt="pushserver use-case possible deployment schema" class="align-center" src="http://developer.paylogic.com/images/pushserver/diagram-deployment.png"/&gt;
+&lt;img alt="pushserver use-case possible deployment schema" class="align-center" src="https://developer.paylogic.com/images/pushserver/diagram-deployment.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="sending-events-to-a-push-server"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;Sending events to a push server&lt;/a&gt;&lt;/h2&gt;
@@ -134,7 +134,7 @@ payment processing, ticket availability changes, etc.&lt;/p&gt;
 &lt;p&gt;For now, Server sent events are more like an experiment for us, but it's a promising technology. We're eager to hear
 some feedback from developers who use our API on whether it will be useful for them to have a stream API.&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Anatoly Bubenkov</dc:creator><pubDate>Mon, 09 Feb 2015 13:01:00 +0100</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2015-02-09:articles/pushserver.html</guid><category>open source</category><category>python</category><category>redis-cluster</category><category>push notifications</category><category>server-sent events</category><category>SSE</category><category>html5</category><category>pub/sub</category></item><item><title>Paylogic Code review tool</title><link>http://developer.paylogic.com/articles/codereview.html</link><description>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Anatoly Bubenkov</dc:creator><pubDate>Mon, 09 Feb 2015 13:01:00 +0100</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2015-02-09:articles/pushserver.html</guid><category>open source</category><category>python</category><category>redis-cluster</category><category>push notifications</category><category>server-sent events</category><category>SSE</category><category>html5</category><category>pub/sub</category></item><item><title>Paylogic Code review tool</title><link>https://developer.paylogic.com/articles/codereview.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;As open sourcing software is a strategic decision of Paylogic we decided not to make an exception for our
@@ -171,7 +171,7 @@ Paylogic codebase has a reference to a Fogbugz case, and the development itself 
 at our &lt;a class="reference external" href="http://pygrunn.org/"&gt;PyGrunn&lt;/a&gt; conference
 on this topic from &lt;a class="reference external" href="http://nl.linkedin.com/in/dzittersteyn"&gt;Dirk Zittersteyn&lt;/a&gt;.  However, since it is important
 to understand the role the code review tool plays in our ecosystem, the below image shows a part of the process.&lt;/p&gt;
-&lt;img alt="gatekeepering and code review process" class="align-center" src="http://developer.paylogic.com/images/codereview/gatekeepering-and-code-review-process.png"/&gt;
+&lt;img alt="gatekeepering and code review process" class="align-center" src="https://developer.paylogic.com/images/codereview/gatekeepering-and-code-review-process.png"/&gt;
 &lt;p&gt;As you can see from the diagram (and the Legend), the code review tool is a critical part of our process.&lt;/p&gt;
 &lt;p&gt;Before we continue, we'll give you a quick glossary for the rest of this article:&lt;/p&gt;
 &lt;dl class="docutils"&gt;
@@ -204,7 +204,7 @@ a parameter, and retrieves the following fields from that case through the
 &lt;/ul&gt;
 &lt;p&gt;For custom fields, we use the &lt;a class="reference external" href="http://www.fogcreek.com/fogbugz/plugins/plugin.aspx?ixPlugin=1"&gt;Custom Fields&lt;/a&gt; plugin.
 From the Fogbugz side, it looks like this:&lt;/p&gt;
-&lt;img alt="create patchset from Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/create-patchset.png"/&gt;
+&lt;img alt="create patchset from Fogbugz" class="align-center" src="https://developer.paylogic.com/images/codereview/create-patchset.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="apply-custom-validations-for-any-patchsets-created"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id6"&gt;Apply custom validations for any patchsets created&lt;/a&gt;&lt;/h3&gt;
@@ -218,17 +218,17 @@ to the user.&lt;/p&gt;
 &lt;p&gt;This is, again, implemented using a special custom field in Fogbugz called
 &lt;tt class="docutils literal"&gt;approved revision&lt;/tt&gt;, together with the Fogbugz API to set it from the code review tool.&lt;/p&gt;
 &lt;p&gt;In the code review tool:&lt;/p&gt;
-&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="http://developer.paylogic.com/images/codereview/approve-revision-click.png"/&gt;
+&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="https://developer.paylogic.com/images/codereview/approve-revision-click.png"/&gt;
 &lt;p&gt;And in Fogbugz:&lt;/p&gt;
-&lt;img alt="approved revision and ci project fields set in the Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/approved-revision-field.png"/&gt;
+&lt;img alt="approved revision and ci project fields set in the Fogbugz" class="align-center" src="https://developer.paylogic.com/images/codereview/approved-revision-field.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="allow-gatekeepers-to-set-and-select-from-the-dropdown-the-target-branch-for-a-given-ci-project"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id8"&gt;Allow gatekeepers to set (and select from the dropdown) the target branch for a given CI project&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;Both &lt;tt class="docutils literal"&gt;target branch&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;CI project&lt;/tt&gt; are custom fields of a Fogbugz case.&lt;/p&gt;
 &lt;p&gt;In the code review tool:&lt;/p&gt;
-&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="http://developer.paylogic.com/images/codereview/approve-revision-target-branch.png"/&gt;
+&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="https://developer.paylogic.com/images/codereview/approve-revision-target-branch.png"/&gt;
 &lt;p&gt;And in Fogbugz:&lt;/p&gt;
-&lt;img alt="target branch field in the Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/target-branch-field.png"/&gt;
+&lt;img alt="target branch field in the Fogbugz" class="align-center" src="https://developer.paylogic.com/images/codereview/target-branch-field.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="support-creation-of-an-issue-patchset-using-bzr-git-and-mercurial-repositories"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id9"&gt;Support creation of an issue (patchset), using bzr, git and mercurial repositories&lt;/a&gt;&lt;/h3&gt;
@@ -280,7 +280,7 @@ This new customization will be open sourced as well.&lt;/p&gt;
 support, and use cases. We hope that it will be useful for the community.
 Feedback is, as usual, more than appreciated. Happy code reviewing, we wish you 0 comments on your reviews!&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Anatoly Bubenkov</dc:creator><pubDate>Thu, 17 Jul 2014 09:00:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-07-17:articles/codereview.html</guid><category>code review</category><category>gatekeeper</category><category>fogbugz</category><category>review</category><category>rietveld</category><category>open source</category></item><item><title>pytest-xdist and session-scoped fixtures</title><link>http://developer.paylogic.com/articles/pytest-xdist-and-session-scoped-fixtures.html</link><description>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Anatoly Bubenkov</dc:creator><pubDate>Thu, 17 Jul 2014 09:00:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-07-17:articles/codereview.html</guid><category>code review</category><category>gatekeeper</category><category>fogbugz</category><category>review</category><category>rietveld</category><category>open source</category></item><item><title>pytest-xdist and session-scoped fixtures</title><link>https://developer.paylogic.com/articles/pytest-xdist-and-session-scoped-fixtures.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;In the earlier &lt;a class="reference external" href="test-p14n"&gt;article on Test parallelization&lt;/a&gt; we unveiled how we &lt;tt class="docutils literal"&gt;parallelize&lt;/tt&gt; our tests.
@@ -390,7 +390,7 @@ not &lt;tt class="docutils literal"&gt;parallelize&lt;/tt&gt; tests, and therefo
 &lt;/ul&gt;
 &lt;p&gt;We see here that the more tests you have for the same amount of nodes, the more test sessions will be started!&lt;/p&gt;
 &lt;p&gt;In the below diagram we can see how it works in a more visual way:&lt;/p&gt;
-&lt;img alt="pytest-xdist in action" class="align-center" src="http://developer.paylogic.com/images/pytest-xdist-in-action.png" style="width: 75%;"/&gt;
+&lt;img alt="pytest-xdist in action" class="align-center" src="https://developer.paylogic.com/images/pytest-xdist-in-action.png" style="width: 75%;"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="how-to-avoid-multiple-sessions-on-single-node"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;How to avoid multiple sessions on single node&lt;/a&gt;&lt;/h2&gt;
@@ -473,7 +473,7 @@ It also improved the test stability, because the OS performs better as it doesn'
 of processes. We hope that you will find our approach useful, especially if you use &lt;tt class="docutils literal"&gt;pytest&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pytest-xdist&lt;/span&gt;&lt;/tt&gt;,
 as you will probably run into the same issues as we did.&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Anatoly Bubenkov</dc:creator><pubDate>Wed, 28 May 2014 12:36:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-05-28:articles/pytest-xdist-and-session-scoped-fixtures.html</guid><category>testing</category><category>pytest</category><category>pytest-xdist</category><category>fixtures</category><category>session</category></item><item><title>Test parallelization</title><link>http://developer.paylogic.com/articles/test-p14n.html</link><description>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Anatoly Bubenkov</dc:creator><pubDate>Wed, 28 May 2014 12:36:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-05-28:articles/pytest-xdist-and-session-scoped-fixtures.html</guid><category>testing</category><category>pytest</category><category>pytest-xdist</category><category>fixtures</category><category>session</category></item><item><title>Test parallelization</title><link>https://developer.paylogic.com/articles/test-p14n.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Automated tests are awesome. A good test suite makes refactoring easier and allows
@@ -902,7 +902,7 @@ it before running the tests:&lt;/p&gt;
 functional tests. It takes about 5 minutes to run unit and functional tests on a
 cluster of 6 old dual core machines, each of them running 2 sessions.&lt;/p&gt;
 &lt;p&gt;An experiment in the early stages gave these results:&lt;/p&gt;
-&lt;img alt="parallelization performance comparison graph" class="align-center" src="http://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
+&lt;img alt="parallelization performance comparison graph" class="align-center" src="https://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
 &lt;p&gt;The blue line is the test distribution over cluster machines, one worker on each
 of them. The pink line represents the "ideal situation", where doubling the
 number of works decreases the tests execution time by a factor of 2. Finally, the

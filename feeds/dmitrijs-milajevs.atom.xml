@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/dmitrijs-milajevs.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2014-01-31T10:37:00+01:00</updated><entry><title>Test parallelization</title><link href="http://developer.paylogic.com/articles/test-p14n.html" rel="alternate"></link><published>2014-01-31T10:37:00+01:00</published><updated>2014-01-31T10:37:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-01-31:articles/test-p14n.html</id><summary type="html">
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="https://developer.paylogic.com/" rel="alternate"></link><link href="https://developer.paylogic.com/feeds/dmitrijs-milajevs.atom.xml" rel="self"></link><id>https://developer.paylogic.com/</id><updated>2014-01-31T10:37:00+01:00</updated><entry><title>Test parallelization</title><link href="https://developer.paylogic.com/articles/test-p14n.html" rel="alternate"></link><published>2014-01-31T10:37:00+01:00</published><updated>2014-01-31T10:37:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-01-31:articles/test-p14n.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Automated tests are awesome. A good test suite makes refactoring easier and allows
@@ -428,7 +428,7 @@ it before running the tests:&lt;/p&gt;
 functional tests. It takes about 5 minutes to run unit and functional tests on a
 cluster of 6 old dual core machines, each of them running 2 sessions.&lt;/p&gt;
 &lt;p&gt;An experiment in the early stages gave these results:&lt;/p&gt;
-&lt;img alt="parallelization performance comparison graph" class="align-center" src="http://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
+&lt;img alt="parallelization performance comparison graph" class="align-center" src="https://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
 &lt;p&gt;The blue line is the test distribution over cluster machines, one worker on each
 of them. The pink line represents the "ideal situation", where doubling the
 number of works decreases the tests execution time by a factor of 2. Finally, the

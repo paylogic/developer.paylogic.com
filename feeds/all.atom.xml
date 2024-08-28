@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/all.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2016-04-01T11:02:00+02:00</updated><entry><title>Factory injection, combining pytest with factory_boy</title><link href="http://developer.paylogic.com/articles/factory-injection-combining-pytest-factory_boy.html" rel="alternate"></link><published>2016-04-01T11:02:00+02:00</published><updated>2016-04-01T11:02:00+02:00</updated><author><name>Oleg Pidsadnyi</name></author><id>tag:developer.paylogic.com,2016-04-01:articles/factory-injection-combining-pytest-factory_boy.html</id><summary type="html">&lt;div class="section" id="factory-injection-combining-pytest-with-factory-boy"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="https://developer.paylogic.com/" rel="alternate"></link><link href="https://developer.paylogic.com/feeds/all.atom.xml" rel="self"></link><id>https://developer.paylogic.com/</id><updated>2016-04-01T11:02:00+02:00</updated><entry><title>Factory injection, combining pytest with factory_boy</title><link href="https://developer.paylogic.com/articles/factory-injection-combining-pytest-factory_boy.html" rel="alternate"></link><published>2016-04-01T11:02:00+02:00</published><updated>2016-04-01T11:02:00+02:00</updated><author><name>Oleg Pidsadnyi</name></author><id>tag:developer.paylogic.com,2016-04-01:articles/factory-injection-combining-pytest-factory_boy.html</id><summary type="html">&lt;div class="section" id="factory-injection-combining-pytest-with-factory-boy"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Factory injection, combining pytest with factory_boy&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;The most annoying in writing tests is the setup. All this boilerplate requires so much effort and
@@ -524,7 +524,7 @@ factories based on SQLAlchemy models.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="open source"></category><category term="python"></category><category term="pytest"></category><category term="pytest-bdd"></category><category term="factory_boy"></category><category term="pytest-factoryboy"></category></entry><entry><title>pushserver</title><link href="http://developer.paylogic.com/articles/pushserver.html" rel="alternate"></link><published>2015-02-09T13:01:00+01:00</published><updated>2015-02-09T13:01:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2015-02-09:articles/pushserver.html</id><summary type="html">
+</summary><category term="open source"></category><category term="python"></category><category term="pytest"></category><category term="pytest-bdd"></category><category term="factory_boy"></category><category term="pytest-factoryboy"></category></entry><entry><title>pushserver</title><link href="https://developer.paylogic.com/articles/pushserver.html" rel="alternate"></link><published>2015-02-09T13:01:00+01:00</published><updated>2015-02-09T13:01:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2015-02-09:articles/pushserver.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Paylogic is constantly working to improve the user experience of it's ticketing platform. When buying a ticket, one of
@@ -609,11 +609,11 @@ Flask-sse on top of redis-cluster allows us to have a high available, scalable w
 &lt;div class="section" id="use-case"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;Use-case&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;A possible use-case can be drawn as follows:&lt;/p&gt;
-&lt;img alt="pushserver use-case from the user perspective" class="align-center" src="http://developer.paylogic.com/images/pushserver/diagram-user-perspective.png"/&gt;
+&lt;img alt="pushserver use-case from the user perspective" class="align-center" src="https://developer.paylogic.com/images/pushserver/diagram-user-perspective.png"/&gt;
 &lt;p&gt;The actor changes some data on the backend via a normal request to the backend. All users receive the broadcasted
 message from the backend via long-lasting channel for server-sent events.&lt;/p&gt;
 &lt;p&gt;The deployment may look like this:&lt;/p&gt;
-&lt;img alt="pushserver use-case possible deployment schema" class="align-center" src="http://developer.paylogic.com/images/pushserver/diagram-deployment.png"/&gt;
+&lt;img alt="pushserver use-case possible deployment schema" class="align-center" src="https://developer.paylogic.com/images/pushserver/diagram-deployment.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="sending-events-to-a-push-server"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;Sending events to a push server&lt;/a&gt;&lt;/h2&gt;
@@ -659,7 +659,7 @@ payment processing, ticket availability changes, etc.&lt;/p&gt;
 &lt;p&gt;For now, Server sent events are more like an experiment for us, but it's a promising technology. We're eager to hear
 some feedback from developers who use our API on whether it will be useful for them to have a stream API.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="open source"></category><category term="python"></category><category term="redis-cluster"></category><category term="push notifications"></category><category term="server-sent events"></category><category term="SSE"></category><category term="html5"></category><category term="pub/sub"></category></entry><entry><title>How we use pytest and pytest-bdd in Paylogic.</title><link href="http://developer.paylogic.com/articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html" rel="alternate"></link><published>2014-10-31T11:00:00+01:00</published><updated>2014-10-31T11:00:00+01:00</updated><author><name>Andrey Makhnach</name></author><id>tag:developer.paylogic.com,2014-10-31:articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html</id><summary type="html">&lt;div class="section" id="how-we-use-pytest-and-pytest-bdd-in-paylogic"&gt;
+</summary><category term="open source"></category><category term="python"></category><category term="redis-cluster"></category><category term="push notifications"></category><category term="server-sent events"></category><category term="SSE"></category><category term="html5"></category><category term="pub/sub"></category></entry><entry><title>How we use pytest and pytest-bdd in Paylogic.</title><link href="https://developer.paylogic.com/articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html" rel="alternate"></link><published>2014-10-31T11:00:00+01:00</published><updated>2014-10-31T11:00:00+01:00</updated><author><name>Andrey Makhnach</name></author><id>tag:developer.paylogic.com,2014-10-31:articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html</id><summary type="html">&lt;div class="section" id="how-we-use-pytest-and-pytest-bdd-in-paylogic"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;How we use pytest and pytest-bdd in Paylogic&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;After some time of using &lt;a class="reference external" href="http://pytest.org"&gt;pytest&lt;/a&gt; and &lt;a class="reference external" href="https://github.com/olegpidsadnyi/pytest-bdd"&gt;pytest-bdd&lt;/a&gt;
@@ -972,7 +972,7 @@ planning to improve a relation between code and tests, fixtures.&lt;/p&gt;
 &lt;p&gt;Thank you for reading.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="open source"></category><category term="python"></category><category term="pytest"></category><category term="pytest-bdd"></category></entry><entry><title>Traduki</title><link href="http://developer.paylogic.com/articles/traduki.html" rel="alternate"></link><published>2014-10-27T10:00:00+01:00</published><updated>2014-10-27T10:00:00+01:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-10-27:articles/traduki.html</id><summary type="html">
+</summary><category term="open source"></category><category term="python"></category><category term="pytest"></category><category term="pytest-bdd"></category></entry><entry><title>Traduki</title><link href="https://developer.paylogic.com/articles/traduki.html" rel="alternate"></link><published>2014-10-27T10:00:00+01:00</published><updated>2014-10-27T10:00:00+01:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-10-27:articles/traduki.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;tt class="docutils literal"&gt;traduki&lt;/tt&gt; is an &lt;a class="reference external" href="https://github.com/paylogic/traduki"&gt;open source&lt;/a&gt;
@@ -1343,7 +1343,7 @@ useful for projects that require an efficient and easy to use internationalizati
 We are waiting for your feedback and recommendations. Check &lt;a class="reference external" href="https://github.com/paylogic/traduki"&gt;traduki&lt;/a&gt;
 in our github profile.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="internationalization"></category><category term="sqlalchemy"></category><category term="python"></category><category term="database"></category><category term="i18n"></category></entry><entry><title>Lessons learned using SCRUM</title><link href="http://developer.paylogic.com/articles/lessons-scrum.html" rel="alternate"></link><published>2014-10-09T10:28:00+02:00</published><updated>2014-10-09T10:28:00+02:00</updated><author><name>Lars de Ridder</name></author><id>tag:developer.paylogic.com,2014-10-09:articles/lessons-scrum.html</id><summary type="html">
+</summary><category term="internationalization"></category><category term="sqlalchemy"></category><category term="python"></category><category term="database"></category><category term="i18n"></category></entry><entry><title>Lessons learned using SCRUM</title><link href="https://developer.paylogic.com/articles/lessons-scrum.html" rel="alternate"></link><published>2014-10-09T10:28:00+02:00</published><updated>2014-10-09T10:28:00+02:00</updated><author><name>Lars de Ridder</name></author><id>tag:developer.paylogic.com,2014-10-09:articles/lessons-scrum.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Paylogic has been using &lt;a class="reference external" href="https://www.scrum.org/"&gt;SCRUM&lt;/a&gt; for its engineering process for years now.
@@ -1499,7 +1499,7 @@ in Paylogic however, so perhaps I'll write another article about that by that
 time.&lt;/p&gt;
 &lt;!-- External references: --&gt;
 &lt;/div&gt;
-</summary><category term="scrum"></category><category term="agile"></category><category term="project management"></category><category term="scrum master"></category><category term="product owner"></category></entry><entry><title>How we use Trello and custom tooling to streamline our development process</title><link href="http://developer.paylogic.com/articles/trello.html" rel="alternate"></link><published>2014-10-07T12:05:00+02:00</published><updated>2014-10-07T12:05:00+02:00</updated><author><name>Lars de Ridder</name></author><id>tag:developer.paylogic.com,2014-10-07:articles/trello.html</id><summary type="html">
+</summary><category term="scrum"></category><category term="agile"></category><category term="project management"></category><category term="scrum master"></category><category term="product owner"></category></entry><entry><title>How we use Trello and custom tooling to streamline our development process</title><link href="https://developer.paylogic.com/articles/trello.html" rel="alternate"></link><published>2014-10-07T12:05:00+02:00</published><updated>2014-10-07T12:05:00+02:00</updated><author><name>Lars de Ridder</name></author><id>tag:developer.paylogic.com,2014-10-07:articles/trello.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;One of the challenges in the abstract world of code (and at the same time one of
@@ -1560,7 +1560,7 @@ backlog boards. I'll now go into some more detail on these boards.&lt;/p&gt;
 &lt;div class="section" id="sprint-board"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id6"&gt;Sprint board&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;A typical sprint board of one of our teams looks something like this:&lt;/p&gt;
-&lt;img alt="Sprint board" class="align-center" src="http://developer.paylogic.com/images/trello/sprint-board.png"/&gt;
+&lt;img alt="Sprint board" class="align-center" src="https://developer.paylogic.com/images/trello/sprint-board.png"/&gt;
 &lt;p&gt;Let's go through the columns (or lists in Trello's terminology).&lt;/p&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;strong&gt;User stories&lt;/strong&gt;: The user stories committed for this sprint. Each of these
@@ -1620,7 +1620,7 @@ might work for you however, so I did want to mention the option.&lt;/li&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id7"&gt;Backlogs&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;We have three engineering teams, so we need three backlogs as well. One such
 backlog board can be seen below.&lt;/p&gt;
-&lt;img alt="Backlog board" class="align-center" src="http://developer.paylogic.com/images/trello/backlog-board.png"/&gt;
+&lt;img alt="Backlog board" class="align-center" src="https://developer.paylogic.com/images/trello/backlog-board.png"/&gt;
 &lt;p&gt;As you can see, it is quite straightforward. There's a Backlog list, containing
 the user stories that are up next, and there is a list for each sprint, to be
 able to keep an easy overview of what was done in which sprint.&lt;/p&gt;
@@ -1645,7 +1645,7 @@ get the data needed for a simple burndown. We started off with a &lt;a class="re
 in Google Docs&lt;/a&gt;, which is a nice and lightweight way to start using Trello for
 your sprints. It turned out we needed a bit more flexibility however, so we
 developed our own burndown application, which can be seen below.&lt;/p&gt;
-&lt;img alt="Custom burndown chart" class="align-center" src="http://developer.paylogic.com/images/trello/burndown.png"/&gt;
+&lt;img alt="Custom burndown chart" class="align-center" src="https://developer.paylogic.com/images/trello/burndown.png"/&gt;
 &lt;p&gt;To be able to generate a burndown using Trello however, you need a way to set
 the size of a task, which we do by convention. Notice how in the sprint board
 shown above every task has a number of "k" between brackets, so like (2k)?
@@ -1671,7 +1671,7 @@ of having to do double administration.&lt;/p&gt;
 again with our burndown chart, so that we could display what every engineer is
 working on right now next to the burndown chart, together with the progress of
 the case. Magic!&lt;/p&gt;
-&lt;img alt="Displaying of who works on what case" class="align-center" src="http://developer.paylogic.com/images/trello/workon.png"/&gt;
+&lt;img alt="Displaying of who works on what case" class="align-center" src="https://developer.paylogic.com/images/trello/workon.png"/&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="closing-thoughts"&gt;
@@ -1698,7 +1698,7 @@ which I didn't know about before, but it looks promising as well. Give it a go!&
 &lt;p&gt;And don't forget to check out the &lt;a class="reference external" href="https://trello.com/taco-game"&gt;taco game&lt;/a&gt;.&lt;/p&gt;
 &lt;!-- External references: --&gt;
 &lt;/div&gt;
-</summary><category term="trello"></category><category term="fogbugz"></category><category term="burndown"></category><category term="scrum"></category><category term="agile"></category></entry><entry><title>Paylogic Code review tool</title><link href="http://developer.paylogic.com/articles/codereview.html" rel="alternate"></link><published>2014-07-17T09:00:00+02:00</published><updated>2014-07-17T09:00:00+02:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-07-17:articles/codereview.html</id><summary type="html">
+</summary><category term="trello"></category><category term="fogbugz"></category><category term="burndown"></category><category term="scrum"></category><category term="agile"></category></entry><entry><title>Paylogic Code review tool</title><link href="https://developer.paylogic.com/articles/codereview.html" rel="alternate"></link><published>2014-07-17T09:00:00+02:00</published><updated>2014-07-17T09:00:00+02:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-07-17:articles/codereview.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;As open sourcing software is a strategic decision of Paylogic we decided not to make an exception for our
@@ -1735,7 +1735,7 @@ Paylogic codebase has a reference to a Fogbugz case, and the development itself 
 at our &lt;a class="reference external" href="http://pygrunn.org/"&gt;PyGrunn&lt;/a&gt; conference
 on this topic from &lt;a class="reference external" href="http://nl.linkedin.com/in/dzittersteyn"&gt;Dirk Zittersteyn&lt;/a&gt;.  However, since it is important
 to understand the role the code review tool plays in our ecosystem, the below image shows a part of the process.&lt;/p&gt;
-&lt;img alt="gatekeepering and code review process" class="align-center" src="http://developer.paylogic.com/images/codereview/gatekeepering-and-code-review-process.png"/&gt;
+&lt;img alt="gatekeepering and code review process" class="align-center" src="https://developer.paylogic.com/images/codereview/gatekeepering-and-code-review-process.png"/&gt;
 &lt;p&gt;As you can see from the diagram (and the Legend), the code review tool is a critical part of our process.&lt;/p&gt;
 &lt;p&gt;Before we continue, we'll give you a quick glossary for the rest of this article:&lt;/p&gt;
 &lt;dl class="docutils"&gt;
@@ -1768,7 +1768,7 @@ a parameter, and retrieves the following fields from that case through the
 &lt;/ul&gt;
 &lt;p&gt;For custom fields, we use the &lt;a class="reference external" href="http://www.fogcreek.com/fogbugz/plugins/plugin.aspx?ixPlugin=1"&gt;Custom Fields&lt;/a&gt; plugin.
 From the Fogbugz side, it looks like this:&lt;/p&gt;
-&lt;img alt="create patchset from Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/create-patchset.png"/&gt;
+&lt;img alt="create patchset from Fogbugz" class="align-center" src="https://developer.paylogic.com/images/codereview/create-patchset.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="apply-custom-validations-for-any-patchsets-created"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id6"&gt;Apply custom validations for any patchsets created&lt;/a&gt;&lt;/h3&gt;
@@ -1782,17 +1782,17 @@ to the user.&lt;/p&gt;
 &lt;p&gt;This is, again, implemented using a special custom field in Fogbugz called
 &lt;tt class="docutils literal"&gt;approved revision&lt;/tt&gt;, together with the Fogbugz API to set it from the code review tool.&lt;/p&gt;
 &lt;p&gt;In the code review tool:&lt;/p&gt;
-&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="http://developer.paylogic.com/images/codereview/approve-revision-click.png"/&gt;
+&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="https://developer.paylogic.com/images/codereview/approve-revision-click.png"/&gt;
 &lt;p&gt;And in Fogbugz:&lt;/p&gt;
-&lt;img alt="approved revision and ci project fields set in the Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/approved-revision-field.png"/&gt;
+&lt;img alt="approved revision and ci project fields set in the Fogbugz" class="align-center" src="https://developer.paylogic.com/images/codereview/approved-revision-field.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="allow-gatekeepers-to-set-and-select-from-the-dropdown-the-target-branch-for-a-given-ci-project"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id8"&gt;Allow gatekeepers to set (and select from the dropdown) the target branch for a given CI project&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;Both &lt;tt class="docutils literal"&gt;target branch&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;CI project&lt;/tt&gt; are custom fields of a Fogbugz case.&lt;/p&gt;
 &lt;p&gt;In the code review tool:&lt;/p&gt;
-&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="http://developer.paylogic.com/images/codereview/approve-revision-target-branch.png"/&gt;
+&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="https://developer.paylogic.com/images/codereview/approve-revision-target-branch.png"/&gt;
 &lt;p&gt;And in Fogbugz:&lt;/p&gt;
-&lt;img alt="target branch field in the Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/target-branch-field.png"/&gt;
+&lt;img alt="target branch field in the Fogbugz" class="align-center" src="https://developer.paylogic.com/images/codereview/target-branch-field.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="support-creation-of-an-issue-patchset-using-bzr-git-and-mercurial-repositories"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id9"&gt;Support creation of an issue (patchset), using bzr, git and mercurial repositories&lt;/a&gt;&lt;/h3&gt;
@@ -1844,7 +1844,7 @@ This new customization will be open sourced as well.&lt;/p&gt;
 support, and use cases. We hope that it will be useful for the community.
 Feedback is, as usual, more than appreciated. Happy code reviewing, we wish you 0 comments on your reviews!&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="code review"></category><category term="gatekeeper"></category><category term="fogbugz"></category><category term="review"></category><category term="rietveld"></category><category term="open source"></category></entry><entry><title>pytest-xdist and session-scoped fixtures</title><link href="http://developer.paylogic.com/articles/pytest-xdist-and-session-scoped-fixtures.html" rel="alternate"></link><published>2014-05-28T12:36:00+02:00</published><updated>2014-05-28T12:36:00+02:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-05-28:articles/pytest-xdist-and-session-scoped-fixtures.html</id><summary type="html">
+</summary><category term="code review"></category><category term="gatekeeper"></category><category term="fogbugz"></category><category term="review"></category><category term="rietveld"></category><category term="open source"></category></entry><entry><title>pytest-xdist and session-scoped fixtures</title><link href="https://developer.paylogic.com/articles/pytest-xdist-and-session-scoped-fixtures.html" rel="alternate"></link><published>2014-05-28T12:36:00+02:00</published><updated>2014-05-28T12:36:00+02:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-05-28:articles/pytest-xdist-and-session-scoped-fixtures.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;In the earlier &lt;a class="reference external" href="test-p14n"&gt;article on Test parallelization&lt;/a&gt; we unveiled how we &lt;tt class="docutils literal"&gt;parallelize&lt;/tt&gt; our tests.
@@ -1954,7 +1954,7 @@ not &lt;tt class="docutils literal"&gt;parallelize&lt;/tt&gt; tests, and therefo
 &lt;/ul&gt;
 &lt;p&gt;We see here that the more tests you have for the same amount of nodes, the more test sessions will be started!&lt;/p&gt;
 &lt;p&gt;In the below diagram we can see how it works in a more visual way:&lt;/p&gt;
-&lt;img alt="pytest-xdist in action" class="align-center" src="http://developer.paylogic.com/images/pytest-xdist-in-action.png" style="width: 75%;"/&gt;
+&lt;img alt="pytest-xdist in action" class="align-center" src="https://developer.paylogic.com/images/pytest-xdist-in-action.png" style="width: 75%;"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="how-to-avoid-multiple-sessions-on-single-node"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;How to avoid multiple sessions on single node&lt;/a&gt;&lt;/h2&gt;
@@ -2037,7 +2037,7 @@ It also improved the test stability, because the OS performs better as it doesn'
 of processes. We hope that you will find our approach useful, especially if you use &lt;tt class="docutils literal"&gt;pytest&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pytest-xdist&lt;/span&gt;&lt;/tt&gt;,
 as you will probably run into the same issues as we did.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="testing"></category><category term="pytest"></category><category term="pytest-xdist"></category><category term="fixtures"></category><category term="session"></category></entry><entry><title>Settei</title><link href="http://developer.paylogic.com/articles/settei.html" rel="alternate"></link><published>2014-04-29T12:03:00+02:00</published><updated>2014-04-29T12:03:00+02:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-04-29:articles/settei.html</id><summary type="html">
+</summary><category term="testing"></category><category term="pytest"></category><category term="pytest-xdist"></category><category term="fixtures"></category><category term="session"></category></entry><entry><title>Settei</title><link href="https://developer.paylogic.com/articles/settei.html" rel="alternate"></link><published>2014-04-29T12:03:00+02:00</published><updated>2014-04-29T12:03:00+02:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-04-29:articles/settei.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;settei&lt;/code&gt; is a general purpose python settings library which uses
@@ -2327,7 +2327,7 @@ e.g. a live environment, where settings usually differ a lot from those used
 during development. Finally, settings inheritance, which is accomplished by using
 dependency injection, provides the modularity and extensibility we needed.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="open source"></category><category term="python"></category><category term="settings"></category><category term="entry points"></category><category term="setuptools"></category></entry><entry><title>Test parallelization</title><link href="http://developer.paylogic.com/articles/test-p14n.html" rel="alternate"></link><published>2014-01-31T10:37:00+01:00</published><updated>2014-01-31T10:37:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-01-31:articles/test-p14n.html</id><summary type="html">
+</summary><category term="open source"></category><category term="python"></category><category term="settings"></category><category term="entry points"></category><category term="setuptools"></category></entry><entry><title>Test parallelization</title><link href="https://developer.paylogic.com/articles/test-p14n.html" rel="alternate"></link><published>2014-01-31T10:37:00+01:00</published><updated>2014-01-31T10:37:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-01-31:articles/test-p14n.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Automated tests are awesome. A good test suite makes refactoring easier and allows
@@ -2756,7 +2756,7 @@ it before running the tests:&lt;/p&gt;
 functional tests. It takes about 5 minutes to run unit and functional tests on a
 cluster of 6 old dual core machines, each of them running 2 sessions.&lt;/p&gt;
 &lt;p&gt;An experiment in the early stages gave these results:&lt;/p&gt;
-&lt;img alt="parallelization performance comparison graph" class="align-center" src="http://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
+&lt;img alt="parallelization performance comparison graph" class="align-center" src="https://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
 &lt;p&gt;The blue line is the test distribution over cluster machines, one worker on each
 of them. The pink line represents the "ideal situation", where doubling the
 number of works decreases the tests execution time by a factor of 2. Finally, the
@@ -2778,7 +2778,7 @@ by the majority of the team. Test parallelization and execution over several nod
 solves this problem, with as trade-off the extra effort needed to make the tests ready for
 parallelization.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="testing"></category><category term="parallelization"></category><category term="pytest"></category><category term="pytest-xdist"></category></entry><entry><title>Prefill Registration Data</title><link href="http://developer.paylogic.com/articles/prefill-registration.html" rel="alternate"></link><published>2013-12-02T10:56:00+01:00</published><updated>2013-12-02T10:56:00+01:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2013-12-02:articles/prefill-registration.html</id><summary type="html">
+</summary><category term="testing"></category><category term="parallelization"></category><category term="pytest"></category><category term="pytest-xdist"></category></entry><entry><title>Prefill Registration Data</title><link href="https://developer.paylogic.com/articles/prefill-registration.html" rel="alternate"></link><published>2013-12-02T10:56:00+01:00</published><updated>2013-12-02T10:56:00+01:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2013-12-02:articles/prefill-registration.html</id><summary type="html">
 &lt;p&gt;&lt;em&gt;Paylogic offers a feature to allow the prefilling of the personal data of a
 consumer during the sales process via a personalized URL. This can be used
 whenever a merchant already has the data of the consumers and wants to offer
@@ -2933,13 +2933,13 @@ an iframe inside the landing page HTML document.&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="integration"></category></entry><entry><title>You are welcome</title><link href="http://developer.paylogic.com/articles/you-are-welcome.html" rel="alternate"></link><published>2013-06-19T18:00:00+02:00</published><updated>2013-06-19T18:00:00+02:00</updated><author><name>Berco Beute</name></author><id>tag:developer.paylogic.com,2013-06-19:articles/you-are-welcome.html</id><summary type="html">
+</summary><category term="integration"></category></entry><entry><title>You are welcome</title><link href="https://developer.paylogic.com/articles/you-are-welcome.html" rel="alternate"></link><published>2013-06-19T18:00:00+02:00</published><updated>2013-06-19T18:00:00+02:00</updated><author><name>Berco Beute</name></author><id>tag:developer.paylogic.com,2013-06-19:articles/you-are-welcome.html</id><summary type="html">
 &lt;div class="section" id="you-are-welcome"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;You are welcome&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;We at Paylogic are passionate about software. We have the craft of software engineering on a pedestal, we love to write clean code, we are interested in high availability, we are intrigued by distributed systems, we like to experiment with emerging technologies, we take pride in the applications we write, deploy and maintain. And we are fortunate enough to be able to live our passion through our jobs. Paylogic is a company that is both commercially and technically quite ambitious. Its goal is to redesign the world of ticketing with creative and reliable ticketing solutions which empower the event organizer in their relation with their visitors. The commercial ambitions are achieved through technical leadership. Technical leadership is achieved by both hiring top software engineers and selecting the right technologies and tools. One of the fundamental choices in that respect is the commitment to open source software. Paylogic is fully built upon open source software and firmly rooted in the open source culture. Some key technologies we use are for example Python, SQLAlchemy, Django, Flask, JavaScript and MySQL. Interestingly enough the Zen of Python is largely used as guidance for running the technical side of Paylogic. But we are not just using open source software, we are also actively giving back. We contribute to many open source projects, we run PyGrunn, the biggest Python conference in the Netherlands, we open source as much of the software we write as possible, we give lectures at universities about our work, and we participate in a number of open source related conferences. Somehow all of our open source efforts were quite detached and independent. This developer portal and blog should change that. This will be the central hub for the outside world to learn about the technology within Paylogic. We will announce open source projects and write about technical topics.&lt;/p&gt;
 &lt;p&gt;In the end it is all about sharing, and we share because we care. We hope you appreciate our effort and share back. Whether it is code, ideas or feedback. So welcome to the tech world of Paylogic and please join the discussions!&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term=""></category></entry><entry><title>Continuous Delivery</title><link href="http://developer.paylogic.com/articles/continuous-delivery.html" rel="alternate"></link><published>2013-05-30T01:08:00+02:00</published><updated>2013-05-30T01:08:00+02:00</updated><author><name>Òscar Vilaplana</name></author><id>tag:developer.paylogic.com,2013-05-30:articles/continuous-delivery.html</id><summary type="html">
+</summary><category term=""></category></entry><entry><title>Continuous Delivery</title><link href="https://developer.paylogic.com/articles/continuous-delivery.html" rel="alternate"></link><published>2013-05-30T01:08:00+02:00</published><updated>2013-05-30T01:08:00+02:00</updated><author><name>Òscar Vilaplana</name></author><id>tag:developer.paylogic.com,2013-05-30:articles/continuous-delivery.html</id><summary type="html">
 &lt;p&gt;&lt;em&gt;When you do Continuous Delivery you can deploy whenever you want: you
 made it as easy as possible and you have become very good at it.
 Everyone in the Engineering and Operations teams knows how to deploy
@@ -3204,7 +3204,7 @@ the video will be available soon.&lt;/p&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="agile"></category><category term="continuous delivery"></category><category term="deployment"></category><category term="release"></category><category term="testing"></category><category term="qa"></category></entry><entry><title>Using Debian packages for Python deployments</title><link href="http://developer.paylogic.com/articles/debian-packages.html" rel="alternate"></link><published>2013-05-14T00:28:00+02:00</published><updated>2013-05-14T00:28:00+02:00</updated><author><name>Peter Odding</name></author><id>tag:developer.paylogic.com,2013-05-14:articles/debian-packages.html</id><summary type="html">
+</summary><category term="agile"></category><category term="continuous delivery"></category><category term="deployment"></category><category term="release"></category><category term="testing"></category><category term="qa"></category></entry><entry><title>Using Debian packages for Python deployments</title><link href="https://developer.paylogic.com/articles/debian-packages.html" rel="alternate"></link><published>2013-05-14T00:28:00+02:00</published><updated>2013-05-14T00:28:00+02:00</updated><author><name>Peter Odding</name></author><id>tag:developer.paylogic.com,2013-05-14:articles/debian-packages.html</id><summary type="html">
 &lt;p&gt;At Paylogic we use Debian packages to deploy our Python applications. This
 article explains how we got started.&lt;/p&gt;
 &lt;p&gt;This is a large article but if you just want to get started building Debian
@@ -3406,7 +3406,7 @@ installation/removal scripts, dpkg triggers and generation of configuration
 files. Stay tuned!&lt;/p&gt;
 &lt;!-- External references: --&gt;
 &lt;/div&gt;
-</summary><category term="python"></category><category term="deployment"></category><category term="automation"></category><category term="debian"></category><category term="packaging"></category></entry><entry><title>pip-accel: Accelerator for pip, the Python package manager</title><link href="http://developer.paylogic.com/articles/pip-accel.html" rel="alternate"></link><published>2013-05-14T00:28:00+02:00</published><updated>2013-05-14T00:28:00+02:00</updated><author><name>Peter Odding</name></author><id>tag:developer.paylogic.com,2013-05-14:articles/pip-accel.html</id><summary type="html">
+</summary><category term="python"></category><category term="deployment"></category><category term="automation"></category><category term="debian"></category><category term="packaging"></category></entry><entry><title>pip-accel: Accelerator for pip, the Python package manager</title><link href="https://developer.paylogic.com/articles/pip-accel.html" rel="alternate"></link><published>2013-05-14T00:28:00+02:00</published><updated>2013-05-14T00:28:00+02:00</updated><author><name>Peter Odding</name></author><id>tag:developer.paylogic.com,2013-05-14:articles/pip-accel.html</id><summary type="html">
 &lt;p&gt;Recently we published &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;pip-accel&lt;/a&gt; to &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;GitHub&lt;/a&gt; and &lt;a class="reference external" href="https://pypi.python.org/pypi/pip-accel"&gt;PyPI&lt;/a&gt;, in this article we'll
 tell you why and how we created this project.&lt;/p&gt;
 &lt;div class="section" id="introduction"&gt;

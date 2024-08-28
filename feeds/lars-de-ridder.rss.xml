@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>Paylogic Developers</title><link>http://developer.paylogic.com/</link><description></description><lastBuildDate>Thu, 09 Oct 2014 10:28:00 +0200</lastBuildDate><item><title>Lessons learned using SCRUM</title><link>http://developer.paylogic.com/articles/lessons-scrum.html</link><description>
+<rss version="2.0"><channel><title>Paylogic Developers</title><link>https://developer.paylogic.com/</link><description></description><lastBuildDate>Thu, 09 Oct 2014 10:28:00 +0200</lastBuildDate><item><title>Lessons learned using SCRUM</title><link>https://developer.paylogic.com/articles/lessons-scrum.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Paylogic has been using &lt;a class="reference external" href="https://www.scrum.org/"&gt;SCRUM&lt;/a&gt; for its engineering process for years now.
@@ -155,7 +155,7 @@ in Paylogic however, so perhaps I'll write another article about that by that
 time.&lt;/p&gt;
 &lt;!-- External references: --&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Lars de Ridder</dc:creator><pubDate>Thu, 09 Oct 2014 10:28:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-10-09:articles/lessons-scrum.html</guid><category>scrum</category><category>agile</category><category>project management</category><category>scrum master</category><category>product owner</category></item><item><title>How we use Trello and custom tooling to streamline our development process</title><link>http://developer.paylogic.com/articles/trello.html</link><description>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Lars de Ridder</dc:creator><pubDate>Thu, 09 Oct 2014 10:28:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-10-09:articles/lessons-scrum.html</guid><category>scrum</category><category>agile</category><category>project management</category><category>scrum master</category><category>product owner</category></item><item><title>How we use Trello and custom tooling to streamline our development process</title><link>https://developer.paylogic.com/articles/trello.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;One of the challenges in the abstract world of code (and at the same time one of
@@ -216,7 +216,7 @@ backlog boards. I'll now go into some more detail on these boards.&lt;/p&gt;
 &lt;div class="section" id="sprint-board"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id6"&gt;Sprint board&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;A typical sprint board of one of our teams looks something like this:&lt;/p&gt;
-&lt;img alt="Sprint board" class="align-center" src="http://developer.paylogic.com/images/trello/sprint-board.png"/&gt;
+&lt;img alt="Sprint board" class="align-center" src="https://developer.paylogic.com/images/trello/sprint-board.png"/&gt;
 &lt;p&gt;Let's go through the columns (or lists in Trello's terminology).&lt;/p&gt;
 &lt;ul class="simple"&gt;
 &lt;li&gt;&lt;strong&gt;User stories&lt;/strong&gt;: The user stories committed for this sprint. Each of these
@@ -276,7 +276,7 @@ might work for you however, so I did want to mention the option.&lt;/li&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id7"&gt;Backlogs&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;We have three engineering teams, so we need three backlogs as well. One such
 backlog board can be seen below.&lt;/p&gt;
-&lt;img alt="Backlog board" class="align-center" src="http://developer.paylogic.com/images/trello/backlog-board.png"/&gt;
+&lt;img alt="Backlog board" class="align-center" src="https://developer.paylogic.com/images/trello/backlog-board.png"/&gt;
 &lt;p&gt;As you can see, it is quite straightforward. There's a Backlog list, containing
 the user stories that are up next, and there is a list for each sprint, to be
 able to keep an easy overview of what was done in which sprint.&lt;/p&gt;
@@ -301,7 +301,7 @@ get the data needed for a simple burndown. We started off with a &lt;a class="re
 in Google Docs&lt;/a&gt;, which is a nice and lightweight way to start using Trello for
 your sprints. It turned out we needed a bit more flexibility however, so we
 developed our own burndown application, which can be seen below.&lt;/p&gt;
-&lt;img alt="Custom burndown chart" class="align-center" src="http://developer.paylogic.com/images/trello/burndown.png"/&gt;
+&lt;img alt="Custom burndown chart" class="align-center" src="https://developer.paylogic.com/images/trello/burndown.png"/&gt;
 &lt;p&gt;To be able to generate a burndown using Trello however, you need a way to set
 the size of a task, which we do by convention. Notice how in the sprint board
 shown above every task has a number of "k" between brackets, so like (2k)?
@@ -327,7 +327,7 @@ of having to do double administration.&lt;/p&gt;
 again with our burndown chart, so that we could display what every engineer is
 working on right now next to the burndown chart, together with the progress of
 the case. Magic!&lt;/p&gt;
-&lt;img alt="Displaying of who works on what case" class="align-center" src="http://developer.paylogic.com/images/trello/workon.png"/&gt;
+&lt;img alt="Displaying of who works on what case" class="align-center" src="https://developer.paylogic.com/images/trello/workon.png"/&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="closing-thoughts"&gt;

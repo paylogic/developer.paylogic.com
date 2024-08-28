@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>Paylogic Developers</title><link>http://developer.paylogic.com/</link><description></description><lastBuildDate>Fri, 31 Jan 2014 10:37:00 +0100</lastBuildDate><item><title>Test parallelization</title><link>http://developer.paylogic.com/articles/test-p14n.html</link><description>
+<rss version="2.0"><channel><title>Paylogic Developers</title><link>https://developer.paylogic.com/</link><description></description><lastBuildDate>Fri, 31 Jan 2014 10:37:00 +0100</lastBuildDate><item><title>Test parallelization</title><link>https://developer.paylogic.com/articles/test-p14n.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Automated tests are awesome. A good test suite makes refactoring easier and allows
@@ -428,7 +428,7 @@ it before running the tests:&lt;/p&gt;
 functional tests. It takes about 5 minutes to run unit and functional tests on a
 cluster of 6 old dual core machines, each of them running 2 sessions.&lt;/p&gt;
 &lt;p&gt;An experiment in the early stages gave these results:&lt;/p&gt;
-&lt;img alt="parallelization performance comparison graph" class="align-center" src="http://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
+&lt;img alt="parallelization performance comparison graph" class="align-center" src="https://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
 &lt;p&gt;The blue line is the test distribution over cluster machines, one worker on each
 of them. The pink line represents the "ideal situation", where doubling the
 number of works decreases the tests execution time by a factor of 2. Finally, the

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>Paylogic Developers</title><link>http://developer.paylogic.com/</link><description></description><lastBuildDate>Tue, 14 May 2013 00:28:00 +0200</lastBuildDate><item><title>Using Debian packages for Python deployments</title><link>http://developer.paylogic.com/articles/debian-packages.html</link><description>
+<rss version="2.0"><channel><title>Paylogic Developers</title><link>https://developer.paylogic.com/</link><description></description><lastBuildDate>Tue, 14 May 2013 00:28:00 +0200</lastBuildDate><item><title>Using Debian packages for Python deployments</title><link>https://developer.paylogic.com/articles/debian-packages.html</link><description>
 &lt;p&gt;At Paylogic we use Debian packages to deploy our Python applications. This
 article explains how we got started.&lt;/p&gt;
 &lt;p&gt;This is a large article but if you just want to get started building Debian
@@ -201,7 +201,7 @@ installation/removal scripts, dpkg triggers and generation of configuration
 files. Stay tuned!&lt;/p&gt;
 &lt;!-- External references: --&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Peter Odding</dc:creator><pubDate>Tue, 14 May 2013 00:28:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2013-05-14:articles/debian-packages.html</guid><category>python</category><category>deployment</category><category>automation</category><category>debian</category><category>packaging</category></item><item><title>pip-accel: Accelerator for pip, the Python package manager</title><link>http://developer.paylogic.com/articles/pip-accel.html</link><description>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Peter Odding</dc:creator><pubDate>Tue, 14 May 2013 00:28:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2013-05-14:articles/debian-packages.html</guid><category>python</category><category>deployment</category><category>automation</category><category>debian</category><category>packaging</category></item><item><title>pip-accel: Accelerator for pip, the Python package manager</title><link>https://developer.paylogic.com/articles/pip-accel.html</link><description>
 &lt;p&gt;Recently we published &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;pip-accel&lt;/a&gt; to &lt;a class="reference external" href="https://github.com/paylogic/pip-accel"&gt;GitHub&lt;/a&gt; and &lt;a class="reference external" href="https://pypi.python.org/pypi/pip-accel"&gt;PyPI&lt;/a&gt;, in this article we'll
 tell you why and how we created this project.&lt;/p&gt;
 &lt;div class="section" id="introduction"&gt;

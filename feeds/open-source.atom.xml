@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/open-source.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2016-04-01T11:02:00+02:00</updated><entry><title>Factory injection, combining pytest with factory_boy</title><link href="http://developer.paylogic.com/articles/factory-injection-combining-pytest-factory_boy.html" rel="alternate"></link><published>2016-04-01T11:02:00+02:00</published><updated>2016-04-01T11:02:00+02:00</updated><author><name>Oleg Pidsadnyi</name></author><id>tag:developer.paylogic.com,2016-04-01:articles/factory-injection-combining-pytest-factory_boy.html</id><summary type="html">&lt;div class="section" id="factory-injection-combining-pytest-with-factory-boy"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="https://developer.paylogic.com/" rel="alternate"></link><link href="https://developer.paylogic.com/feeds/open-source.atom.xml" rel="self"></link><id>https://developer.paylogic.com/</id><updated>2016-04-01T11:02:00+02:00</updated><entry><title>Factory injection, combining pytest with factory_boy</title><link href="https://developer.paylogic.com/articles/factory-injection-combining-pytest-factory_boy.html" rel="alternate"></link><published>2016-04-01T11:02:00+02:00</published><updated>2016-04-01T11:02:00+02:00</updated><author><name>Oleg Pidsadnyi</name></author><id>tag:developer.paylogic.com,2016-04-01:articles/factory-injection-combining-pytest-factory_boy.html</id><summary type="html">&lt;div class="section" id="factory-injection-combining-pytest-with-factory-boy"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Factory injection, combining pytest with factory_boy&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;The most annoying in writing tests is the setup. All this boilerplate requires so much effort and
@@ -524,7 +524,7 @@ factories based on SQLAlchemy models.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="open source"></category><category term="python"></category><category term="pytest"></category><category term="pytest-bdd"></category><category term="factory_boy"></category><category term="pytest-factoryboy"></category></entry><entry><title>pushserver</title><link href="http://developer.paylogic.com/articles/pushserver.html" rel="alternate"></link><published>2015-02-09T13:01:00+01:00</published><updated>2015-02-09T13:01:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2015-02-09:articles/pushserver.html</id><summary type="html">
+</summary><category term="open source"></category><category term="python"></category><category term="pytest"></category><category term="pytest-bdd"></category><category term="factory_boy"></category><category term="pytest-factoryboy"></category></entry><entry><title>pushserver</title><link href="https://developer.paylogic.com/articles/pushserver.html" rel="alternate"></link><published>2015-02-09T13:01:00+01:00</published><updated>2015-02-09T13:01:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2015-02-09:articles/pushserver.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Paylogic is constantly working to improve the user experience of it's ticketing platform. When buying a ticket, one of
@@ -609,11 +609,11 @@ Flask-sse on top of redis-cluster allows us to have a high available, scalable w
 &lt;div class="section" id="use-case"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id4"&gt;Use-case&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;A possible use-case can be drawn as follows:&lt;/p&gt;
-&lt;img alt="pushserver use-case from the user perspective" class="align-center" src="http://developer.paylogic.com/images/pushserver/diagram-user-perspective.png"/&gt;
+&lt;img alt="pushserver use-case from the user perspective" class="align-center" src="https://developer.paylogic.com/images/pushserver/diagram-user-perspective.png"/&gt;
 &lt;p&gt;The actor changes some data on the backend via a normal request to the backend. All users receive the broadcasted
 message from the backend via long-lasting channel for server-sent events.&lt;/p&gt;
 &lt;p&gt;The deployment may look like this:&lt;/p&gt;
-&lt;img alt="pushserver use-case possible deployment schema" class="align-center" src="http://developer.paylogic.com/images/pushserver/diagram-deployment.png"/&gt;
+&lt;img alt="pushserver use-case possible deployment schema" class="align-center" src="https://developer.paylogic.com/images/pushserver/diagram-deployment.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="sending-events-to-a-push-server"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;Sending events to a push server&lt;/a&gt;&lt;/h2&gt;
@@ -659,7 +659,7 @@ payment processing, ticket availability changes, etc.&lt;/p&gt;
 &lt;p&gt;For now, Server sent events are more like an experiment for us, but it's a promising technology. We're eager to hear
 some feedback from developers who use our API on whether it will be useful for them to have a stream API.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="open source"></category><category term="python"></category><category term="redis-cluster"></category><category term="push notifications"></category><category term="server-sent events"></category><category term="SSE"></category><category term="html5"></category><category term="pub/sub"></category></entry><entry><title>Traduki</title><link href="http://developer.paylogic.com/articles/traduki.html" rel="alternate"></link><published>2014-10-27T10:00:00+01:00</published><updated>2014-10-27T10:00:00+01:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-10-27:articles/traduki.html</id><summary type="html">
+</summary><category term="open source"></category><category term="python"></category><category term="redis-cluster"></category><category term="push notifications"></category><category term="server-sent events"></category><category term="SSE"></category><category term="html5"></category><category term="pub/sub"></category></entry><entry><title>Traduki</title><link href="https://developer.paylogic.com/articles/traduki.html" rel="alternate"></link><published>2014-10-27T10:00:00+01:00</published><updated>2014-10-27T10:00:00+01:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-10-27:articles/traduki.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;tt class="docutils literal"&gt;traduki&lt;/tt&gt; is an &lt;a class="reference external" href="https://github.com/paylogic/traduki"&gt;open source&lt;/a&gt;
@@ -1030,7 +1030,7 @@ useful for projects that require an efficient and easy to use internationalizati
 We are waiting for your feedback and recommendations. Check &lt;a class="reference external" href="https://github.com/paylogic/traduki"&gt;traduki&lt;/a&gt;
 in our github profile.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="internationalization"></category><category term="sqlalchemy"></category><category term="python"></category><category term="database"></category><category term="i18n"></category></entry><entry><title>Paylogic Code review tool</title><link href="http://developer.paylogic.com/articles/codereview.html" rel="alternate"></link><published>2014-07-17T09:00:00+02:00</published><updated>2014-07-17T09:00:00+02:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-07-17:articles/codereview.html</id><summary type="html">
+</summary><category term="internationalization"></category><category term="sqlalchemy"></category><category term="python"></category><category term="database"></category><category term="i18n"></category></entry><entry><title>Paylogic Code review tool</title><link href="https://developer.paylogic.com/articles/codereview.html" rel="alternate"></link><published>2014-07-17T09:00:00+02:00</published><updated>2014-07-17T09:00:00+02:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-07-17:articles/codereview.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;As open sourcing software is a strategic decision of Paylogic we decided not to make an exception for our
@@ -1067,7 +1067,7 @@ Paylogic codebase has a reference to a Fogbugz case, and the development itself 
 at our &lt;a class="reference external" href="http://pygrunn.org/"&gt;PyGrunn&lt;/a&gt; conference
 on this topic from &lt;a class="reference external" href="http://nl.linkedin.com/in/dzittersteyn"&gt;Dirk Zittersteyn&lt;/a&gt;.  However, since it is important
 to understand the role the code review tool plays in our ecosystem, the below image shows a part of the process.&lt;/p&gt;
-&lt;img alt="gatekeepering and code review process" class="align-center" src="http://developer.paylogic.com/images/codereview/gatekeepering-and-code-review-process.png"/&gt;
+&lt;img alt="gatekeepering and code review process" class="align-center" src="https://developer.paylogic.com/images/codereview/gatekeepering-and-code-review-process.png"/&gt;
 &lt;p&gt;As you can see from the diagram (and the Legend), the code review tool is a critical part of our process.&lt;/p&gt;
 &lt;p&gt;Before we continue, we'll give you a quick glossary for the rest of this article:&lt;/p&gt;
 &lt;dl class="docutils"&gt;
@@ -1100,7 +1100,7 @@ a parameter, and retrieves the following fields from that case through the
 &lt;/ul&gt;
 &lt;p&gt;For custom fields, we use the &lt;a class="reference external" href="http://www.fogcreek.com/fogbugz/plugins/plugin.aspx?ixPlugin=1"&gt;Custom Fields&lt;/a&gt; plugin.
 From the Fogbugz side, it looks like this:&lt;/p&gt;
-&lt;img alt="create patchset from Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/create-patchset.png"/&gt;
+&lt;img alt="create patchset from Fogbugz" class="align-center" src="https://developer.paylogic.com/images/codereview/create-patchset.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="apply-custom-validations-for-any-patchsets-created"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id6"&gt;Apply custom validations for any patchsets created&lt;/a&gt;&lt;/h3&gt;
@@ -1114,17 +1114,17 @@ to the user.&lt;/p&gt;
 &lt;p&gt;This is, again, implemented using a special custom field in Fogbugz called
 &lt;tt class="docutils literal"&gt;approved revision&lt;/tt&gt;, together with the Fogbugz API to set it from the code review tool.&lt;/p&gt;
 &lt;p&gt;In the code review tool:&lt;/p&gt;
-&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="http://developer.paylogic.com/images/codereview/approve-revision-click.png"/&gt;
+&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="https://developer.paylogic.com/images/codereview/approve-revision-click.png"/&gt;
 &lt;p&gt;And in Fogbugz:&lt;/p&gt;
-&lt;img alt="approved revision and ci project fields set in the Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/approved-revision-field.png"/&gt;
+&lt;img alt="approved revision and ci project fields set in the Fogbugz" class="align-center" src="https://developer.paylogic.com/images/codereview/approved-revision-field.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="allow-gatekeepers-to-set-and-select-from-the-dropdown-the-target-branch-for-a-given-ci-project"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id8"&gt;Allow gatekeepers to set (and select from the dropdown) the target branch for a given CI project&lt;/a&gt;&lt;/h3&gt;
 &lt;p&gt;Both &lt;tt class="docutils literal"&gt;target branch&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;CI project&lt;/tt&gt; are custom fields of a Fogbugz case.&lt;/p&gt;
 &lt;p&gt;In the code review tool:&lt;/p&gt;
-&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="http://developer.paylogic.com/images/codereview/approve-revision-target-branch.png"/&gt;
+&lt;img alt="approve revision from codereview by the gatekeeper, target branch autocompletion" class="align-center" src="https://developer.paylogic.com/images/codereview/approve-revision-target-branch.png"/&gt;
 &lt;p&gt;And in Fogbugz:&lt;/p&gt;
-&lt;img alt="target branch field in the Fogbugz" class="align-center" src="http://developer.paylogic.com/images/codereview/target-branch-field.png"/&gt;
+&lt;img alt="target branch field in the Fogbugz" class="align-center" src="https://developer.paylogic.com/images/codereview/target-branch-field.png"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="support-creation-of-an-issue-patchset-using-bzr-git-and-mercurial-repositories"&gt;
 &lt;h3&gt;&lt;a class="toc-backref" href="#id9"&gt;Support creation of an issue (patchset), using bzr, git and mercurial repositories&lt;/a&gt;&lt;/h3&gt;
@@ -1176,7 +1176,7 @@ This new customization will be open sourced as well.&lt;/p&gt;
 support, and use cases. We hope that it will be useful for the community.
 Feedback is, as usual, more than appreciated. Happy code reviewing, we wish you 0 comments on your reviews!&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="code review"></category><category term="gatekeeper"></category><category term="fogbugz"></category><category term="review"></category><category term="rietveld"></category><category term="open source"></category></entry><entry><title>Settei</title><link href="http://developer.paylogic.com/articles/settei.html" rel="alternate"></link><published>2014-04-29T12:03:00+02:00</published><updated>2014-04-29T12:03:00+02:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-04-29:articles/settei.html</id><summary type="html">
+</summary><category term="code review"></category><category term="gatekeeper"></category><category term="fogbugz"></category><category term="review"></category><category term="rietveld"></category><category term="open source"></category></entry><entry><title>Settei</title><link href="https://developer.paylogic.com/articles/settei.html" rel="alternate"></link><published>2014-04-29T12:03:00+02:00</published><updated>2014-04-29T12:03:00+02:00</updated><author><name>Spyros Ioakeimidis</name></author><id>tag:developer.paylogic.com,2014-04-29:articles/settei.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;settei&lt;/code&gt; is a general purpose python settings library which uses

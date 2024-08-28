@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>Paylogic Developers</title><link>http://developer.paylogic.com/</link><description></description><lastBuildDate>Mon, 27 Oct 2014 10:00:00 +0100</lastBuildDate><item><title>Traduki</title><link>http://developer.paylogic.com/articles/traduki.html</link><description>
+<rss version="2.0"><channel><title>Paylogic Developers</title><link>https://developer.paylogic.com/</link><description></description><lastBuildDate>Mon, 27 Oct 2014 10:00:00 +0100</lastBuildDate><item><title>Traduki</title><link>https://developer.paylogic.com/articles/traduki.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;tt class="docutils literal"&gt;traduki&lt;/tt&gt; is an &lt;a class="reference external" href="https://github.com/paylogic/traduki"&gt;open source&lt;/a&gt;
@@ -370,7 +370,7 @@ useful for projects that require an efficient and easy to use internationalizati
 We are waiting for your feedback and recommendations. Check &lt;a class="reference external" href="https://github.com/paylogic/traduki"&gt;traduki&lt;/a&gt;
 in our github profile.&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Spyros Ioakeimidis</dc:creator><pubDate>Mon, 27 Oct 2014 10:00:00 +0100</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-10-27:articles/traduki.html</guid><category>internationalization</category><category>sqlalchemy</category><category>python</category><category>database</category><category>i18n</category></item><item><title>Settei</title><link>http://developer.paylogic.com/articles/settei.html</link><description>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Spyros Ioakeimidis</dc:creator><pubDate>Mon, 27 Oct 2014 10:00:00 +0100</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-10-27:articles/traduki.html</guid><category>internationalization</category><category>sqlalchemy</category><category>python</category><category>database</category><category>i18n</category></item><item><title>Settei</title><link>https://developer.paylogic.com/articles/settei.html</link><description>
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id3"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;settei&lt;/code&gt; is a general purpose python settings library which uses
@@ -660,7 +660,7 @@ e.g. a live environment, where settings usually differ a lot from those used
 during development. Finally, settings inheritance, which is accomplished by using
 dependency injection, provides the modularity and extensibility we needed.&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Spyros Ioakeimidis</dc:creator><pubDate>Tue, 29 Apr 2014 12:03:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-04-29:articles/settei.html</guid><category>open source</category><category>python</category><category>settings</category><category>entry points</category><category>setuptools</category></item><item><title>Prefill Registration Data</title><link>http://developer.paylogic.com/articles/prefill-registration.html</link><description>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Spyros Ioakeimidis</dc:creator><pubDate>Tue, 29 Apr 2014 12:03:00 +0200</pubDate><guid isPermaLink="false">tag:developer.paylogic.com,2014-04-29:articles/settei.html</guid><category>open source</category><category>python</category><category>settings</category><category>entry points</category><category>setuptools</category></item><item><title>Prefill Registration Data</title><link>https://developer.paylogic.com/articles/prefill-registration.html</link><description>
 &lt;p&gt;&lt;em&gt;Paylogic offers a feature to allow the prefilling of the personal data of a
 consumer during the sales process via a personalized URL. This can be used
 whenever a merchant already has the data of the consumers and wants to offer

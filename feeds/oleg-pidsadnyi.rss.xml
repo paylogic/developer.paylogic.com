@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>Paylogic Developers</title><link>http://developer.paylogic.com/</link><description></description><lastBuildDate>Fri, 01 Apr 2016 11:02:00 +0200</lastBuildDate><item><title>Factory injection, combining pytest with factory_boy</title><link>http://developer.paylogic.com/articles/factory-injection-combining-pytest-factory_boy.html</link><description>&lt;div class="section" id="factory-injection-combining-pytest-with-factory-boy"&gt;
+<rss version="2.0"><channel><title>Paylogic Developers</title><link>https://developer.paylogic.com/</link><description></description><lastBuildDate>Fri, 01 Apr 2016 11:02:00 +0200</lastBuildDate><item><title>Factory injection, combining pytest with factory_boy</title><link>https://developer.paylogic.com/articles/factory-injection-combining-pytest-factory_boy.html</link><description>&lt;div class="section" id="factory-injection-combining-pytest-with-factory-boy"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Factory injection, combining pytest with factory_boy&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;The most annoying in writing tests is the setup. All this boilerplate requires so much effort and

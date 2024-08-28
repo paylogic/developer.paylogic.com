@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="http://developer.paylogic.com/" rel="alternate"></link><link href="http://developer.paylogic.com/feeds/testing.atom.xml" rel="self"></link><id>http://developer.paylogic.com/</id><updated>2014-10-31T11:00:00+01:00</updated><entry><title>How we use pytest and pytest-bdd in Paylogic.</title><link href="http://developer.paylogic.com/articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html" rel="alternate"></link><published>2014-10-31T11:00:00+01:00</published><updated>2014-10-31T11:00:00+01:00</updated><author><name>Andrey Makhnach</name></author><id>tag:developer.paylogic.com,2014-10-31:articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html</id><summary type="html">&lt;div class="section" id="how-we-use-pytest-and-pytest-bdd-in-paylogic"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Paylogic Developers</title><link href="https://developer.paylogic.com/" rel="alternate"></link><link href="https://developer.paylogic.com/feeds/testing.atom.xml" rel="self"></link><id>https://developer.paylogic.com/</id><updated>2014-10-31T11:00:00+01:00</updated><entry><title>How we use pytest and pytest-bdd in Paylogic.</title><link href="https://developer.paylogic.com/articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html" rel="alternate"></link><published>2014-10-31T11:00:00+01:00</published><updated>2014-10-31T11:00:00+01:00</updated><author><name>Andrey Makhnach</name></author><id>tag:developer.paylogic.com,2014-10-31:articles/how-we-use-pytest-and-pytest-bdd-in-paylogic.html</id><summary type="html">&lt;div class="section" id="how-we-use-pytest-and-pytest-bdd-in-paylogic"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;How we use pytest and pytest-bdd in Paylogic&lt;/a&gt;&lt;/h2&gt;
 
 &lt;p&gt;After some time of using &lt;a class="reference external" href="http://pytest.org"&gt;pytest&lt;/a&gt; and &lt;a class="reference external" href="https://github.com/olegpidsadnyi/pytest-bdd"&gt;pytest-bdd&lt;/a&gt;
@@ -312,7 +312,7 @@ planning to improve a relation between code and tests, fixtures.&lt;/p&gt;
 &lt;p&gt;Thank you for reading.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="open source"></category><category term="python"></category><category term="pytest"></category><category term="pytest-bdd"></category></entry><entry><title>pytest-xdist and session-scoped fixtures</title><link href="http://developer.paylogic.com/articles/pytest-xdist-and-session-scoped-fixtures.html" rel="alternate"></link><published>2014-05-28T12:36:00+02:00</published><updated>2014-05-28T12:36:00+02:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-05-28:articles/pytest-xdist-and-session-scoped-fixtures.html</id><summary type="html">
+</summary><category term="open source"></category><category term="python"></category><category term="pytest"></category><category term="pytest-bdd"></category></entry><entry><title>pytest-xdist and session-scoped fixtures</title><link href="https://developer.paylogic.com/articles/pytest-xdist-and-session-scoped-fixtures.html" rel="alternate"></link><published>2014-05-28T12:36:00+02:00</published><updated>2014-05-28T12:36:00+02:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-05-28:articles/pytest-xdist-and-session-scoped-fixtures.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id2"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;In the earlier &lt;a class="reference external" href="test-p14n"&gt;article on Test parallelization&lt;/a&gt; we unveiled how we &lt;tt class="docutils literal"&gt;parallelize&lt;/tt&gt; our tests.
@@ -422,7 +422,7 @@ not &lt;tt class="docutils literal"&gt;parallelize&lt;/tt&gt; tests, and therefo
 &lt;/ul&gt;
 &lt;p&gt;We see here that the more tests you have for the same amount of nodes, the more test sessions will be started!&lt;/p&gt;
 &lt;p&gt;In the below diagram we can see how it works in a more visual way:&lt;/p&gt;
-&lt;img alt="pytest-xdist in action" class="align-center" src="http://developer.paylogic.com/images/pytest-xdist-in-action.png" style="width: 75%;"/&gt;
+&lt;img alt="pytest-xdist in action" class="align-center" src="https://developer.paylogic.com/images/pytest-xdist-in-action.png" style="width: 75%;"/&gt;
 &lt;/div&gt;
 &lt;div class="section" id="how-to-avoid-multiple-sessions-on-single-node"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id5"&gt;How to avoid multiple sessions on single node&lt;/a&gt;&lt;/h2&gt;
@@ -505,7 +505,7 @@ It also improved the test stability, because the OS performs better as it doesn'
 of processes. We hope that you will find our approach useful, especially if you use &lt;tt class="docutils literal"&gt;pytest&lt;/tt&gt; and &lt;tt class="docutils literal"&gt;&lt;span class="pre"&gt;pytest-xdist&lt;/span&gt;&lt;/tt&gt;,
 as you will probably run into the same issues as we did.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="testing"></category><category term="pytest"></category><category term="pytest-xdist"></category><category term="fixtures"></category><category term="session"></category></entry><entry><title>Test parallelization</title><link href="http://developer.paylogic.com/articles/test-p14n.html" rel="alternate"></link><published>2014-01-31T10:37:00+01:00</published><updated>2014-01-31T10:37:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-01-31:articles/test-p14n.html</id><summary type="html">
+</summary><category term="testing"></category><category term="pytest"></category><category term="pytest-xdist"></category><category term="fixtures"></category><category term="session"></category></entry><entry><title>Test parallelization</title><link href="https://developer.paylogic.com/articles/test-p14n.html" rel="alternate"></link><published>2014-01-31T10:37:00+01:00</published><updated>2014-01-31T10:37:00+01:00</updated><author><name>Anatoly Bubenkov</name></author><id>tag:developer.paylogic.com,2014-01-31:articles/test-p14n.html</id><summary type="html">
 &lt;div class="section" id="introduction"&gt;
 &lt;h2&gt;&lt;a class="toc-backref" href="#id1"&gt;Introduction&lt;/a&gt;&lt;/h2&gt;
 &lt;p&gt;Automated tests are awesome. A good test suite makes refactoring easier and allows
@@ -934,7 +934,7 @@ it before running the tests:&lt;/p&gt;
 functional tests. It takes about 5 minutes to run unit and functional tests on a
 cluster of 6 old dual core machines, each of them running 2 sessions.&lt;/p&gt;
 &lt;p&gt;An experiment in the early stages gave these results:&lt;/p&gt;
-&lt;img alt="parallelization performance comparison graph" class="align-center" src="http://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
+&lt;img alt="parallelization performance comparison graph" class="align-center" src="https://developer.paylogic.com/images/p14n.png" style="width: 75%;"/&gt;
 &lt;p&gt;The blue line is the test distribution over cluster machines, one worker on each
 of them. The pink line represents the "ideal situation", where doubling the
 number of works decreases the tests execution time by a factor of 2. Finally, the
