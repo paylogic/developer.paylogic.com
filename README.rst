@@ -20,7 +20,7 @@ following steps should help you get started::
   # Run Pelican and view the result in a web browser.
   cd developer.paylogic.com
   make devserver [DEVSERVER_PORT=<port>]
-  gnome-open http://127.0.0.1:8000  # DEVSERVER_PORT is 8000 by default
+  xdg-open http://127.0.0.1:8000  # DEVSERVER_PORT is 8000 by default
 
 
 Publishing changes
