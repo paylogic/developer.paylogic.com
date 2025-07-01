@@ -8,11 +8,6 @@ generate the web pages from content written in the reStructuredText_ format.
 The git repository is hosted on our GitHub_ account and we use `GitHub Pages`_
 with a custom DNS name for hosting.
 
-
-.. image:: https://travis-ci.org/paylogic/developer.paylogic.com.svg?branch=master
-    :target: https://travis-ci.org/paylogic/developer.paylogic.com
-    
-
 Running it locally
 ------------------
 
@@ -31,10 +26,9 @@ following steps should help you get started::
 Publishing changes
 ------------------
 
-This repo is set up the way travis will build the static content automatically on every push
-to ``master`` branch, and then will push the build result to ``gh-pages`` branch, which is then
-served by `GitHub Pages`_.
-
+The makefile target ``make github`` will render the website and store the
+rendered files into the ``gh-pages`` branch which is what `GitHub Pages`_
+deploys to developer.paylogic.com_.
 
 License
 -------
